@@ -7,15 +7,13 @@ SHELL = /bin/sh
 # specify flags and libraries needed for your compiler
 
 CC =		mpic++
-CCFLAGS =	-O2
-#CCFLAGS =	-O2 -fopenmp
+CCFLAGS =	-O2 -fopenmp
 SHFLAGS =	-fPIC
 DEPFLAGS =	-M
 
 LINK =		mpic++
 LINKFLAGS =	-O2 -framework Accelerate
-LIB =		-lstdc++
-#LIB =		-lstdc++ -lgomp
+LIB =		-lstdc++ -lgomp
 SIZE =		size
 
 ARCHIVE =	ar
@@ -39,9 +37,9 @@ LMP_INC =	-DLAMMPS_GZIP -DLAMMPS_JPEG
 # PATH = path for MPI library
 # LIB = name of MPI library
 
-MPI_INC =	-I/usr/local/include/openmpi/ompi/mpi
-MPI_PATH =	-L/usr/local/lib/openmpi
-MPI_LIB =	-lmpi -lmpi_cxx
+MPI_INC =	
+MPI_PATH =	
+MPI_LIB =	
 
 # FFT library, OPTIONAL
 # see discussion in doc/Section_start.html#2_2 (step 6)
@@ -50,8 +48,8 @@ MPI_LIB =	-lmpi -lmpi_cxx
 # PATH = path for FFT library
 # LIB = name of FFT library
 
-FFT_INC =	-DFFT_FFTW3 -I/usr/local/include
-FFT_PATH = 	-L/usr/local/lib
+FFT_INC =	-DFFT_FFTW3
+FFT_PATH = 	
 FFT_LIB =	-lfftw3
 
 # JPEG and/or PNG library, OPTIONAL
