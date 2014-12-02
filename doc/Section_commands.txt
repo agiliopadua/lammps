@@ -583,7 +583,9 @@ package"_Section_start.html#start_3.
 "atc"_fix_atc.html,
 "ave/spatial/sphere"_fix_ave_spatial_sphere.html,
 "colvars"_fix_colvars.html,
+"gle"_fix_gle.html,
 "imd"_fix_imd.html,
+"ipi"_fix_ipi.html,
 "langevin/eff"_fix_langevin_eff.html,
 "lb/fluid"_fix_lb_fluid.html,
 "lb/momentum"_fix_lb_momentum.html,
@@ -598,6 +600,7 @@ package"_Section_start.html#start_3.
 "nvt/eff"_fix_nh_eff.html,
 "nvt/sllod/eff"_fix_nvt_sllod_eff.html,
 "phonon"_fix_phonon.html,
+"pimd"_fix_pimd.html,
 "qeq/reax"_fix_qeq_reax.html,
 "qmmm"_fix_qmmm.html,
 "reax/c/bonds"_fix_reax_bonds.html,
@@ -639,7 +642,6 @@ KOKKOS, o = USER-OMP, t = OPT.
 "erotate/sphere"_compute_erotate_sphere.html,
 "erotate/sphere/atom"_compute_erotate_sphere_atom.html,
 "event/displace"_compute_event_displace.html,
-"force/molecule"_compute_force_molecule.html,
 "group/group"_compute_group_group.html,
 "gyration"_compute_gyration.html,
 "gyration/molecule"_compute_gyration_molecule.html,
@@ -847,6 +849,7 @@ package"_Section_start.html#start_3.
 "sph/rhosum"_pair_sph_rhosum.html,
 "sph/taitwater"_pair_sph_taitwater.html,
 "sph/taitwater/morris"_pair_sph_taitwater_morris.html,
+"srp"_pair_srp.html,
 "tersoff/table (o)"_pair_tersoff.html,
 "tip4p/long/soft (o)"_pair_lj_soft.html :tb(c=4,ea=c)
 
