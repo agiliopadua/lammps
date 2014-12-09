@@ -605,6 +605,12 @@ neigh_half_multi_omp.cpp
 neigh_half_nsq_omp.cpp
 neigh_respa_omp.cpp
 neighbor_omp.h
+fix_pimd.cpp
+fix_pimd.h
+fix_srp.cpp
+fix_srp.h
+pair_srp.cpp
+pair_srp.h
 
 pair_adp.cpp
 pair_adp.h
