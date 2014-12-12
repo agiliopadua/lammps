@@ -611,6 +611,8 @@ fix_srp.cpp
 fix_srp.h
 pair_srp.cpp
 pair_srp.h
+fix_ave_spatial_sphere.h
+fix_ave_spatial_sphere.cpp
 
 pair_adp.cpp
 pair_adp.h
