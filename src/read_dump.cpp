@@ -15,6 +15,11 @@
    Contributing author: Timothy Sirk (ARL)
 ------------------------------------------------------------------------- */
 
+// lmptype.h must be first b/c this file uses MAXBIGINT and includes mpi.h
+// due to OpenMPI bug which sets INT64_MAX via its mpi.h
+//   before lmptype.h can set flags to insure it is done correctly
+
+#include "lmptype.h" 
 #include "mpi.h"
 #include "string.h"
 #include "stdlib.h"
@@ -199,7 +204,7 @@ void ReadDump::setup_reader(int narg, char **arg)
 
   // unrecognized style
 
-  else error->all(FLERR,"Invalid dump reader style");
+  else error->all(FLERR,"Unknown dump reader style");
 
   // pass any arguments to reader
 

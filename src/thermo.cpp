@@ -11,6 +11,11 @@
    See the README file in the top-level LAMMPS directory.
 ------------------------------------------------------------------------- */
 
+// lmptype.h must be first b/c this file uses MAXBIGINT and includes mpi.h
+// due to OpenMPI bug which sets INT64_MAX via its mpi.h
+//   before lmptype.h can set flags to insure it is done correctly
+
+#include "lmptype.h" 
 #include "mpi.h"
 #include "math.h"
 #include "stdlib.h"
@@ -837,10 +842,12 @@ void Thermo::parse_fields(char *str)
       if (ptr == NULL) argindex1[nfield] = 0;
       else {
         *ptr = '\0';
-        argindex1[nfield] = input->variable->int_between_brackets(ptr,0);
+        argindex1[nfield] = 
+          (int) input->variable->int_between_brackets(ptr,0);
         ptr++;
         if (*ptr == '[') {
-          argindex2[nfield] = input->variable->int_between_brackets(ptr,0);
+          argindex2[nfield] = 
+            (int) input->variable->int_between_brackets(ptr,0);
           ptr++;
         } else argindex2[nfield] = 0;
       }
@@ -910,7 +917,7 @@ void Thermo::parse_fields(char *str)
 
       delete [] id;
 
-    } else error->all(FLERR,"Invalid keyword in thermo_style custom command");
+    } else error->all(FLERR,"Unknown keyword in thermo_style custom command");
 
     word = strtok(NULL," \0");
   }
