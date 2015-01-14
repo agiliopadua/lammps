@@ -336,7 +336,8 @@ FixRigid::FixRigid(LAMMPS *lmp, int narg, char **arg) :
 
     } else if (strcmp(arg[iarg],"langevin") == 0) {
       if (iarg+5 > narg) error->all(FLERR,"Illegal fix rigid command");
-      if (strcmp(style,"rigid") != 0 && strcmp(style,"rigid/nve") != 0)
+      if (strcmp(style,"rigid") != 0 && strcmp(style,"rigid/nve") != 0 && 
+          strcmp(style,"rigid/omp") != 0 && strcmp(style,"rigid/nve/omp") != 0)
         error->all(FLERR,"Illegal fix rigid command");
       langflag = 1;
       t_start = force->numeric(FLERR,arg[iarg+1]);
@@ -350,7 +351,8 @@ FixRigid::FixRigid(LAMMPS *lmp, int narg, char **arg) :
 
     } else if (strcmp(arg[iarg],"temp") == 0) {
       if (iarg+4 > narg) error->all(FLERR,"Illegal fix rigid command");
-      if (strcmp(style,"rigid/nvt") != 0 && strcmp(style,"rigid/npt") != 0)
+      if (strcmp(style,"rigid/nvt") != 0 && strcmp(style,"rigid/npt") != 0 &&
+          strcmp(style,"rigid/nvt/omp") != 0 && strcmp(style,"rigid/npt/omp") != 0)
         error->all(FLERR,"Illegal fix rigid command");
       tstat_flag = 1;
       t_start = force->numeric(FLERR,arg[iarg+1]);
@@ -360,7 +362,8 @@ FixRigid::FixRigid(LAMMPS *lmp, int narg, char **arg) :
 
     } else if (strcmp(arg[iarg],"iso") == 0) {
       if (iarg+4 > narg) error->all(FLERR,"Illegal fix rigid command");
-      if (strcmp(style,"rigid/npt") != 0 && strcmp(style,"rigid/nph") != 0)
+      if (strcmp(style,"rigid/npt") != 0 && strcmp(style,"rigid/nph") != 0 &&
+          strcmp(style,"rigid/npt/omp") != 0 && strcmp(style,"rigid/nph/omp") != 0)
 	      error->all(FLERR,"Illegal fix rigid command");
       pcouple = XYZ;
       p_start[0] = p_start[1] = p_start[2] = force->numeric(FLERR,arg[iarg+1]);
@@ -376,7 +379,8 @@ FixRigid::FixRigid(LAMMPS *lmp, int narg, char **arg) :
 
     } else if (strcmp(arg[iarg],"aniso") == 0) {
       if (iarg+4 > narg) error->all(FLERR,"Illegal fix rigid command");
-      if (strcmp(style,"rigid/npt") != 0 && strcmp(style,"rigid/nph") != 0)
+      if (strcmp(style,"rigid/npt") != 0 && strcmp(style,"rigid/nph") != 0 &&
+          strcmp(style,"rigid/npt/omp") != 0 && strcmp(style,"rigid/nph/omp") != 0)
 	      error->all(FLERR,"Illegal fix rigid command");
       p_start[0] = p_start[1] = p_start[2] = force->numeric(FLERR,arg[iarg+1]);
       p_stop[0] = p_stop[1] = p_stop[2] = force->numeric(FLERR,arg[iarg+2]);
@@ -391,6 +395,9 @@ FixRigid::FixRigid(LAMMPS *lmp, int narg, char **arg) :
 
     } else if (strcmp(arg[iarg],"x") == 0) {
       if (iarg+4 > narg) error->all(FLERR,"Illegal fix rigid command");
+      if (strcmp(style,"rigid/npt") != 0 && strcmp(style,"rigid/nph") != 0 &&
+          strcmp(style,"rigid/npt/omp") != 0 && strcmp(style,"rigid/nph/omp") != 0)
+	      error->all(FLERR,"Illegal fix rigid command");
       p_start[0] = force->numeric(FLERR,arg[iarg+1]);
       p_stop[0] = force->numeric(FLERR,arg[iarg+2]);
       p_period[0] = force->numeric(FLERR,arg[iarg+3]);
@@ -399,6 +406,9 @@ FixRigid::FixRigid(LAMMPS *lmp, int narg, char **arg) :
 
     } else if (strcmp(arg[iarg],"y") == 0) {
       if (iarg+4 > narg) error->all(FLERR,"Illegal fix rigid command");
+      if (strcmp(style,"rigid/npt") != 0 && strcmp(style,"rigid/nph") != 0 &&
+          strcmp(style,"rigid/npt/omp") != 0 && strcmp(style,"rigid/nph/omp") != 0)
+	      error->all(FLERR,"Illegal fix rigid command");
       p_start[1] = force->numeric(FLERR,arg[iarg+1]);
       p_stop[1] = force->numeric(FLERR,arg[iarg+2]);
       p_period[1] = force->numeric(FLERR,arg[iarg+3]);
@@ -407,6 +417,9 @@ FixRigid::FixRigid(LAMMPS *lmp, int narg, char **arg) :
 
     } else if (strcmp(arg[iarg],"z") == 0) {
       if (iarg+4 > narg) error->all(FLERR,"Illegal fix rigid command");
+      if (strcmp(style,"rigid/npt") != 0 && strcmp(style,"rigid/nph") != 0 &&
+          strcmp(style,"rigid/npt/omp") != 0 && strcmp(style,"rigid/nph/omp") != 0)
+	      error->all(FLERR,"Illegal fix rigid command");
       p_start[2] = force->numeric(FLERR,arg[iarg+1]);
       p_stop[2] = force->numeric(FLERR,arg[iarg+2]);
       p_period[2] = force->numeric(FLERR,arg[iarg+3]);
@@ -425,7 +438,7 @@ FixRigid::FixRigid(LAMMPS *lmp, int narg, char **arg) :
 
     } else if (strcmp(arg[iarg],"dilate") == 0) {
       if (iarg+2 > narg) 
-        error->all(FLERR,"Illegal fix rigid nvt/npt/nph command");
+        error->all(FLERR,"Illegal fix rigid npt/nph command");
       if (strcmp(arg[iarg+1],"all") == 0) allremap = 1;
       else {
         allremap = 0;
@@ -442,7 +455,8 @@ FixRigid::FixRigid(LAMMPS *lmp, int narg, char **arg) :
 
     } else if (strcmp(arg[iarg],"tparam") == 0) {
       if (iarg+4 > narg) error->all(FLERR,"Illegal fix rigid command");
-      if (strcmp(style,"rigid/nvt") != 0 && strcmp(style,"rigid/npt") != 0)
+      if (strcmp(style,"rigid/nvt") != 0 && strcmp(style,"rigid/npt") != 0 && 
+          strcmp(style,"rigid/nvt/omp") != 0 && strcmp(style,"rigid/npt/omp") != 0)
         error->all(FLERR,"Illegal fix rigid command");
       t_chain = force->inumeric(FLERR,arg[iarg+1]);
       t_iter = force->inumeric(FLERR,arg[iarg+2]);
@@ -451,7 +465,8 @@ FixRigid::FixRigid(LAMMPS *lmp, int narg, char **arg) :
 
     } else if (strcmp(arg[iarg],"pchain") == 0) {
       if (iarg+2 > narg) error->all(FLERR,"Illegal fix rigid command");
-      if (strcmp(style,"rigid/npt") != 0 && strcmp(style,"rigid/nph") != 0)
+      if (strcmp(style,"rigid/npt") != 0 && strcmp(style,"rigid/nph") != 0 && 
+          strcmp(style,"rigid/npt/omp") != 0 && strcmp(style,"rigid/nph/omp") != 0)
         error->all(FLERR,"Illegal fix rigid command");
       p_chain = force->inumeric(FLERR,arg[iarg+1]);
       iarg += 2;
@@ -965,56 +980,6 @@ void FixRigid::final_integrate()
   set_v();
 }
 
-/* ----------------------------------------------------------------------
-   apply evolution operators to quat, quat momentum
-   see Miller paper cited in fix rigid/nvt and fix rigid/npt
-------------------------------------------------------------------------- */
-
-void FixRigid::no_squish_rotate(int k, double *p, double *q,
-                                double *inertia, double dt) const
-{
-  double phi,c_phi,s_phi,kp[4],kq[4];
-
-  // apply permuation operator on p and q, get kp and kq
-
-  if (k == 1) {
-    kq[0] = -q[1];  kp[0] = -p[1];
-    kq[1] =  q[0];  kp[1] =  p[0];
-    kq[2] =  q[3];  kp[2] =  p[3];
-    kq[3] = -q[2];  kp[3] = -p[2];
-  } else if (k == 2) {
-    kq[0] = -q[2];  kp[0] = -p[2];
-    kq[1] = -q[3];  kp[1] = -p[3];
-    kq[2] =  q[0];  kp[2] =  p[0];
-    kq[3] =  q[1];  kp[3] =  p[1];
-  } else if (k == 3) {
-    kq[0] = -q[3];  kp[0] = -p[3];
-    kq[1] =  q[2];  kp[1] =  p[2];
-    kq[2] = -q[1];  kp[2] = -p[1];
-    kq[3] =  q[0];  kp[3] =  p[0];
-  }
-
-  // obtain phi, cosines and sines
-
-  phi = p[0]*kq[0] + p[1]*kq[1] + p[2]*kq[2] + p[3]*kq[3];
-  if (fabs(inertia[k-1]) < 1e-6) phi *= 0.0;
-  else phi /= 4.0 * inertia[k-1];
-  c_phi = cos(dt * phi);
-  s_phi = sin(dt * phi);
-
-  // advance p and q
-
-  p[0] = c_phi*p[0] + s_phi*kp[0];
-  p[1] = c_phi*p[1] + s_phi*kp[1];
-  p[2] = c_phi*p[2] + s_phi*kp[2];
-  p[3] = c_phi*p[3] + s_phi*kp[3];
-
-  q[0] = c_phi*q[0] + s_phi*kq[0];
-  q[1] = c_phi*q[1] + s_phi*kq[1];
-  q[2] = c_phi*q[2] + s_phi*kq[2];
-  q[3] = c_phi*q[3] + s_phi*kq[3];
-}
-
 /* ---------------------------------------------------------------------- */
 
 void FixRigid::initial_integrate_respa(int vflag, int ilevel, int iloop)
@@ -1141,7 +1106,9 @@ int FixRigid::dof(int tgroup)
 
   for (int i = 0; i < nlocal; i++)
     if (body[i] >= 0 && mask[i] & tgroupbit) {
-      if (extended && eflags[i]) mcount[body[i]]++;
+      // do not count point particles or point dipoles as extended particles
+      // a spheroid dipole will be counted as extended
+      if (extended && (eflags[i] & ~(POINT | DIPOLE))) mcount[body[i]]++;
       else ncount[body[i]]++;
     }
 
