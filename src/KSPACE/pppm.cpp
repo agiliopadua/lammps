@@ -380,16 +380,6 @@ void PPPM::init()
 
 void PPPM::setup()
 {
-  
-  // update qsum and qsqsum, if needed
-  
-  if (eflag_global || eflag_atom) {
-    if (qsum_update_flag || (atom->natoms != natoms_original)) {
-      qsum_qsq(0);
-      natoms_original = atom->natoms;
-    }
-  }
-  
   if (triclinic) {
     setup_triclinic();
     return;
