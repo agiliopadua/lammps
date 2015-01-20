@@ -175,8 +175,6 @@ FixAdapt::~FixAdapt()
   }
   delete [] adapt;
 
-  if (chgflag && force->kspace) force->kspace->qsum_update_flag = 0;
-
   // check nfix in case all fixes have already been deleted
 
   if (id_fix_diam && modify->nfix) modify->delete_fix(id_fix_diam);
@@ -192,6 +190,7 @@ int FixAdapt::setmask()
   int mask = 0;
   mask |= PRE_FORCE;
   mask |= POST_RUN;
+  mask |= PRE_FORCE_RESPA;
   return mask;
 }
 
@@ -352,11 +351,6 @@ void FixAdapt::init()
     }
   }
 
-  // when adapting charge and using kspace, 
-  // need to recompute additional params in kspace->setup()
-
-  if (chgflag && force->kspace) force->kspace->qsum_update_flag = 1;
-
   // fixes that store initial per-atom values
   
   if (id_fix_diam) {
@@ -400,10 +394,10 @@ void FixAdapt::pre_force(int vflag)
 
 /* ---------------------------------------------------------------------- */
 
-void FixAdapt::pre_force_respa(int vflag, int ilevel)
+void FixAdapt::pre_force_respa(int vflag, int ilevel, int)
 {
   if (ilevel < nlevels_respa-1) return;
-  setup_pre_force(vflag);
+  pre_force(vflag);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -503,10 +497,9 @@ void FixAdapt::change_settings()
 
   if (anypair) force->pair->reinit();
 
-  // re-setup KSpace if it exists and adapting charges
-  // since charges have changed
+  // reset KSpace charges if charges have changed
 
-  if (chgflag && force->kspace) force->kspace->setup();
+  if (chgflag && force->kspace) force->kspace->qsum_qsq();
 }
 
 /* ----------------------------------------------------------------------
