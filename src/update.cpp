@@ -235,7 +235,7 @@ void Update::set_units(const char *style)
     force->hhmrr2e = 0.0;
     force->mvh2r = 0.0;
     force->angstrom = 1.88972612;
-    force->femtosecond = 0.0241888428;
+    force->femtosecond = 41.34137413;
     force->qelectron = 1.0;
 
     dt = 0.001;
@@ -408,7 +408,7 @@ void Update::create_minimize(int narg, char **arg)
 void Update::reset_timestep(int narg, char **arg)
 {
   if (narg != 1) error->all(FLERR,"Illegal reset_timestep command");
-  bigint newstep = ATOBIGINT(arg[0]);
+  bigint newstep = force->bnumeric(FLERR,arg[0]);
   reset_timestep(newstep);
 }
 
