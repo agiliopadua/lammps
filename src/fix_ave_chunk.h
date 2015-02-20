@@ -21,6 +21,7 @@ FixStyle(ave/chunk,FixAveChunk)
 #define LMP_FIX_AVE_CHUNK_H
 
 #include "stdio.h"
+#include "unistd.h"
 #include "fix.h"
 
 namespace LAMMPS_NS {
