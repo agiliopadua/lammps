@@ -499,6 +499,8 @@ pair_peri_ves.cpp
 pair_peri_ves.h
 fix_poems.cpp
 fix_poems.h
+python.cpp
+python.h
 fix_qeq.cpp
 fix_qeq.h
 fix_qeq_dynamic.cpp
@@ -743,6 +745,12 @@ pppm_old.h
 user_cuda.h
 verlet_cuda.cpp
 verlet_cuda.h
+compute_temp_drude.cpp
+compute_temp_drude.h
+fix_langevin_drude.cpp
+fix_langevin_drude.h
+fix_special_drude.cpp
+fix_special_drude.h
 atom_vec_electron.cpp
 atom_vec_electron.h
 compute_ke_atom_eff.cpp
