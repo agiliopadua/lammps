@@ -35,7 +35,6 @@ class FixAveSpatial : public Fix {
   void end_of_step();
   double compute_array(int,int);
   double memory_usage();
-  void reset_timestep(bigint);
 
  private:
   int me,nvalues;
@@ -90,7 +89,7 @@ class FixAveSpatial : public Fix {
 
 W: The fix ave/spatial command has been replaced by the more flexible fix ave/chunk and compute chunk/atom commands -- fix ave/spatial will be removed in the summer of 2015
 
-UNDOCUMENTED
+Self-explanatory.
 
 E: Illegal ... command
 
@@ -108,7 +107,7 @@ Self-explanatory.
 
 E: No input values for fix ave/spatial
 
-UNDOCUMENTED
+Self-explanatory.
 
 E: Region ID for fix ave/spatial does not exist
 
@@ -181,13 +180,13 @@ E: Fix for fix ave/spatial not computed at compatible time
 Fixes generate their values on specific timesteps.  Fix ave/spatial is
 requesting a value on a non-allowed timestep.
 
+E: Invalid timestep reset for fix ave/spatial
+
+Resetting the timestep has invalidated the sequence of timesteps this
+fix needs to process.
+
 E: Invalid bin bounds in fix ave/spatial
 
-UNDOCUMENTED
-
-E: Fix ave/spatial missed timestep
-
-You cannot reset the timestep to a value beyond where the fix
-expects to next perform averaging.
+The lo/hi values are inconsistent.
 
 */

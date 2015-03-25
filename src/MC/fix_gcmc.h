@@ -61,7 +61,6 @@ class FixGCMC : public Fix {
   int molecule_group,molecule_group_bit;
   int molecule_group_inversebit;
   int exclusion_group,exclusion_group_bit;
-  int exclusion_group_inversebit;
   int ngcmc_type,nevery,seed;
   int ncycles,nexchanges,nmcmoves;
   int ngas;                 // # of gas atoms on all procs
@@ -69,8 +68,8 @@ class FixGCMC : public Fix {
   int ngas_before;          // # of gas atoms on procs < this proc
   int mode;                 // ATOM or MOLECULE
   int regionflag;           // 0 = anywhere in box, 1 = specific region
-  int iregion;              // GCMC region
-  char *idregion;           // GCMC region id
+  int iregion;              // gcmc region
+  char *idregion;           // gcmc region id
   bool pressure_flag;       // true if user specified reservoir pressure
   bool charge_flag;         // true if user specified atomic charge
   bool full_flag;           // true if doing full system energy calculations
@@ -155,37 +154,87 @@ E: Fix gcmc region extends outside simulation box
 
 Self-explanatory.
 
+E: Fix gcmc molecule must have coordinates
+
+The defined molecule does not specify coordinates.
+
+E: Fix gcmc molecule must have atom types
+
+The defined molecule does not specify atom types.
+
+E: Invalid atom type in fix gcmc mol command
+
+Self-explanatory.
+
+E: Fix gcmc molecule template ID must be same as atom_style template ID
+
+When using atom_style template, you cannot insert molecules that are
+not in that template.
+
+E: Cannot use fix gcmc shake and not molecule
+
+Self-explanatory.
+
+E: Molecule template ID for fix gcmc does not exist
+
+Self-explanatory.
+
+W: Molecule template for fix gcmc has multiple molecules
+
+The fix gcmc command will only create molecules of a single type,
+i.e. the first molecule in the template.
+
 E: Region ID for fix gcmc does not exist
 
 Self-explanatory.
 
+W: fix gcmc using full_energy option
+
+Fix gcmc has automatically turned on the full_energy option since it
+is required for systems like the one specified by the user. User input
+included one or more of the following: kspace, triclinic, a hybrid
+pair style, an eam pair style, or no "single" function for the pair
+style.
+
 E: Invalid atom type in fix gcmc command
 
-The atom type specified in the GCMC command does not exist.
+The atom type specified in the gcmc command does not exist.
 
 E: Fix gcmc cannot exchange individual atoms belonging to a molecule
 
-This is an error since you should not delete only one atom of a molecule.
-The user has specified atomic (non-molecular) gas exchanges, but an atom
-belonging to a molecule could be deleted.
+This is an error since you should not delete only one atom of a
+molecule.  The user has specified atomic (non-molecular) gas
+exchanges, but an atom belonging to a molecule could be deleted.
 
 E: All mol IDs should be set for fix gcmc group atoms
 
-The molecule flag is on, yet not all molecule ids in the fix group have
-been set to non-zero positive values by the user. This is an error since
-all atoms in the fix gcmc group are eligible for deletion, rotation, and
-translation and therefore must have valid molecule ids.
+The molecule flag is on, yet not all molecule ids in the fix group
+have been set to non-zero positive values by the user. This is an
+error since all atoms in the fix gcmc group are eligible for deletion,
+rotation, and translation and therefore must have valid molecule ids.
 
 E: Fix gcmc molecule command requires that atoms have molecule attributes
 
-Should not choose the GCMC molecule feature if no molecules are being
-simulated. The general molecule flag is off, but GCMC's molecule flag
+Should not choose the gcmc molecule feature if no molecules are being
+simulated. The general molecule flag is off, but gcmc's molecule flag
 is on.
+
+E: Fix gcmc shake fix does not exist
+
+Self-explanatory.
+
+E: Fix gcmc and fix shake not using same molecule template ID
+
+Self-explanatory.
 
 E: Cannot use fix gcmc in a 2d simulation
 
 Fix gcmc is set up to run in 3d only. No 2d simulations with fix gcmc
 are allowed.
+
+E: Could not find fix gcmc exclusion group ID
+
+Self-explanatory.
 
 E: Could not find fix gcmc rotation group ID
 
@@ -196,7 +245,7 @@ E: Illegal fix gcmc gas mass <= 0
 The computed mass of the designated gas molecule or atom type was less 
 than or equal to zero.
 
-E: Cannot do GCMC on atoms in atom_modify first group
+E: Cannot do gcmc on atoms in atom_modify first group
 
 This is a restriction due to the way atoms are organized in a list to
 enable the atom_modify first command.
@@ -205,14 +254,12 @@ E: Fix gcmc ran out of available molecule IDs
 
 See the setting for tagint in the src/lmptype.h file.
 
-E: Fix gcmc could not find any atoms in the user-supplied template molecule
+E: Fix gcmc ran out of available atom IDs
 
-When using the molecule option with fix gcmc, the user must supply a 
-template molecule in the usual LAMMPS data file with its molecule id
-specified in the fix gcmc command as the "type" of the exchanged gas.
+See the setting for tagint in the src/lmptype.h file.
 
-E: Fix gcmc incorrect number of atoms per molecule
+E: Too many total atoms
 
-The number of atoms in each gas molecule was not computed correctly.
+See the setting for bigint in the src/lmptype.h file.
 
 */
