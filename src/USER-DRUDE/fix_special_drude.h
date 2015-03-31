@@ -36,7 +36,7 @@ class FixSpecialDrude : public Fix {
   
  protected:
   bool done;
-  int index_drude, index_ref;
+  int index_drudetype, index_drudeid;
 };
 
 }

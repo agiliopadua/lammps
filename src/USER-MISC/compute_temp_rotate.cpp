@@ -24,6 +24,7 @@
 #include "force.h"
 #include "group.h"
 #include "domain.h"
+#include "modify.h"
 #include "lattice.h"
 #include "error.h"
 #include "memory.h"
@@ -77,7 +78,7 @@ void ComputeTempRotate::setup()
 
 void ComputeTempRotate::dof_compute()
 {
-  fix_dof = adjust_dof_fix(igroup);
+  fix_dof = modify->adjust_dof_fix(igroup);
   double natoms = group->count(igroup);
   int nper = domain->dimension;
   dof = nper * natoms;

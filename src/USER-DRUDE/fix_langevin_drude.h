@@ -30,9 +30,10 @@ class FixLangevinDrude : public Fix {
   virtual ~FixLangevinDrude();
   int setmask();
   void init();
-  void setup(int);
-  virtual void post_force(int);
+  void setup(int vflag);
+  virtual void post_force(int vflag);
   //void post_force_respa(int, int, int);
+  void langevin(int vflag, bool thermalize); 
   void reset_target(double);
   virtual void *extract(const char *, int &);
   double compute_vector(int);
@@ -45,7 +46,7 @@ class FixLangevinDrude : public Fix {
   char *tstr_core, *tstr_drude;
   double energy;
   int tflag;
-  int index_drude, index_ref;
+  int index_drudetype, index_drudeid;
 
   class AtomVecEllipsoid *avec;
 
