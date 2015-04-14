@@ -48,7 +48,7 @@ PACKAGE = asphere body class2 colloid coreshell dipole fld gpu granular kim \
 PACKUSER = user-atc user-awpmd user-cg-cmm user-colvars \
 	   user-cuda user-eff user-fep user-intel user-lb user-misc \
 	   user-molfile user-omp user-phonon user-qmmm user-quip \
-	   user-reaxc user-sph user-drude
+	   user-reaxc user-sph
 
 PACKLIB = gpu kim kokkos meam poems python reax voronoi \
 	  user-atc user-awpmd user-colvars user-cuda user-molfile \
