@@ -63,10 +63,6 @@ pair_born_coul_long_cs.cpp
 pair_born_coul_long_cs.h
 pair_buck_coul_long_cs.cpp
 pair_buck_coul_long_cs.h
-pair_coul_long_cs.cpp
-pair_coul_long_cs.h
-pair_lj_cut_coul_long_cs.cpp
-pair_lj_cut_coul_long_cs.h
 atom_vec_dipole.cpp
 atom_vec_dipole.h
 pair_lj_cut_dipole_cut.cpp
