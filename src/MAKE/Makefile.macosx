@@ -7,13 +7,15 @@ SHELL = /bin/sh
 # specify flags and libraries needed for your compiler
 
 CC =		mpic++
-CCFLAGS =	-O2 -fopenmp
+CCFLAGS =	-O2 
+#CCFLAGS =	-O2 -fopenmp
 SHFLAGS =	-fPIC
 DEPFLAGS =	-M
 
 LINK =		mpic++
 LINKFLAGS =	-O2 -framework Accelerate
-LIB =		-lstdc++ -lgomp
+LIB =		-lstdc++
+#LIB =		-lstdc++ -lgomp
 SIZE =		size
 
 ARCHIVE =	ar
