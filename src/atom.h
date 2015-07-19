@@ -160,6 +160,7 @@ class Atom : protected Pointers {
 
   int sortfreq;             // sort atoms every this many steps, 0 = off
   bigint nextsort;          // next timestep to sort on
+  double userbinsize;       // requested sort bin size
 
   // indices of atoms with same ID
 
@@ -187,19 +188,19 @@ class Atom : protected Pointers {
 
   void deallocate_topology();
 
-  void data_atoms(int, char *);
-  void data_vels(int, char *);
+  void data_atoms(int, char *, tagint, int, int, double *);
+  void data_vels(int, char *, tagint);
 
-  void data_bonds(int, char *, int *);
-  void data_angles(int, char *, int *);
-  void data_dihedrals(int, char *, int *);
-  void data_impropers(int, char *, int *);
+  void data_bonds(int, char *, int *, tagint);
+  void data_angles(int, char *, int *, tagint);
+  void data_dihedrals(int, char *, int *, tagint);
+  void data_impropers(int, char *, int *, tagint);
 
-  void data_bonus(int, char *, class AtomVec *);
-  void data_bodies(int, char *, class AtomVecBody *);
+  void data_bonus(int, char *, class AtomVec *, tagint);
+  void data_bodies(int, char *, class AtomVecBody *, tagint);
 
   virtual void allocate_type_arrays();
-  void set_mass(const char *);
+  void set_mass(const char *, int);
   void set_mass(int, double);
   void set_mass(int, char **);
   void set_mass(double *);
@@ -281,7 +282,6 @@ class Atom : protected Pointers {
   int *binhead;                   // 1st atom in each bin
   int *next;                      // next atom in bin
   int *permute;                   // permutation vector
-  double userbinsize;             // requested sort bin size
   double bininvx,bininvy,bininvz; // inverse actual bin sizes
   double bboxlo[3],bboxhi[3];     // bounding box of my sub-domain
 
