@@ -113,12 +113,13 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="http://lammps.sandia.gov">Homepage</a>
+            <a href="http://lammps.sandia.gov">Website</a>
             <a href="Section_commands.html#comm">Commands</a>
         
       </li>
   </ul>
   <hr/>
+  
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
@@ -138,8 +139,8 @@
 <li>value = <em>temp</em> or <em>kecom</em> or <em>internal</em></li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>temp = temperature of each chunk
-  kecom = kinetic energy of each chunk based on velocity of center of mass
-  internal = internal kinetic energy of each chunk
+kecom = kinetic energy of each chunk based on velocity of center of mass
+internal = internal kinetic energy of each chunk
 </pre></div>
 </div>
 <ul class="simple">
@@ -148,14 +149,14 @@
 </ul>
 <pre class="literal-block">
 <em>com</em> value = <em>yes</em> or <em>no</em>
-    yes = subtract center-of-mass velocity from each chunk before calculating temperature
-    no = do not subtract center-of-mass velocity
-  <em>bias</em> value = bias-ID
-    bias-ID = ID of a temperature compute that removes a velocity bias
-  <em>adof</em> value = dof_per_atom
-    dof_per_atom = define this many degrees-of-freedom per atom
-  <em>cdof</em> value = dof_per_chunk
-    dof_per_chunk = define this many degrees-of-freedom per chunk
+  yes = subtract center-of-mass velocity from each chunk before calculating temperature
+  no = do not subtract center-of-mass velocity
+<em>bias</em> value = bias-ID
+  bias-ID = ID of a temperature compute that removes a velocity bias
+<em>adof</em> value = dof_per_atom
+  dof_per_atom = define this many degrees-of-freedom per atom
+<em>cdof</em> value = dof_per_chunk
+  dof_per_chunk = define this many degrees-of-freedom per chunk
 </pre>
 </div>
 <div class="section" id="examples">
@@ -371,6 +372,7 @@ system (2 or 3), and cdof = 0.0.</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>

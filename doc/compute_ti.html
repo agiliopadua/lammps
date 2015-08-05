@@ -113,12 +113,13 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="http://lammps.sandia.gov">Homepage</a>
+            <a href="http://lammps.sandia.gov">Website</a>
             <a href="Section_commands.html#comm">Commands</a>
         
       </li>
   </ul>
   <hr/>
+  
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
@@ -138,17 +139,17 @@
 </ul>
 <pre class="literal-block">
 pair style args = atype v_name1 v_name2
-    atype = atom type (see asterisk form below)
-    v_name1 = variable with name1 that is energy scale factor and function of lambda
-    v_name2 = variable with name2 that is derivative of v_name1 with respect to lambda
-  <em>tail</em> args = atype v_name1 v_name2
-    atype = atom type (see asterisk form below)
-    v_name1 = variable with name1 that is energy tail correction scale factor and function of lambda
-    v_name2 = variable with name2 that is derivative of v_name1 with respect to lambda
-  <em>kspace</em> args = atype v_name1 v_name2
-    atype = atom type (see asterisk form below)
-    v_name1 = variable with name1 that is K-Space scale factor and function of lambda
-    v_name2 = variable with name2 that is derivative of v_name1 with respect to lambda
+  atype = atom type (see asterisk form below)
+  v_name1 = variable with name1 that is energy scale factor and function of lambda
+  v_name2 = variable with name2 that is derivative of v_name1 with respect to lambda
+<em>tail</em> args = atype v_name1 v_name2
+  atype = atom type (see asterisk form below)
+  v_name1 = variable with name1 that is energy tail correction scale factor and function of lambda
+  v_name2 = variable with name2 that is derivative of v_name1 with respect to lambda
+<em>kspace</em> args = atype v_name1 v_name2
+  atype = atom type (see asterisk form below)
+  v_name1 = variable with name1 that is K-Space scale factor and function of lambda
+  v_name2 = variable with name2 that is derivative of v_name1 with respect to lambda
 </pre>
 </div>
 <div class="section" id="examples">
@@ -281,6 +282,7 @@ LAMMPS was built with that package.  See the <a class="reference internal" href=
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>

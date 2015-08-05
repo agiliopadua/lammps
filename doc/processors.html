@@ -113,12 +113,13 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="http://lammps.sandia.gov">Homepage</a>
+            <a href="http://lammps.sandia.gov">Website</a>
             <a href="Section_commands.html#comm">Commands</a>
         
       </li>
   </ul>
   <hr/>
+  
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
@@ -137,26 +138,26 @@
 </ul>
 <pre class="literal-block">
 <em>grid</em> arg = gstyle params ...
-    gstyle = <em>onelevel</em> or <em>twolevel</em> or <em>numa</em> or <em>custom</em>
-      onelevel params = none
-      twolevel params = Nc Cx Cy Cz
-        Nc = number of cores per node
-        Cx,Cy,Cz = # of cores in each dimension of 3d sub-grid assigned to each node
-      numa params = none
-      custom params = infile
-        infile = file containing grid layout
-  <em>map</em> arg = <em>cart</em> or <em>cart/reorder</em> or <em>xyz</em> or <em>xzy</em> or <em>yxz</em> or <em>yzx</em> or <em>zxy</em> or <em>zyx</em>
-     cart = use MPI_Cart() methods to map processors to 3d grid with reorder = 0
-     cart/reorder = use MPI_Cart() methods to map processors to 3d grid with reorder = 1
-     xyz,xzy,yxz,yzx,zxy,zyx = map procesors to 3d grid in IJK ordering
-  <em>numa</em> arg = none
-  <em>part</em> args = Psend Precv cstyle
-    Psend = partition # (1 to Np) which will send its processor layout
-    Precv = partition # (1 to Np) which will recv the processor layout
-    cstyle = <em>multiple</em>
-      <em>multiple</em> = Psend grid will be multiple of Precv grid in each dimension
-  <em>file</em> arg = outfile
-    outfile = name of file to write 3d grid of processors to
+  gstyle = <em>onelevel</em> or <em>twolevel</em> or <em>numa</em> or <em>custom</em>
+    onelevel params = none
+    twolevel params = Nc Cx Cy Cz
+      Nc = number of cores per node
+      Cx,Cy,Cz = # of cores in each dimension of 3d sub-grid assigned to each node
+    numa params = none
+    custom params = infile
+      infile = file containing grid layout
+<em>map</em> arg = <em>cart</em> or <em>cart/reorder</em> or <em>xyz</em> or <em>xzy</em> or <em>yxz</em> or <em>yzx</em> or <em>zxy</em> or <em>zyx</em>
+   cart = use MPI_Cart() methods to map processors to 3d grid with reorder = 0
+   cart/reorder = use MPI_Cart() methods to map processors to 3d grid with reorder = 1
+   xyz,xzy,yxz,yzx,zxy,zyx = map procesors to 3d grid in IJK ordering
+<em>numa</em> arg = none
+<em>part</em> args = Psend Precv cstyle
+  Psend = partition # (1 to Np) which will send its processor layout
+  Precv = partition # (1 to Np) which will recv the processor layout
+  cstyle = <em>multiple</em>
+    <em>multiple</em> = Psend grid will be multiple of Precv grid in each dimension
+<em>file</em> arg = outfile
+  outfile = name of file to write 3d grid of processors to
 </pre>
 </div>
 <div class="section" id="examples">
@@ -474,6 +475,7 @@ cart.</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>

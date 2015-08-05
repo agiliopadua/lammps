@@ -113,12 +113,13 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="http://lammps.sandia.gov">Homepage</a>
+            <a href="http://lammps.sandia.gov">Website</a>
             <a href="Section_commands.html#comm">Commands</a>
         
       </li>
   </ul>
   <hr/>
+  
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
@@ -139,8 +140,8 @@
 </ul>
 <pre class="literal-block">
 <em>reduce</em> arg = none
-  <em>reduce/region</em> arg = region-ID
-    region-ID = ID of region to use for choosing atoms
+<em>reduce/region</em> arg = region-ID
+  region-ID = ID of region to use for choosing atoms
 </pre>
 <ul class="simple">
 <li>mode = <em>sum</em> or <em>min</em> or <em>max</em> or <em>ave</em> or <em>sumsq</em> or <em>avesq</em></li>
@@ -148,11 +149,11 @@
 <li>input = x, y, z, vx, vy, vz, fx, fy, fz, c_ID, c_ID[N], f_ID, f_ID[N], v_name</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>x,y,z,vx,vy,vz,fx,fy,fz = atom attribute (position, velocity, force component)
-  c_ID = per-atom or local vector calculated by a compute with ID
-  c_ID[I] = Ith column of per-atom or local array calculated by a compute with ID
-  f_ID = per-atom or local vector calculated by a fix with ID
-  f_ID[I] = Ith column of per-atom or local array calculated by a fix with ID
-  v_name = per-atom vector calculated by an atom-style variable with name
+c_ID = per-atom or local vector calculated by a compute with ID
+c_ID[I] = Ith column of per-atom or local array calculated by a compute with ID
+f_ID = per-atom or local vector calculated by a fix with ID
+f_ID[I] = Ith column of per-atom or local array calculated by a fix with ID
+v_name = per-atom vector calculated by an atom-style variable with name
 </pre></div>
 </div>
 <ul class="simple">
@@ -161,8 +162,8 @@
 </ul>
 <pre class="literal-block">
 <em>replace</em> args = vec1 vec2
-    vec1 = reduced value from this input vector will be replaced
-    vec2 = replace it with vec1[N] where N is index of max/min value from vec2
+  vec1 = reduced value from this input vector will be replaced
+  vec2 = replace it with vec1[N] where N is index of max/min value from vec2
 </pre>
 </div>
 <div class="section" id="examples">
@@ -335,6 +336,7 @@ quantities being reduced are in.</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>

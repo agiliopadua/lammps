@@ -113,12 +113,13 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="http://lammps.sandia.gov">Homepage</a>
+            <a href="http://lammps.sandia.gov">Website</a>
             <a href="Section_commands.html#comm">Commands</a>
         
       </li>
   </ul>
   <hr/>
+  
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
@@ -137,22 +138,22 @@
 </ul>
 <pre class="literal-block">
 <em>cvel</em> values = K vel
-    K = spring constant (force/distance units)
-    vel = velocity of pulling (distance/time units)
-  <em>cfor</em> values = force
-    force = pulling force (force units)
+  K = spring constant (force/distance units)
+  vel = velocity of pulling (distance/time units)
+<em>cfor</em> values = force
+  force = pulling force (force units)
 </pre>
 <ul class="simple">
 <li>keyword = <em>tether</em> or <em>couple</em></li>
 </ul>
 <pre class="literal-block">
 <em>tether</em> values = x y z R0
-    x,y,z = point to which spring is tethered
-    R0 = distance of end of spring from tether point (distance units)
-  <em>couple</em> values = group-ID2 x y z R0
-    group-ID2 = 2nd group to couple to fix group with a spring
-    x,y,z = direction of spring, automatically computed with 'auto'
-    R0 = distance of end of spring (distance units)
+  x,y,z = point to which spring is tethered
+  R0 = distance of end of spring from tether point (distance units)
+<em>couple</em> values = group-ID2 x y z R0
+  group-ID2 = 2nd group to couple to fix group with a spring
+  x,y,z = direction of spring, automatically computed with 'auto'
+  R0 = distance of end of spring (distance units)
 </pre>
 </div>
 <div class="section" id="examples">
@@ -298,6 +299,7 @@ Jarzynski, Phys. Rev. Lett. 78, 2690 (1997)</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>

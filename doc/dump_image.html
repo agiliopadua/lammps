@@ -113,12 +113,13 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="http://lammps.sandia.gov">Homepage</a>
+            <a href="http://lammps.sandia.gov">Website</a>
             <a href="Section_commands.html#comm">Commands</a>
         
       </li>
   </ul>
   <hr/>
+  
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
@@ -146,47 +147,47 @@
 </ul>
 <pre class="literal-block">
 <em>adiam</em> value = number = numeric value for atom diameter (distance units)
-  <em>atom</em> = yes/no = do or do not draw atoms
-  <em>bond</em> values = color width = color and width of bonds
-    color = <em>atom</em> or <em>type</em> or <em>none</em>
-    width = number or <em>atom</em> or <em>type</em> or <em>none</em>
-      number = numeric value for bond width (distance units)
-  <em>size</em> values = width height = size of images
-    width = width of image in # of pixels
-    height = height of image in # of pixels
-  <em>view</em> values = theta phi = view of simulation box
-    theta = view angle from +z axis (degrees)
-    phi = azimuthal view angle (degrees)
-    theta or phi can be a variable (see below)
-  <em>center</em> values = flag Cx Cy Cz = center point of image
-    flag = &quot;s&quot; for static, &quot;d&quot; for dynamic
-    Cx,Cy,Cz = center point of image as fraction of box dimension (0.5 = center of box)
-    Cx,Cy,Cz can be variables (see below)
-  <em>up</em> values = Ux Uy Uz = direction that is &quot;up&quot; in image
-    Ux,Uy,Uz = components of up vector
-    Ux,Uy,Uz can be variables (see below)
-  <em>zoom</em> value = zfactor = size that simulation box appears in image
-    zfactor = scale image size by factor &gt; 1 to enlarge, factor &lt; 1 to shrink
-    zfactor can be a variable (see below)
-  <em>persp</em> value = pfactor = amount of &quot;perspective&quot; in image
-    pfactor = amount of perspective (0 = none, &lt; 1 = some, &gt; 1 = highly skewed)
-    pfactor can be a variable (see below)
-  <em>box</em> values = yes/no diam = draw outline of simulation box
-    yes/no = do or do not draw simulation box lines
-    diam = diameter of box lines as fraction of shortest box length
-  <em>axes</em> values = yes/no length diam = draw xyz axes
-    yes/no = do or do not draw xyz axes lines next to simulation box
-    length = length of axes lines as fraction of respective box lengths
-    diam = diameter of axes lines as fraction of shortest box length
-  <em>subbox</em> values = yes/no diam = draw outline of processor sub-domains
-    yes/no = do or do not draw sub-domain lines
-    diam = diameter of sub-domain lines as fraction of shortest box length
-  <em>shiny</em> value = sfactor = shinyness of spheres and cylinders
-    sfactor = shinyness of spheres and cylinders from 0.0 to 1.0
-  <em>ssao</em> value = yes/no seed dfactor = SSAO depth shading
-    yes/no = turn depth shading on/off
-    seed = random # seed (positive integer)
-    dfactor = strength of shading from 0.0 to 1.0
+<em>atom</em> = yes/no = do or do not draw atoms
+<em>bond</em> values = color width = color and width of bonds
+  color = <em>atom</em> or <em>type</em> or <em>none</em>
+  width = number or <em>atom</em> or <em>type</em> or <em>none</em>
+    number = numeric value for bond width (distance units)
+<em>size</em> values = width height = size of images
+  width = width of image in # of pixels
+  height = height of image in # of pixels
+<em>view</em> values = theta phi = view of simulation box
+  theta = view angle from +z axis (degrees)
+  phi = azimuthal view angle (degrees)
+  theta or phi can be a variable (see below)
+<em>center</em> values = flag Cx Cy Cz = center point of image
+  flag = &quot;s&quot; for static, &quot;d&quot; for dynamic
+  Cx,Cy,Cz = center point of image as fraction of box dimension (0.5 = center of box)
+  Cx,Cy,Cz can be variables (see below)
+<em>up</em> values = Ux Uy Uz = direction that is &quot;up&quot; in image
+  Ux,Uy,Uz = components of up vector
+  Ux,Uy,Uz can be variables (see below)
+<em>zoom</em> value = zfactor = size that simulation box appears in image
+  zfactor = scale image size by factor &gt; 1 to enlarge, factor &lt; 1 to shrink
+  zfactor can be a variable (see below)
+<em>persp</em> value = pfactor = amount of &quot;perspective&quot; in image
+  pfactor = amount of perspective (0 = none, &lt; 1 = some, &gt; 1 = highly skewed)
+  pfactor can be a variable (see below)
+<em>box</em> values = yes/no diam = draw outline of simulation box
+  yes/no = do or do not draw simulation box lines
+  diam = diameter of box lines as fraction of shortest box length
+<em>axes</em> values = yes/no length diam = draw xyz axes
+  yes/no = do or do not draw xyz axes lines next to simulation box
+  length = length of axes lines as fraction of respective box lengths
+  diam = diameter of axes lines as fraction of shortest box length
+<em>subbox</em> values = yes/no diam = draw outline of processor sub-domains
+  yes/no = do or do not draw sub-domain lines
+  diam = diameter of sub-domain lines as fraction of shortest box length
+<em>shiny</em> value = sfactor = shinyness of spheres and cylinders
+  sfactor = shinyness of spheres and cylinders from 0.0 to 1.0
+<em>ssao</em> value = yes/no seed dfactor = SSAO depth shading
+  yes/no = turn depth shading on/off
+  seed = random # seed (positive integer)
+  dfactor = strength of shading from 0.0 to 1.0
 </pre>
 </div>
 <div class="section" id="examples">
@@ -219,7 +220,7 @@ from an existing dump file, and using these dump commands in the rerun
 script to generate the images/movie.</p>
 <p>Here are two sample images, rendered as 1024x1024 JPEG files.  Click
 to see the full-size images:</p>
-<DIV ALIGN=center><a data-lightbox="group-ff92fe3f-f719-4c57-9cea-113b9e9643e4"
+<DIV ALIGN=center><a data-lightbox="group-default"
                    href="_images/dump1.jpg"
                    class=""
                    title=""
@@ -229,7 +230,7 @@ to see the full-size images:</p>
                     width="25%"
                     height="auto"
                     alt=""/>
-                    </a><a data-lightbox="group-a3858670-6500-41c1-b0c2-9f0272e3b692"
+                    </a><a data-lightbox="group-default"
                    href="_images/dump2.jpg"
                    class=""
                    title=""
@@ -685,6 +686,7 @@ mp4).</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>

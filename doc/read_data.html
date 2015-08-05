@@ -113,12 +113,13 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="http://lammps.sandia.gov">Homepage</a>
+            <a href="http://lammps.sandia.gov">Website</a>
             <a href="Section_commands.html#comm">Commands</a>
         
       </li>
   </ul>
   <hr/>
+  
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
@@ -137,28 +138,28 @@
 </ul>
 <pre class="literal-block">
 <em>add</em> arg = <em>append</em> or <em>Nstart</em> or <em>merge</em>
-    append = add new atoms with IDs appended to current IDs
-    Nstart = add new atoms with IDs starting with Nstart
-    merge = add new atoms with their IDs unchanged
-  <em>offset</em> args = toff boff aoff doff ioff
-    toff = offset to add to atom types
-    boff = offset to add to bond types
-    aoff = offset to add to angle types
-    doff = offset to add to dihedral types
-    ioff = offset to add to improper types
-  <em>shift</em> args = Sx Sy Sz
-    Sx,Sy,Sz = distance to shift atoms when adding to system (distance units)
-  <em>extra/atom/types</em> arg = # of extra atom types
-  <em>extra/bond/types</em> arg = # of extra bond types
-  <em>extra/angle/types</em> arg = # of extra angle types
-  <em>extra/dihedral/types</em> arg = # of extra dihedral types
-  <em>extra/improper/types</em> arg = # of extra improper types
-  <em>group</em> args = groupID
-    groupID = add atoms in data file to this group
-  <em>fix</em> args = fix-ID header-string section-string
-    fix-ID = ID of fix to process header lines and sections of data file
-    header-string = header lines containing this string will be passed to fix
-    section-string = section names with this string will be passed to fix
+  append = add new atoms with IDs appended to current IDs
+  Nstart = add new atoms with IDs starting with Nstart
+  merge = add new atoms with their IDs unchanged
+<em>offset</em> args = toff boff aoff doff ioff
+  toff = offset to add to atom types
+  boff = offset to add to bond types
+  aoff = offset to add to angle types
+  doff = offset to add to dihedral types
+  ioff = offset to add to improper types
+<em>shift</em> args = Sx Sy Sz
+  Sx,Sy,Sz = distance to shift atoms when adding to system (distance units)
+<em>extra/atom/types</em> arg = # of extra atom types
+<em>extra/bond/types</em> arg = # of extra bond types
+<em>extra/angle/types</em> arg = # of extra angle types
+<em>extra/dihedral/types</em> arg = # of extra dihedral types
+<em>extra/improper/types</em> arg = # of extra improper types
+<em>group</em> args = groupID
+  groupID = add atoms in data file to this group
+<em>fix</em> args = fix-ID header-string section-string
+  fix-ID = ID of fix to process header lines and sections of data file
+  header-string = header lines containing this string will be passed to fix
+  section-string = section names with this string will be passed to fix
 </pre>
 </div>
 <div class="section" id="examples">
@@ -529,7 +530,7 @@ Atoms section:</p>
 <li>line syntax: ID coeffs</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>ID = angle type (1-N)
-  coeffs = list of coeffs
+coeffs = list of coeffs
 </pre></div>
 </div>
 <ul class="simple">
@@ -551,7 +552,7 @@ input script.</p>
 </ul>
 <pre class="literal-block">
 ID = improper type (1-N)
-  coeffs = list of coeffs (see <a class="reference internal" href="improper_coeff.html"><em>improper_coeff</em></a>)
+coeffs = list of coeffs (see <a class="reference internal" href="improper_coeff.html"><em>improper_coeff</em></a>)
 </pre>
 <hr class="docutils" />
 <p><em>AngleAngleTorsion Coeffs</em> section:</p>
@@ -561,7 +562,7 @@ ID = improper type (1-N)
 </ul>
 <pre class="literal-block">
 ID = dihedral type (1-N)
-  coeffs = list of coeffs (see <a class="reference internal" href="dihedral_coeff.html"><em>dihedral_coeff</em></a>)
+coeffs = list of coeffs (see <a class="reference internal" href="dihedral_coeff.html"><em>dihedral_coeff</em></a>)
 </pre>
 <hr class="docutils" />
 <p><em>Angles</em> section:</p>
@@ -570,8 +571,8 @@ ID = dihedral type (1-N)
 <li>line syntax: ID type atom1 atom2 atom3</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>ID = number of angle (1-Nangles)
-  type = angle type (1-Nangletype)
-  atom1,atom2,atom3 = IDs of 1st,2nd,3rd atoms in angle
+type = angle type (1-Nangletype)
+atom1,atom2,atom3 = IDs of 1st,2nd,3rd atoms in angle
 </pre></div>
 </div>
 <p>example:
@@ -592,7 +593,7 @@ integers (1, not 1.0).</p>
 </ul>
 <pre class="literal-block">
 ID = dihedral type (1-N)
-  coeffs = list of coeffs (see <a class="reference internal" href="dihedral_coeff.html"><em>dihedral_coeff</em></a>)
+coeffs = list of coeffs (see <a class="reference internal" href="dihedral_coeff.html"><em>dihedral_coeff</em></a>)
 </pre>
 <hr class="docutils" />
 <p><em>Atoms</em> section:</p>
@@ -609,8 +610,8 @@ box the atom is in.  These may be important to include for some kinds
 of analysis.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="15%" />
-<col width="85%" />
+<col width="14%" />
+<col width="86%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>angle</td>
@@ -652,19 +653,22 @@ of analysis.</p>
 <tr class="row-odd"><td>peri</td>
 <td>atom-ID atom-type volume density x y z</td>
 </tr>
-<tr class="row-even"><td>sphere</td>
+<tr class="row-even"><td>smd</td>
+<td>atom-ID atom-type molecule volume mass kernel_radius contact_radius x y z</td>
+</tr>
+<tr class="row-odd"><td>sphere</td>
 <td>atom-ID atom-type diameter density x y z</td>
 </tr>
-<tr class="row-odd"><td>template</td>
+<tr class="row-even"><td>template</td>
 <td>atom-ID molecule-ID template-index template-atom atom-type x y z</td>
 </tr>
-<tr class="row-even"><td>tri</td>
+<tr class="row-odd"><td>tri</td>
 <td>atom-ID molecule-ID atom-type triangleflag density x y z</td>
 </tr>
-<tr class="row-odd"><td>wavepacket</td>
+<tr class="row-even"><td>wavepacket</td>
 <td>atom-ID atom-type charge spin eradius etag cs_re cs_im x y z</td>
 </tr>
-<tr class="row-even"><td>hybrid</td>
+<tr class="row-odd"><td>hybrid</td>
 <td>atom-ID atom-type x y z sub-style1 sub-style2 ...</td>
 </tr>
 </tbody>
@@ -694,6 +698,8 @@ of analysis.</p>
 <li>eradius = electron radius (or fixed-core radius)</li>
 <li>etag = integer ID of electron that each wavepacket belongs to</li>
 <li>cs_re,cs_im = real/imaginary parts of wavepacket coefficients</li>
+<li>kernel_radius = ??? (distance units)</li>
+<li>contact_radius = ??? (distance units)</li>
 </ul>
 <p>The units for these quantities depend on the unit style; see the
 <a class="reference internal" href="units.html"><em>units</em></a> command for details.</p>
@@ -814,7 +820,7 @@ script.</p>
 <li>first line syntax: atom-ID ninteger ndouble</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>ninteger = # of integer quantities for this particle
-  ndouble = # of floating-point quantities for this particle
+ndouble = # of floating-point quantities for this particle
 </pre></div>
 </div>
 <ul class="simple">
@@ -823,16 +829,16 @@ script.</p>
 <li>example:</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>12 3 6
-  2 3 2
-  1.0 2.0 3.0 1.0 2.0 4.0
+2 3 2
+1.0 2.0 3.0 1.0 2.0 4.0
 </pre></div>
 </div>
 <ul class="simple">
 <li>example:</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>12 0 14
-  1.0 2.0 3.0 1.0 2.0 4.0 1.0 2.0 3.0 1.0
-  2.0 4.0 4.0 2.0
+1.0 2.0 3.0 1.0 2.0 4.0 1.0 2.0 3.0 1.0
+2.0 4.0 4.0 2.0
 </pre></div>
 </div>
 <p>The <em>Bodies</em> section must appear if <a class="reference internal" href="atom_style.html"><em>atom_style body</em></a>
@@ -862,7 +868,7 @@ e.g. there are no integer lines in the last example above.</p>
 <li>line syntax: ID coeffs</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>ID = bond type (1-N)
-  coeffs = list of coeffs
+coeffs = list of coeffs
 </pre></div>
 </div>
 <ul class="simple">
@@ -884,7 +890,7 @@ script.</p>
 </ul>
 <pre class="literal-block">
 ID = angle type (1-N)
-  coeffs = list of coeffs (see class 2 section of <a class="reference internal" href="angle_coeff.html"><em>angle_coeff</em></a>)
+coeffs = list of coeffs (see class 2 section of <a class="reference internal" href="angle_coeff.html"><em>angle_coeff</em></a>)
 </pre>
 <hr class="docutils" />
 <p><em>BondBond Coeffs</em> section:</p>
@@ -894,7 +900,7 @@ ID = angle type (1-N)
 </ul>
 <pre class="literal-block">
 ID = angle type (1-N)
-  coeffs = list of coeffs (see class 2 section of <a class="reference internal" href="angle_coeff.html"><em>angle_coeff</em></a>)
+coeffs = list of coeffs (see class 2 section of <a class="reference internal" href="angle_coeff.html"><em>angle_coeff</em></a>)
 </pre>
 <hr class="docutils" />
 <p><em>BondBond13 Coeffs</em> section:</p>
@@ -904,7 +910,7 @@ ID = angle type (1-N)
 </ul>
 <pre class="literal-block">
 ID = dihedral type (1-N)
-  coeffs = list of coeffs (see class 2 section of <a class="reference internal" href="dihedral_coeff.html"><em>dihedral_coeff</em></a>)
+coeffs = list of coeffs (see class 2 section of <a class="reference internal" href="dihedral_coeff.html"><em>dihedral_coeff</em></a>)
 </pre>
 <hr class="docutils" />
 <p><em>Bonds</em> section:</p>
@@ -913,8 +919,8 @@ ID = dihedral type (1-N)
 <li>line syntax: ID type atom1 atom2</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>ID = bond number (1-Nbonds)
-  type = bond type (1-Nbondtype)
-  atom1,atom2 = IDs of 1st,2nd atoms in bond
+type = bond type (1-Nbondtype)
+atom1,atom2 = IDs of 1st,2nd atoms in bond
 </pre></div>
 </div>
 <ul class="simple">
@@ -932,7 +938,7 @@ in this section must be integers (1, not 1.0).</p>
 <li>line syntax: ID coeffs</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>ID = dihedral type (1-N)
-  coeffs = list of coeffs
+coeffs = list of coeffs
 </pre></div>
 </div>
 <ul class="simple">
@@ -953,8 +959,8 @@ Coefficients can also be set via the
 <li>line syntax: ID type atom1 atom2 atom3 atom4</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>ID = number of dihedral (1-Ndihedrals)
-  type = dihedral type (1-Ndihedraltype)
-  atom1,atom2,atom3,atom4 = IDs of 1st,2nd,3rd,4th atoms in dihedral
+type = dihedral type (1-Ndihedraltype)
+atom1,atom2,atom3,atom4 = IDs of 1st,2nd,3rd,4th atoms in dihedral
 </pre></div>
 </div>
 <ul class="simple">
@@ -973,8 +979,8 @@ section must be integers (1, not 1.0).</p>
 <li>line syntax: atom-ID shapex shapey shapez quatw quati quatj quatk</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>atom-ID = ID of atom which is an ellipsoid
-  shapex,shapey,shapez = 3 diameters of ellipsoid (distance units)
-  quatw,quati,quatj,quatk = quaternion components for orientation of atom
+shapex,shapey,shapez = 3 diameters of ellipsoid (distance units)
+quatw,quati,quatj,quatk = quaternion components for orientation of atom
 </pre></div>
 </div>
 <ul class="simple">
@@ -1010,7 +1016,7 @@ specified as a unit vector.</p>
 </ul>
 <pre class="literal-block">
 ID = dihedral type (1-N)
-  coeffs = list of coeffs (see class 2 section of <a class="reference internal" href="dihedral_coeff.html"><em>dihedral_coeff</em></a>)
+coeffs = list of coeffs (see class 2 section of <a class="reference internal" href="dihedral_coeff.html"><em>dihedral_coeff</em></a>)
 </pre>
 <hr class="docutils" />
 <p><em>Improper Coeffs</em> section:</p>
@@ -1019,7 +1025,7 @@ ID = dihedral type (1-N)
 <li>line syntax: ID coeffs</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>ID = improper type (1-N)
-  coeffs = list of coeffs
+coeffs = list of coeffs
 </pre></div>
 </div>
 <ul class="simple">
@@ -1040,8 +1046,8 @@ Coefficients can also be set via the
 <li>line syntax: ID type atom1 atom2 atom3 atom4</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>ID = number of improper (1-Nimpropers)
-  type = improper type (1-Nimpropertype)
-  atom1,atom2,atom3,atom4 = IDs of 1st,2nd,3rd,4th atoms in improper
+type = improper type (1-Nimpropertype)
+atom1,atom2,atom3,atom4 = IDs of 1st,2nd,3rd,4th atoms in improper
 </pre></div>
 </div>
 <ul class="simple">
@@ -1062,8 +1068,8 @@ values in this section must be integers (1, not 1.0).</p>
 <li>line syntax: atom-ID x1 y1 x2 y2</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>atom-ID = ID of atom which is a line segment
-  x1,y1 = 1st end point
-  x2,y2 = 2nd end point
+x1,y1 = 1st end point
+x2,y2 = 2nd end point
 </pre></div>
 </div>
 <ul class="simple">
@@ -1090,7 +1096,7 @@ for defining some interactions.</p>
 <li>line syntax: ID mass</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>ID = atom type (1-N)
-  mass = mass value
+mass = mass value
 </pre></div>
 </div>
 <ul class="simple">
@@ -1111,7 +1117,7 @@ e.g. <a class="reference internal" href="atom_style.html"><em>atom_style sphere<
 </ul>
 <pre class="literal-block">
 ID = dihedral type (1-N)
-  coeffs = list of coeffs (see class 2 section of <a class="reference internal" href="dihedral_coeff.html"><em>dihedral_coeff</em></a>)
+coeffs = list of coeffs (see class 2 section of <a class="reference internal" href="dihedral_coeff.html"><em>dihedral_coeff</em></a>)
 </pre>
 <hr class="docutils" />
 <p><em>Pair Coeffs</em> section:</p>
@@ -1120,7 +1126,7 @@ ID = dihedral type (1-N)
 <li>line syntax: ID coeffs</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>ID = atom type (1-N)
-  coeffs = list of coeffs
+coeffs = list of coeffs
 </pre></div>
 </div>
 <ul class="simple">
@@ -1144,15 +1150,15 @@ script.</p>
 <li>line syntax: ID1 ID2 coeffs</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>ID1 = atom type I = 1-N
-  ID2 = atom type J = I-N, with I &lt;= J
-  coeffs = list of coeffs
+ID2 = atom type J = I-N, with I &lt;= J
+coeffs = list of coeffs
 </pre></div>
 </div>
 <ul class="simple">
 <li>examples:</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>3 3 0.022 2.35197 0.022 2.35197
-  3 5 0.022 2.35197 0.022 2.35197
+3 5 0.022 2.35197 0.022 2.35197
 </pre></div>
 </div>
 <p>This section must have N*(N+1)/2 lines where N = # of atom types.  The
@@ -1171,9 +1177,9 @@ script.</p>
 <li>line syntax: atom-ID x1 y1 x2 y2</li>
 </ul>
 <div class="highlight-python"><div class="highlight"><pre>atom-ID = ID of atom which is a line segment
-  x1,y1,z1 = 1st corner point
-  x2,y2,z2 = 2nd corner point
-  x3,y3,z3 = 3rd corner point
+x1,y1,z1 = 1st corner point
+x2,y2,z2 = 2nd corner point
+x3,y3,z3 = 3rd corner point
 </pre></div>
 </div>
 <ul class="simple">
@@ -1308,6 +1314,7 @@ fields:</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>

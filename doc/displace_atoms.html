@@ -113,12 +113,13 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="http://lammps.sandia.gov">Homepage</a>
+            <a href="http://lammps.sandia.gov">Website</a>
             <a href="Section_commands.html#comm">Commands</a>
         
       </li>
   </ul>
   <hr/>
+  
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
@@ -136,26 +137,26 @@
 </ul>
 <pre class="literal-block">
 <em>move</em> args = delx dely delz
-    delx,dely,delz = distance to displace in each dimension (distance units)
-  <em>ramp</em> args = ddim dlo dhi dim clo chi
-    ddim = <em>x</em> or <em>y</em> or <em>z</em>
-    dlo,dhi = displacement distance between dlo and dhi (distance units)
-    dim = <em>x</em> or <em>y</em> or <em>z</em>
-    clo,chi = lower and upper bound of domain to displace (distance units)
-  <em>random</em> args = dx dy dz seed
-    dx,dy,dz = random displacement magnitude in each dimension (distance units)
-    seed = random # seed (positive integer)
-  <em>rotate</em> args = Px Py Pz Rx Ry Rz theta
-    Px,Py,Pz = origin point of axis of rotation (distance units)
-    Rx,Ry,Rz = axis of rotation vector
-    theta = angle of rotation (degrees)
+  delx,dely,delz = distance to displace in each dimension (distance units)
+<em>ramp</em> args = ddim dlo dhi dim clo chi
+  ddim = <em>x</em> or <em>y</em> or <em>z</em>
+  dlo,dhi = displacement distance between dlo and dhi (distance units)
+  dim = <em>x</em> or <em>y</em> or <em>z</em>
+  clo,chi = lower and upper bound of domain to displace (distance units)
+<em>random</em> args = dx dy dz seed
+  dx,dy,dz = random displacement magnitude in each dimension (distance units)
+  seed = random # seed (positive integer)
+<em>rotate</em> args = Px Py Pz Rx Ry Rz theta
+  Px,Py,Pz = origin point of axis of rotation (distance units)
+  Rx,Ry,Rz = axis of rotation vector
+  theta = angle of rotation (degrees)
 </pre>
 <ul class="simple">
 <li>zero or more keyword/value pairs may be appended</li>
 </ul>
 <pre class="literal-block">
 keyword = <em>units</em>
-    value = <em>box</em> or <em>lattice</em>
+  value = <em>box</em> or <em>lattice</em>
 </pre>
 </div>
 <div class="section" id="examples">
@@ -280,6 +281,7 @@ as the initial mapping attempted to be.</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>

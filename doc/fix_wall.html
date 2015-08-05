@@ -113,12 +113,13 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="http://lammps.sandia.gov">Homepage</a>
+            <a href="http://lammps.sandia.gov">Website</a>
             <a href="Section_commands.html#comm">Commands</a>
         
       </li>
   </ul>
   <hr/>
+  
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
@@ -150,15 +151,15 @@
 </ul>
 <pre class="literal-block">
 args = coord epsilon sigma cutoff
-    coord = position of wall = EDGE or constant or variable
-      EDGE = current lo or hi edge of simulation box
-      constant = number like 0.0 or -30.0 (distance units)
-      variable = <a class="reference internal" href="variable.html"><em>equal-style variable</em></a> like v_x or v_wiggle
-    epsilon = strength factor for wall-particle interaction (energy or energy/distance^2 units)
-      epsilon can be a variable (see below)
-    sigma = size factor for wall-particle interaction (distance units)
-      sigma can be a variable (see below)
-    cutoff = distance from wall at which wall-particle interaction is cut off (distance units)
+  coord = position of wall = EDGE or constant or variable
+    EDGE = current lo or hi edge of simulation box
+    constant = number like 0.0 or -30.0 (distance units)
+    variable = <a class="reference internal" href="variable.html"><em>equal-style variable</em></a> like v_x or v_wiggle
+  epsilon = strength factor for wall-particle interaction (energy or energy/distance^2 units)
+    epsilon can be a variable (see below)
+  sigma = size factor for wall-particle interaction (distance units)
+    sigma can be a variable (see below)
+  cutoff = distance from wall at which wall-particle interaction is cut off (distance units)
 </pre>
 <ul class="simple">
 <li>zero or more keyword/value pairs may be appended</li>
@@ -166,14 +167,14 @@ args = coord epsilon sigma cutoff
 </ul>
 <pre class="literal-block">
 <em>units</em> value = <em>lattice</em> or <em>box</em>
-    <em>lattice</em> = the wall position is defined in lattice units
-    <em>box</em> = the wall position is defined in simulation box units
-  <em>fld</em> value = <em>yes</em> or <em>no</em>
-    <em>yes</em> = invoke the wall constraint to be compatible with implicit FLD
-    <em>no</em> = invoke the wall constraint in the normal way
-  <em>pbc</em> value = <em>yes</em> or <em>no</em>
-    <em>yes</em> = allow periodic boundary in a wall dimension
-    <em>no</em> = require non-perioidic boundaries in any wall dimension
+  <em>lattice</em> = the wall position is defined in lattice units
+  <em>box</em> = the wall position is defined in simulation box units
+<em>fld</em> value = <em>yes</em> or <em>no</em>
+  <em>yes</em> = invoke the wall constraint to be compatible with implicit FLD
+  <em>no</em> = invoke the wall constraint in the normal way
+<em>pbc</em> value = <em>yes</em> or <em>no</em>
+  <em>yes</em> = allow periodic boundary in a wall dimension
+  <em>no</em> = require non-perioidic boundaries in any wall dimension
 </pre>
 </div>
 <div class="section" id="examples">
@@ -442,6 +443,7 @@ erratum in JCP 84, 2901 (1986).</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>

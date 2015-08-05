@@ -113,12 +113,13 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="http://lammps.sandia.gov">Homepage</a>
+            <a href="http://lammps.sandia.gov">Website</a>
             <a href="Section_commands.html#comm">Commands</a>
         
       </li>
   </ul>
   <hr/>
+  
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
@@ -166,7 +167,10 @@ dim = 2 or 3 = dimensionality of the simulation, N = number of atoms
 in the group, k = Boltzmann constant, and T = temperature.  Note that
 the velocity of each core or shell atom used in the KE calculation is
 the velocity of the center-of-mass (COM) of the core/shell pair the
-atom is part of.</p>
+atom is part of.  Note that atoms that are not core or shell particles
+are also included in the temperature calculation (if they are in the
+specified group-ID); they contribute to the total kinetic energy in
+the usual way.</p>
 <p>A kinetic energy tensor, stored as a 6-element vector, is also
 calculated by this compute for use in the computation of a pressure
 tensor.  The formula for the components of the tensor is the same as
@@ -253,6 +257,7 @@ be used which generate new molecules or atoms during a simulation.</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
       <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
