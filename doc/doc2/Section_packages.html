@@ -140,8 +140,8 @@ on how to build LAMMPS with both kinds of auxiliary libraries.
 <TR ALIGN="center"><TD >USER-QTB</TD><TD > quantum nuclear effects</TD><TD > Yuan Shen (Stanford)</TD><TD > <A HREF = "fix_qtb.html">fix qtb</A> <A HREF = "fix_qbmsst.html">fix_qbmsst</A></TD><TD > qtb</TD><TD > -</TD><TD > -</TD></TR>
 <TR ALIGN="center"><TD >USER-QUIP</TD><TD > QUIP/libatoms interface</TD><TD > Albert Bartok-Partay (U Cambridge)</TD><TD > <A HREF = "pair_quip.html">pair_style quip</A></TD><TD > USER/quip</TD><TD > -</TD><TD > lib/quip</TD></TR>
 <TR ALIGN="center"><TD >USER-REAXC</TD><TD > C version of ReaxFF</TD><TD > Metin Aktulga (LBNL)</TD><TD > <A HREF = "pair_reax_c.html">pair_style reaxc</A></TD><TD > reax</TD><TD > -</TD><TD > -</TD></TR>
-<TR ALIGN="center"><TD >USER-SMD</TD><TD > smoothed Mach dynamics</TD><TD > Georg Ganzenmuller (EMI)</TD><TD > <A HREF = "USER/smd/SMD_user_guide.pdf">userguide.pdf</A></TD><TD > USER/smd</TD><TD > -</TD><TD > -</TD></TR>
-<TR ALIGN="center"><TD >USER-SPH</TD><TD > smoothed particle hydrodynamics</TD><TD > Georg Ganzenmuller (EMI)</TD><TD > <A HREF = "USER/sph/SPH_LAMMPS_userguide.pdf">userguide.pdf</A></TD><TD > USER/sph</TD><TD > <A HREF = "http://lammps.sandia.gov/movies.html#sph">sph</A></TD><TD > -</TD></TR>
+<TR ALIGN="center"><TD >USER-SMD</TD><TD > smoothed Mach dynamics</TD><TD > Georg Ganzenmuller (EMI)</TD><TD > <A HREF = "PDF/SMD_LAMMPS_userguide.pdf">userguide.pdf</A></TD><TD > USER/smd</TD><TD > -</TD><TD > -</TD></TR>
+<TR ALIGN="center"><TD >USER-SPH</TD><TD > smoothed particle hydrodynamics</TD><TD > Georg Ganzenmuller (EMI)</TD><TD > <A HREF = "PDF/SPH_LAMMPS_userguide.pdf">userguide.pdf</A></TD><TD > USER/sph</TD><TD > <A HREF = "http://lammps.sandia.gov/movies.html#sph">sph</A></TD><TD > -</TD></TR>
 <TR ALIGN="center"><TD >
 </TD></TR></TABLE></DIV>
 
@@ -645,9 +645,22 @@ questions.
 <P>This package implements smoothed Mach dynamics (SMD) in
 LAMMPS.  Currently, the package has the following features:
 </P>
-<P>???
+<P>* Does liquids via traditional Smooth Particle Hydrodynamics (SPH)
 </P>
-<P>See the file doc/USER/smd/SPH_user_guide.pdf to get started.
+<P>* Also solves solids mechanics problems via a state of the art 
+  stabilized meshless method with hourglass control.
+</P>
+<P>* Can specify hydrostatic interactions independently from material 
+  strength models, i.e. pressure and deviatoric stresses are separated.
+</P>
+<P>* Many material models available (Johnson-Cook, plasticity with 
+  hardening, Mie-Grueneisen, Polynomial EOS).  Easy to add new 
+  material models.
+</P>
+<P>* Rigid boundary conditions (walls) can be loaded as surface geometries 
+  from *.STL files.
+</P>
+<P>See the file doc/PDF/SMD_LAMMPS_userguide.pdf to get started.
 </P>
 <P>There are example scripts for using this package in examples/USER/smd.
 </P>
@@ -663,14 +676,18 @@ LAMMPS.  Currently, the package has the following features:
 </P>
 <P>* Tait, ideal gas, Lennard-Jones equation of states, full support for 
   complete (i.e. internal-energy dependent) equations of state
-* plain or Monaghans XSPH integration of the equations of motion
-* density continuity or density summation to propagate the density field
-* commands to set internal energy and density of particles from the 
+</P>
+<P>* Plain or Monaghans XSPH integration of the equations of motion
+</P>
+<P>* Density continuity or density summation to propagate the density field
+</P>
+<P>* Commands to set internal energy and density of particles from the 
   input script
-* output commands to access internal energy and density for dumping and 
+</P>
+<P>* Output commands to access internal energy and density for dumping and 
   thermo output
 </P>
-<P>See the file doc/USER/sph/SPH_LAMMPS_userguide.pdf to get started.
+<P>See the file doc/PDF/SPH_LAMMPS_userguide.pdf to get started.
 </P>
 <P>There are example scripts for using this package in examples/USER/sph.
 </P>
