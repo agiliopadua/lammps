@@ -754,8 +754,8 @@ package"_Section_start.html#start_3.
 "smd/triangle/mesh/vertices"_compute_smd_triangle_mesh_vertices.html,
 "smd/ulsph/num/neighs"_compute_smd_ulsph_num_neighs.html,
 "smd/ulsph/strain"_compute_smd_ulsph_strain.html,
-"smd/ulsph/strain/rate"_compute_smd_ulsph_strain/rate.html,
-"smd/ulpsh/stress"_compute_smd_ulpsh_stress.html,
+"smd/ulsph/strain/rate"_compute_smd_ulsph_strain_rate.html,
+"smd/ulsph/stress"_compute_smd_ulsph_stress.html,
 "smd/vol"_compute_smd_vol.html,
 "temp/drude"_compute_temp_drude.html,
 "temp/eff"_compute_temp_eff.html,
@@ -832,6 +832,7 @@ KOKKOS, o = USER-OMP, t = OPT.
 "lj/class2 (cgko)"_pair_class2.html,
 "lj/class2/coul/cut (cko)"_pair_class2.html,
 "lj/class2/coul/long (cgko)"_pair_class2.html,
+"lj/cubic (go)"_pair_lj_cubic.html,
 "lj/cut (cgikot)"_pair_lj.html,
 "lj/cut/coul/cut (cgko)"_pair_lj.html,
 "lj/cut/coul/debye (cgko)"_pair_lj.html,
@@ -874,7 +875,7 @@ KOKKOS, o = USER-OMP, t = OPT.
 "soft (go)"_pair_soft.html,
 "sw (cgkio)"_pair_sw.html,
 "table (gko)"_pair_table.html,
-"tersoff (cko)"_pair_tersoff.html,
+"tersoff (cgko)"_pair_tersoff.html,
 "tersoff/mod (ko)"_pair_tersoff_mod.html,
 "tersoff/zbl (ko)"_pair_tersoff_zbl.html,
 "tip4p/cut (o)"_pair_coul.html,
@@ -882,7 +883,7 @@ KOKKOS, o = USER-OMP, t = OPT.
 "tri/lj (o)"_pair_tri_lj.html,
 "yukawa (go)"_pair_yukawa.html,
 "yukawa/colloid (go)"_pair_yukawa_colloid.html,
-"zbl (o)"_pair_zbl.html :tb(c=4,ea=c)
+"zbl (go)"_pair_zbl.html :tb(c=4,ea=c)
 
 These are additional pair styles in USER packages, which can be used
 if "LAMMPS is built with the appropriate
