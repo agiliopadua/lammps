@@ -1610,6 +1610,15 @@ pair_sph_taitwater.cpp
 pair_sph_taitwater.h
 pair_sph_taitwater_morris.cpp
 pair_sph_taitwater_morris.h
+!/USER-TALLY
+compute_force_tally.cpp
+compute_force_tally.h
+compute_heat_flux_tally.cpp
+compute_heat_flux_tally.h
+compute_pe_tally.cpp
+compute_pe_tally.h
+compute_stress_tally.cpp
+compute_stress_tally.h
 !/VORONOI
 compute_voronoi_atom.cpp
 compute_voronoi_atom.h
