@@ -245,7 +245,7 @@ void PPPMDisp::init()
   int *ptr = pair ? (int *) pair->extract("ewald_order",tmp) : NULL;
   double *p_cutoff = pair ? (double *) pair->extract("cut_coul",tmp) : NULL;
   double *p_cutoff_lj = pair ? (double *) pair->extract("cut_LJ",tmp) : NULL;
-  if (!(ptr||*p_cutoff||*p_cutoff_lj)) 
+  if (!(ptr||p_cutoff||p_cutoff_lj))
     error->all(FLERR,"KSpace style is incompatible with Pair style");
   cutoff = *p_cutoff;
   cutoff_lj = *p_cutoff_lj;
@@ -3543,7 +3543,7 @@ void PPPMDisp::set_init_g6()
   double acc_rspace = accuracy;
   if (accuracy_real_6 > 0) acc_rspace = accuracy_real_6;
 
-  g_ewald_6 = 1.0/cutoff_lj;
+  g_ewald_old = g_ewald_6 = 1.0/cutoff_lj;
   df_real = lj_rspace_error() - acc_rspace;
   int counter = 0;
   if (df_real > 0) {

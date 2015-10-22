@@ -153,8 +153,8 @@ FixGCMC::FixGCMC(LAMMPS *lmp, int narg, char **arg) :
       error->all(FLERR,"Fix gcmc molecule must have coordinates");
     if (onemols[imol]->typeflag == 0)
       error->all(FLERR,"Fix gcmc molecule must have atom types");
-    if (ngcmc_type+onemols[imol]->ntypes <= 0 || ngcmc_type+onemols[imol]->ntypes > atom->ntypes)
-      error->all(FLERR,"Invalid atom type in fix gcmc mol command");
+    if (ngcmc_type != 0)
+      error->all(FLERR,"Atom type must be zero in fix gcmc mol command");
     if (onemols[imol]->qflag == 1 && atom->q == NULL)
       error->all(FLERR,"Fix gcmc molecule has charges, but atom style does not");
 
@@ -510,7 +510,7 @@ void FixGCMC::init()
     sprintf(group_arg[0],"FixGCMC:rotation_gas_atoms:%s",id);
     group_arg[1] = (char *) "molecule";
     char digits[12];
-    sprintf(digits,"%d",ngcmc_type);
+    sprintf(digits,"%d",-1);
     group_arg[2] = digits;
     group->assign(3,group_arg);
     molecule_group = group->find(group_arg[0]);
@@ -526,11 +526,6 @@ void FixGCMC::init()
   // otherwise just get the gas mass
   
   if (mode == MOLECULE) {
-
-    // apply gcmc offset to types in molecule template
-
-    for (int i = 0; i < onemols[imol]->natoms; i++)
-      onemols[imol]->type[i] += ngcmc_type;
 
     onemols[imol]->compute_mass();
     onemols[imol]->compute_com();
@@ -1313,7 +1308,7 @@ void FixGCMC::attempt_molecule_insertion()
       fixshake->set_molecule(nlocalprev,maxtag_all,imol,com_coord,vnew,quat);
 
     atom->natoms += natoms_per_molecule;
-    if (atom->natoms < 0 || atom->natoms > MAXBIGINT)
+    if (atom->natoms < 0)
       error->all(FLERR,"Too many total atoms");
     atom->nbonds += onemols[imol]->nbonds;
     atom->nangles += onemols[imol]->nangles;
@@ -1962,7 +1957,7 @@ void FixGCMC::attempt_molecule_insertion_full()
     fixshake->set_molecule(nlocalprev,maxtag_all,imol,com_coord,vnew,quat);
 
   atom->natoms += natoms_per_molecule;
-  if (atom->natoms < 0 || atom->natoms > MAXBIGINT)
+  if (atom->natoms < 0)
     error->all(FLERR,"Too many total atoms");
   atom->nbonds += onemols[imol]->nbonds;
   atom->nangles += onemols[imol]->nangles;
