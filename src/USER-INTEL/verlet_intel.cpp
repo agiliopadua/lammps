@@ -97,7 +97,12 @@ void VerletIntel::init()
 
 void VerletIntel::setup()
 {
-  if (comm->me == 0 && screen) fprintf(screen,"Setting up run ...\n");
+  if (comm->me == 0 && screen) {
+    fprintf(screen,"Setting up Verlet run ...\n");
+    fprintf(screen,"  Unit style  : %s\n", update->unit_style);
+    fprintf(screen,"  Current step: " BIGINT_FORMAT "\n", update->ntimestep);
+    fprintf(screen,"  Time step   : %g\n", update->dt);
+  }
 
   update->setupflag = 1;
 
@@ -325,7 +330,6 @@ void VerletIntel::run(int n)
       modify->pre_force(vflag);
       timer->stamp(Timer::MODIFY);
     }
-
 
     if (pair_compute_flag) {
       force->pair->compute(eflag,vflag);
