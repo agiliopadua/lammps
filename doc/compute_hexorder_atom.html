@@ -134,17 +134,19 @@
 <ul class="simple">
 <li>ID, group-ID are documented in <a class="reference internal" href="compute.html"><em>compute</em></a> command</li>
 <li>hexorder/atom = style name of this compute command</li>
-<li>zero or more keyword/value pairs may be appended</li>
-<li>keyword = <em>degree</em></li>
+<li>one or more keyword/value pairs may be appended</li>
 </ul>
 <pre class="literal-block">
-<em>n</em> value = degree of order parameter
+keyword = <em>degree</em> or <em>nnn</em> or <em>cutoff</em>
+  <em>cutoff</em> value = distance cutoff
+  <em>nnn</em> value = number of nearest neighbors
+  <em>degree</em> value = degree <em>n</em> of order parameter
 </pre>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre>compute 1 all hexorder/atom
-compute 1 all hexorder/atom n 4
+compute 1 all hexorder/atom degree 4 nnn 4 cutoff 1.2
 </pre></div>
 </div>
 </div>
@@ -156,7 +158,7 @@ parameter was introduced by <a class="reference internal" href="#nelson"><span>N
 hexagonal symmetry in two-dimensional systems. For each atom, <em>qn</em>
 is a complex number (stored as two real numbers) defined as follows:</p>
 <img alt="_images/hexorder.jpg" class="align-center" src="_images/hexorder.jpg" />
-<p>where the sum is over the <em>n</em> nearest neighbors
+<p>where the sum is over the <em>nnn</em> nearest neighbors
 of the central atom. The angle theta
 is formed by the bond vector rij and the <em>x</em> axis. theta is calculated
 only using the <em>x</em> and <em>y</em> components, whereas the distance from the
@@ -164,17 +166,27 @@ central atom is calculated using all three
 <em>x</em>, <em>y</em>, and <em>z</em> components of the bond vector.
 Neighbor atoms not in the group
 are included in the order parameter of atoms in the group.</p>
-<p>The optional keyword <em>n</em> sets the degree of the order parameter.
-The default value is 6. For a perfect hexagonal lattice,
-<a href="#id1"><span class="problematic" id="id2">*</span></a>q*6 = exp(6 i phi) for all atoms, where the constant 0 &lt; phi &lt; pi/3
-depends only on the orientation of the lattice relative to the x axis.
+<p>The optional keyword <em>cutoff</em> defines the distance cutoff
+used when searching for neighbors. The default value, also
+the maximum allowable value, is the cutoff specified
+by the pair style.</p>
+<p>The optional keyword <em>nnn</em> defines the number of nearest
+neighbors used to calculate <em>qn</em>. The default value is 6.
+If the value is NULL, then all neighbors up to the
+distance cutoff are used.</p>
+<p>The optional keyword <em>degree</em> sets the degree <em>n</em> of the order parameter.
+The default value is 6. For a perfect hexagonal lattice with
+<em>nnn</em> = 6,
+<em>q*6 = exp(6 i phi) for all atoms, where the constant 0 &lt; phi &lt; pi/3
+depends only on the orientation of the lattice relative to the *x</em> axis.
 In an isotropic liquid, local neighborhoods may still exhibit
 weak hexagonal symmetry, but because the orientational correlation
 decays quickly with distance, the value of phi will be different for
-different atoms, and <a href="#id3"><span class="problematic" id="id4">|&lt;*q*6&gt;|</span></a> &lt;&lt; 1.</p>
-<p>The value of <em>qn</em> will be zero for atoms not in the
-specified compute group. If the atom has less than <em>n</em> neighbors (within
-the potential cutoff), then <em>qn</em> is set to zero.</p>
+different atoms, and so when <a href="#id1"><span class="problematic" id="id2">*</span></a>q*6 is averaged over all the atoms
+in the system, <a href="#id3"><span class="problematic" id="id4">|&lt;*q*6&gt;|</span></a> &lt;&lt; 1.</p>
+<p>The value of <em>qn</em> is set to zero for atoms not in the
+specified compute group, as well as for atoms that have less than
+<em>nnn</em> neighbors within the distance cutoff.</p>
 <p>The neighbor list needed to compute this quantity is constructed each
 time the calculation is performed (i.e. each time a snapshot of atoms
 is dumped).  Thus it can be inefficient to compute/dump this quantity
@@ -187,8 +199,8 @@ interactions between atoms in the same bond, angle, or dihedral.  This
 is the default setting for the <a class="reference internal" href="special_bonds.html"><em>special_bonds</em></a>
 command, and means those pairwise interactions do not appear in the
 neighbor list.  Because this fix uses the neighbor list, it also means
-those pairs will not be included in the order parameter.  One way
-to get around this, is to write a dump file, and use the
+those pairs will not be included in the order parameter.  This difficulty
+can be circumvented by writing a dump file, and using the
 <a class="reference internal" href="rerun.html"><em>rerun</em></a> command to compute the order parameter for snapshots
 in the dump file.  The rerun script can use a
 <a class="reference internal" href="special_bonds.html"><em>special_bonds</em></a> command that includes all pairs in
@@ -196,13 +208,11 @@ the neighbor list.</p>
 </div>
 <p><strong>Output info:</strong></p>
 <p>This compute calculates a per-atom array with 2 columns, giving the
-real and imaginary parts of <em>qn</em>, respectively.</p>
+real and imaginary parts <em>qn</em>, a complex number restricted to the
+unit disk of the complex plane i.e. Re(<em>qn</em>)^2 + Im(<em>qn</em>)^2 &lt;= 1 .</p>
 <p>These values can be accessed by any command that uses
 per-atom values from a compute as input.  See <a class="reference internal" href="Section_howto.html#howto-15"><span>Section_howto 15</span></a> for an overview of LAMMPS output
 options.</p>
-<p>The per-atom array contain pairs of numbers representing the
-real and imaginary parts of <em>qn</em>, a complex number subject to the
-constraint <a href="#id5"><span class="problematic" id="id6">|*qn*|</span></a> &lt;= 1.</p>
 </div>
 <div class="section" id="restrictions">
 <h2>Restrictions<a class="headerlink" href="#restrictions" title="Permalink to this headline">¶</a></h2>
@@ -211,11 +221,11 @@ constraint <a href="#id5"><span class="problematic" id="id6">|*qn*|</span></a> &
 </div>
 <div class="section" id="related-commands">
 <h2>Related commands<a class="headerlink" href="#related-commands" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="compute_coord_atom.html"><em>compute coord/atom</em></a>, <a class="reference internal" href="compute_centro_atom.html"><em>compute centro/atom</em></a></p>
+<p><a class="reference internal" href="compute_orientorder_atom.html"><em>compute orientorder/atom</em></a>, <a class="reference internal" href="compute_coord_atom.html"><em>compute coord/atom</em></a>, <a class="reference internal" href="compute_centro_atom.html"><em>compute centro/atom</em></a></p>
 </div>
 <div class="section" id="default">
 <h2>Default<a class="headerlink" href="#default" title="Permalink to this headline">¶</a></h2>
-<p>The option default is <em>n</em> = 6.</p>
+<p>The option defaults are <em>cutoff</em> = pair style cutoff, <em>nnn</em> = 6, <em>degree</em> = 6</p>
 <hr class="docutils" />
 <p id="nelson"><strong>(Nelson)</strong> Nelson, Halperin, Phys Rev B, 19, 2457 (1979).</p>
 </div>
