@@ -267,6 +267,8 @@ fix_nve_kokkos.cpp
 fix_nve_kokkos.h
 fix_nvt_kokkos.cpp
 fix_nvt_kokkos.h
+fix_setforce_kokkos.cpp
+fix_setforce_kokkos.h
 fix_wall_reflect_kokkos.cpp
 fix_wall_reflect_kokkos.h
 improper_harmonic_kokkos.cpp
@@ -347,6 +349,8 @@ pair_tersoff_mod_kokkos.cpp
 pair_tersoff_mod_kokkos.h
 pair_tersoff_zbl_kokkos.cpp
 pair_tersoff_zbl_kokkos.h
+region_block_kokkos.cpp
+region_block_kokkos.h
 verlet_kokkos.cpp
 verlet_kokkos.h
 !/KSPACE
@@ -1074,10 +1078,14 @@ fix_ttm_mod.cpp
 fix_ttm_mod.h
 improper_cossq.cpp
 improper_cossq.h
+improper_distance.cpp
+improper_distance.h
 improper_fourier.cpp
 improper_fourier.h
 improper_ring.cpp
 improper_ring.h
+pair_buck_mdf.cpp
+pair_buck_mdf.h
 pair_cdeam.cpp
 pair_cdeam.h
 pair_coul_diel.cpp
@@ -1086,8 +1094,12 @@ pair_edip.cpp
 pair_edip.h
 pair_gauss_cut.cpp
 pair_gauss_cut.h
+pair_lennard_mdf.cpp
+pair_lennard_mdf.h
 pair_list.cpp
 pair_list.h
+pair_lj_mdf.cpp
+pair_lj_mdf.h
 pair_lj_sf.cpp
 pair_lj_sf.h
 pair_lj_sf_dipole_sf.cpp
