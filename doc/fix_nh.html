@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>fix nvt command &mdash; LAMMPS 17 Dec 2015 documentation</title>
+  <title>fix nvt command &mdash; LAMMPS documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="LAMMPS 17 Dec 2015 documentation" href="index.html"/> 
+    <link rel="top" title="LAMMPS documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -548,6 +548,18 @@ the outermost rRESPA timestep, the barostat dynamics are not the
 limiting factor for numerical stability. Both factorizations are
 time-reversible and can be shown to preserve the phase space measure
 of the underlying non-Hamiltonian equations of motion.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This implementation has been shown to conserve linear momentum
+up to machine precision under NVT dynamics. Under NPT dynamics,
+for a system with zero initial total linear momentum, the total
+momentum fluctuates close to zero. It may occasionally undergo brief
+excursions to non-negligible values, before returning close to zero.
+Over long simulations, this has the effect of causing the center-of-mass
+to undergo a slow random walk. This can be mitigated by resetting
+the momentum at infrequent intervals using the
+<a class="reference internal" href="fix_momentum.html"><em>fix momentum</em></a> command.</p>
+</div>
 <hr class="docutils" />
 <p>The fix npt and fix nph commands can be used with rigid bodies or
 mixtures of rigid bodies and non-rigid particles (e.g. solvent).  But
@@ -721,7 +733,7 @@ Martyna, J Phys A: Math Gen, 39, 5629 (2006).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'17 Dec 2015',
+            VERSION:'',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
