@@ -1383,8 +1383,6 @@ pair_hbond_dreiding_lj_omp.cpp
 pair_hbond_dreiding_lj_omp.h
 pair_hbond_dreiding_morse_omp.cpp
 pair_hbond_dreiding_morse_omp.h
-pair_line_lj_omp.cpp
-pair_line_lj_omp.h
 pair_lj96_cut_omp.cpp
 pair_lj96_cut_omp.h
 pair_lj_charmm_coul_charmm_implicit_omp.cpp
@@ -1499,8 +1497,6 @@ pair_tip4p_long_omp.cpp
 pair_tip4p_long_omp.h
 pair_tip4p_long_soft_omp.cpp
 pair_tip4p_long_soft_omp.h
-pair_tri_lj_omp.cpp
-pair_tri_lj_omp.h
 pair_vashishta_omp.cpp
 pair_vashishta_omp.h
 pair_yukawa_colloid_omp.cpp
