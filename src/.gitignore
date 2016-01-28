@@ -963,6 +963,12 @@ pair_tip4p_long_soft.h
 dump_h5md.cpp
 dump_h5md.h
 !/USER-INTEL
+angle_charmm_intel.cpp
+angle_charmm_intel.h
+bond_harmonic_intel.cpp
+bond_harmonic_intel.h
+dihedral_charmm_intel.cpp
+dihedral_charmm_intel.h
 fix_intel.cpp
 fix_intel.h
 fix_nh_intel.cpp
@@ -973,6 +979,8 @@ fix_nve_asphere_intel.cpp
 fix_nve_asphere_intel.h
 fix_nve_intel.cpp
 fix_nve_intel.h
+improper_harmonic_intel.cpp
+improper_harmonic_intel.h
 intel_buffers.cpp
 intel_buffers.h
 intel_intrinsics.h
