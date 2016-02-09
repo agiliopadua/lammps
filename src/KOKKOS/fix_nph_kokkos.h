@@ -40,4 +40,12 @@ class FixNPHKokkos : public FixNHKokkos<DeviceType> {
 
 /* ERROR/WARNING messages:
 
+E: Temperature control can not be used with fix nph
+
+UNDOCUMENTED
+
+E: Pressure control must be used with fix nph
+
+UNDOCUMENTED
+
 */
