@@ -103,6 +103,7 @@ pair_coul_long_cs.cpp
 pair_coul_long_cs.h
 pair_lj_cut_coul_long_cs.cpp
 pair_lj_cut_coul_long_cs.h
+!/DEPEND
 !/DIPOLE
 atom_vec_dipole.cpp
 atom_vec_dipole.h
