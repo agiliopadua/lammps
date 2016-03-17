@@ -13,62 +13,77 @@
 
 #include <mpi.h>
 #include <string.h>
-#include "compute_erotate_rigid.h"
+#include "compute_bond.h"
 #include "update.h"
 #include "force.h"
-#include "modify.h"
-#include "fix.h"
-#include "fix_rigid.h"
-#include "fix_rigid_small.h"
+#include "bond.h"
 #include "error.h"
 
 using namespace LAMMPS_NS;
 
 /* ---------------------------------------------------------------------- */
 
-ComputeERotateRigid::ComputeERotateRigid(LAMMPS *lmp, int narg, char **arg) :
+ComputeBond::ComputeBond(LAMMPS *lmp, int narg, char **arg) :
   Compute(lmp, narg, arg)
 {
-  if (narg != 4) error->all(FLERR,"Illegal compute erotate/rigid command");
+  if (narg < 4 || narg > 5) error->all(FLERR,"Illegal compute bond command");
+  if (igroup) error->all(FLERR,"Compute bond must use group all");
 
   scalar_flag = 1;
   extscalar = 1;
+  peflag = 1;
+  timeflag = 1;
 
   int n = strlen(arg[3]) + 1;
-  rfix = new char[n];
-  strcpy(rfix,arg[3]);
+  if (lmp->suffix) n += strlen(lmp->suffix) + 1;
+  bstyle = new char[n];
+  strcpy(bstyle,arg[3]);
+
+  // check if bond style with and without suffix exists
+
+  bond = force->bond_match(bstyle);
+  if (!bond && lmp->suffix) {
+    strcat(bstyle,"/");
+    strcat(bstyle,lmp->suffix);
+    bond = force->bond_match(bstyle);
+  }
+  if (!bond)
+    error->all(FLERR,"Unrecognized bond style in compute bond command");
+
+  vector = NULL;
 }
 
 /* ---------------------------------------------------------------------- */
 
-ComputeERotateRigid::~ComputeERotateRigid()
+ComputeBond::~ComputeBond()
 {
-  delete [] rfix;
+  delete [] bstyle;
 }
 
 /* ---------------------------------------------------------------------- */
 
-void ComputeERotateRigid::init()
+void ComputeBond::init()
 {
-  irfix = modify->find_fix(rfix);
-  if (irfix < 0)
-    error->all(FLERR,"Fix ID for compute erotate/rigid does not exist");
+  // recheck for bond style in case it has been deleted
 
-  if (strncmp(modify->fix[irfix]->style,"rigid",5))
-    error->all(FLERR,"Compute erotate/rigid with non-rigid fix-ID");
+  bond = force->bond_match(bstyle);
+
+  if (!bond)
+    error->all(FLERR,"Unrecognized bond style in compute bond command");
 }
 
 /* ---------------------------------------------------------------------- */
 
-double ComputeERotateRigid::compute_scalar()
+double ComputeBond::compute_scalar()
 {
   invoked_scalar = update->ntimestep;
+  if (update->eflag_global != invoked_scalar)
+    error->all(FLERR,"Energy was not tallied on needed timestep");
 
-  if (strncmp(modify->fix[irfix]->style,"rigid",5) == 0) {
-    if (strstr(modify->fix[irfix]->style,"/small")) {
-      scalar = ((FixRigidSmall *) modify->fix[irfix])->extract_erotational();
-    } else scalar = ((FixRigid *) modify->fix[irfix])->extract_erotational();
-  }
-  scalar *= force->mvv2e;
+  double eng;
+  eng = bond->energy;
+
+  MPI_Allreduce(&eng,&scalar,1,MPI_DOUBLE,MPI_SUM,world);
   return scalar;
 }
+
