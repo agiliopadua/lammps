@@ -435,6 +435,8 @@ pair_adp.cpp
 pair_adp.h
 pair_airebo.cpp
 pair_airebo.h
+pair_airebo_morse.cpp
+pair_airebo_morse.h
 pair_bop.cpp
 pair_bop.h
 pair_comb.cpp
@@ -1049,10 +1051,8 @@ pair_sw_intel.cpp
 pair_sw_intel.h
 pair_tersoff_intel.cpp
 pair_tersoff_intel.h
-verlet_intel.cpp
-verlet_intel.h
-verlet_split_intel.cpp
-verlet_split_intel.h
+pppm_intel.cpp
+pppm_intel.h
 !/USER-LB
 fix_lb_fluid.cpp
 fix_lb_fluid.h
@@ -1356,6 +1356,8 @@ neigh_respa_omp.cpp
 neighbor_omp.h
 pair_adp_omp.cpp
 pair_adp_omp.h
+pair_airebo_morse_omp.cpp
+pair_airebo_morse_omp.h
 pair_airebo_omp.cpp
 pair_airebo_omp.h
 pair_beck_omp.cpp
@@ -1476,6 +1478,8 @@ pair_lj_cut_omp.cpp
 pair_lj_cut_omp.h
 pair_lj_cut_soft_omp.cpp
 pair_lj_cut_soft_omp.h
+pair_lj_cut_thole_long_omp.cpp
+pair_lj_cut_thole_long_omp.h
 pair_lj_cut_tip4p_cut_omp.cpp
 pair_lj_cut_tip4p_cut_omp.h
 pair_lj_cut_tip4p_long_omp.cpp
@@ -1514,6 +1518,8 @@ pair_meam_spline_omp.cpp
 pair_meam_spline_omp.h
 pair_morse_omp.cpp
 pair_morse_omp.h
+pair_morse_smooth_linear_omp.cpp
+pair_morse_smooth_linear_omp.h
 pair_nb3b_harmonic_omp.cpp
 pair_nb3b_harmonic_omp.h
 pair_nm_cut_coul_cut_omp.cpp
@@ -1747,6 +1753,8 @@ compute_force_tally.cpp
 compute_force_tally.h
 compute_heat_flux_tally.cpp
 compute_heat_flux_tally.h
+compute_pe_mol_tally.cpp
+compute_pe_mol_tally.h
 compute_pe_tally.cpp
 compute_pe_tally.h
 compute_stress_tally.cpp
