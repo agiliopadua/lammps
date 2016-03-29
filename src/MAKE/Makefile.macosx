@@ -8,7 +8,8 @@ SHELL = /bin/sh
 
 OMPI_CXX :=     g++
 CC =		mpicxx
-CCFLAGS =	-O3 -fopenmp
+#CCFLAGS =	-O3 -fopenmp
+CCFLAGS = -O3
 SHFLAGS =	-fPIC
 DEPFLAGS =	-M
 
