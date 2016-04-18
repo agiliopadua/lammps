@@ -85,6 +85,7 @@ FixGCMC::FixGCMC(LAMMPS *lmp, int narg, char **arg) :
   chemical_potential = force->numeric(FLERR,arg[9]);
   displace = force->numeric(FLERR,arg[10]);
 
+  if (nevery <= 0) error->all(FLERR,"Illegal fix gcmc command");
   if (nexchanges < 0) error->all(FLERR,"Illegal fix gcmc command");
   if (nmcmoves < 0) error->all(FLERR,"Illegal fix gcmc command");
   if (seed <= 0) error->all(FLERR,"Illegal fix gcmc command");
@@ -367,7 +368,7 @@ FixGCMC::~FixGCMC()
       delete [] grouptypestrings[igroup];
     memory->sfree(grouptypestrings);
   }
-  if (full_flag) {
+  if (full_flag && group) {
     int igroupall = group->find("all");
     neighbor->exclusion_group_group_delete(exclusion_group,igroupall);
   }
