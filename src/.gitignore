@@ -203,6 +203,10 @@ pair_table_gpu.cpp
 pair_table_gpu.h
 pair_tersoff_gpu.cpp
 pair_tersoff_gpu.h
+pair_tersoff_mod_gpu.cpp
+pair_tersoff_mod_gpu.h
+pair_tersoff_zbl_gpu.cpp
+pair_tersoff_zbl_gpu.h
 pair_yukawa_colloid_gpu.cpp
 pair_yukawa_colloid_gpu.h
 pair_yukawa_gpu.cpp
@@ -492,6 +496,8 @@ compute_msd_nongauss.cpp
 compute_msd_nongauss.h
 compute_ti.cpp
 compute_ti.h
+dump_xtc.cpp
+dump_xtc.h
 fix_deposit.cpp
 fix_deposit.h
 fix_efield.cpp
@@ -516,6 +522,8 @@ pair_nm_cut_coul_cut.cpp
 pair_nm_cut_coul_cut.h
 pair_nm_cut_coul_long.cpp
 pair_nm_cut_coul_long.h
+xdr_compat.cpp
+xdr_compat.h
 !/MOLECULE
 angle_charmm.cpp
 angle_charmm.h
@@ -990,6 +998,8 @@ pair_lj_cut_soft.cpp
 pair_lj_cut_soft.h
 pair_lj_cut_tip4p_long_soft.cpp
 pair_lj_cut_tip4p_long_soft.h
+pair_morse_soft.cpp
+pair_morse_soft.h
 pair_tip4p_long_soft.cpp
 pair_tip4p_long_soft.h
 !/USER-H5MD
@@ -1765,8 +1775,3 @@ dump_custom_vtk.h
 !/VORONOI
 compute_voronoi_atom.cpp
 compute_voronoi_atom.h
-!/XTC
-dump_xtc.cpp
-dump_xtc.h
-xdr_compat.cpp
-xdr_compat.h
