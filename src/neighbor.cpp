@@ -108,6 +108,11 @@ Neighbor::Neighbor(LAMMPS *lmp) : Pointers(lmp)
 
   len_ssa_airnum = 0;
   ssa_airnum = NULL;
+  maxbin_ssa = 0;
+  bins_ssa = NULL;
+  binhead_ssa = NULL;
+  gbinhead_ssa = NULL;
+  maxhead_ssa = 0;
 
   // pair exclusion list info
 
@@ -2070,6 +2075,9 @@ int Neighbor::coord2bin(double *x)
 {
   int ix,iy,iz;
 
+  if (!ISFINITE(x[0]) || !ISFINITE(x[1]) || !ISFINITE(x[2]))
+    error->one(FLERR,"Non-numeric positions - simulation unstable");
+
   if (x[0] >= bboxhi[0])
     ix = static_cast<int> ((x[0]-bboxhi[0])*bininvx) + nbinx;
   else if (x[0] >= bboxlo[0]) {
@@ -2103,6 +2111,9 @@ int Neighbor::coord2bin(double *x)
 
 int Neighbor::coord2bin(double *x, int &ix, int &iy, int &iz)
 {
+  if (!ISFINITE(x[0]) || !ISFINITE(x[1]) || !ISFINITE(x[2]))
+    error->one(FLERR,"Non-numeric positions - simulation unstable");
+
   if (x[0] >= bboxhi[0])
     ix = static_cast<int> ((x[0]-bboxhi[0])*bininvx) + nbinx;
   else if (x[0] >= bboxlo[0]) {
