@@ -42,7 +42,6 @@
 #include "group.h"
 #include "output.h"
 #include "citeme.h"
-#include "accelerator_cuda.h"
 #include "accelerator_kokkos.h"
 #include "accelerator_omp.h"
 #include "accelerator_intel.h"
@@ -80,7 +79,6 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator)
   int logflag = 0;
   int partscreenflag = 0;
   int partlogflag = 0;
-  int cudaflag = 0;
   int kokkosflag = 0;
   int restartflag = 0;
   int restartremapflag = 0;
@@ -152,14 +150,6 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator)
       if (iarg+2 > narg)
        error->universe_all(FLERR,"Invalid command-line argument");
       partlogflag = iarg + 1;
-      iarg += 2;
-    } else if (strcmp(arg[iarg],"-cuda") == 0 ||
-               strcmp(arg[iarg],"-c") == 0) {
-      if (iarg+2 > narg)
-        error->universe_all(FLERR,"Invalid command-line argument");
-      if (strcmp(arg[iarg+1],"on") == 0) cudaflag = 1;
-      else if (strcmp(arg[iarg+1],"off") == 0) cudaflag = 0;
-      else error->universe_all(FLERR,"Invalid command-line argument");
       iarg += 2;
     } else if (strcmp(arg[iarg],"-kokkos") == 0 ||
                strcmp(arg[iarg],"-k") == 0) {
@@ -470,25 +460,6 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator)
     error->all(FLERR,"Small to big integers are not sized correctly");
 #endif
 
-  // error check on accelerator packages
-
-  if (cudaflag == 1 && kokkosflag == 1)
-    error->all(FLERR,"Cannot use -cuda on and -kokkos on together");
-
-  // create Cuda class if USER-CUDA installed, unless explicitly switched off
-  // instantiation creates dummy Cuda class if USER-CUDA is not installed
-
-  cuda = NULL;
-  if (cudaflag == 1) {
-    cuda = new Cuda(this);
-    if (!cuda->cuda_exists)
-      error->all(FLERR,"Cannot use -cuda on without USER-CUDA installed");
-  }
-
-  int me;
-  MPI_Comm_rank(world,&me);
-  if (cuda && me == 0) error->message(FLERR,"USER-CUDA mode is enabled");
-
   // create Kokkos class if KOKKOS installed, unless explicitly switched off
   // instantiation creates dummy Kokkos class if KOKKOS is not installed
   // add args between kkfirst and kklast to Kokkos instantiation
@@ -610,7 +581,6 @@ LAMMPS::~LAMMPS()
 
   if (world != universe->uworld) MPI_Comm_free(&world);
 
-  delete cuda;
   delete kokkos;
   delete [] suffix;
   delete [] suffix2;
@@ -629,19 +599,18 @@ LAMMPS::~LAMMPS()
 
 void LAMMPS::create()
 {
+  force = NULL;         // Domain->Lattice checks if Force exists
+
   // Comm class must be created before Atom class
   // so that nthreads is defined when create_avec invokes grow()
 
-  if (cuda) comm = new CommCuda(this);
-  else if (kokkos) comm = new CommKokkos(this);
+  if (kokkos) comm = new CommKokkos(this);
   else comm = new CommBrick(this);
 
-  if (cuda) neighbor = new NeighborCuda(this);
-  else if (kokkos) neighbor = new NeighborKokkos(this);
+  if (kokkos) neighbor = new NeighborKokkos(this);
   else neighbor = new Neighbor(this);
 
-  if (cuda) domain = new DomainCuda(this);
-  else if (kokkos) domain = new DomainKokkos(this);
+  if (kokkos) domain = new DomainKokkos(this);
 #ifdef LMP_USER_OMP
   else domain = new DomainOMP(this);
 #else
@@ -659,8 +628,7 @@ void LAMMPS::create()
   group = new Group(this);
   force = new Force(this);    // must be after group, to create temperature
 
-  if (cuda) modify = new ModifyCuda(this);
-  else if (kokkos) modify = new ModifyKokkos(this);
+  if (kokkos) modify = new ModifyKokkos(this);
   else modify = new Modify(this);
 
   output = new Output(this);  // must be after group, so "all" exists
@@ -680,19 +648,16 @@ void LAMMPS::create()
 
 void LAMMPS::post_create()
 {
-  // default package commands triggered by "-c on" and "-k on"
+  // default package command triggered by "-k on"
 
-  if (cuda && cuda->cuda_exists) input->one("package cuda 1");
   if (kokkos && kokkos->kokkos_exists) input->one("package kokkos");
 
   // suffix will always be set if suffix_enable = 1
-  // check that USER-CUDA and KOKKOS package classes were instantiated
+  // check that KOKKOS package classes were instantiated
   // check that GPU, INTEL, USER-OMP fixes were compiled with LAMMPS
 
   if (!suffix_enable) return;
 
-  if (strcmp(suffix,"cuda") == 0 && (cuda == NULL || cuda->cuda_exists == 0))
-    error->all(FLERR,"Using suffix cuda without USER-CUDA package enabled");
   if (strcmp(suffix,"gpu") == 0 && !modify->check_package("GPU"))
     error->all(FLERR,"Using suffix gpu without GPU package installed");
   if (strcmp(suffix,"intel") == 0 && !modify->check_package("INTEL"))
@@ -800,7 +765,6 @@ void LAMMPS::help()
 {
   fprintf(screen,
           "\nCommand line options:\n\n"
-          "-cuda on/off                : turn CUDA mode on or off (-c)\n"
           "-echo none/screen/log/both  : echoing of input script (-e)\n"
           "-help                       : print this help message (-h)\n"
           "-in filename                : read input from file, not stdin (-i)\n"
@@ -814,7 +778,7 @@ void LAMMPS::help()
           "-restart rfile dfile ...    : convert restart to data file (-r)\n"
           "-reorder topology-specs     : processor reordering (-r)\n"
           "-screen none/filename       : where to send screen output (-sc)\n"
-          "-suffix cuda/gpu/opt/omp    : style suffix to apply (-sf)\n"
+          "-suffix gpu/intel/opt/omp   : style suffix to apply (-sf)\n"
           "-var varname value          : set index style variable (-v)\n\n");
 
   fprintf(screen,"Style options compiled with this executable\n\n");

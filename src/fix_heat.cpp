@@ -133,6 +133,8 @@ void FixHeat::init()
   if (group->count(igroup) == 0)
     error->all(FLERR,"Fix heat group has no atoms");
   masstotal = group->mass(igroup);
+  if (masstotal <= 0.0)
+    error->all(FLERR,"Fix heat group has invalid mass");
 }
 
 /* ---------------------------------------------------------------------- */
@@ -153,7 +155,7 @@ void FixHeat::end_of_step()
 
   // reallocate per-atom arrays if necessary
 
-  if (hstyle == ATOM && atom->nlocal > maxatom) {
+  if (hstyle == ATOM && atom->nmax > maxatom) {
     maxatom = atom->nmax;
     memory->destroy(vheat);
     memory->destroy(vscale);

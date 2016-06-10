@@ -17,7 +17,6 @@
 
 #include <string.h>
 #include "info.h"
-#include "accelerator_cuda.h"
 #include "accelerator_kokkos.h"
 #include "atom.h"
 #include "comm.h"
@@ -328,9 +327,9 @@ void Info::command(int narg, char **arg)
               bstyles[domain->boundary[0][0]],bstyles[domain->boundary[0][1]],
               bstyles[domain->boundary[1][0]],bstyles[domain->boundary[1][1]],
               bstyles[domain->boundary[2][0]],bstyles[domain->boundary[2][1]]);
-      fprintf(out,"Xlo, zhi = %g, %g\n", domain->boxlo[0], domain->boxhi[0]);
-      fprintf(out,"Ylo, zhi = %g, %g\n", domain->boxlo[1], domain->boxhi[1]);
-      fprintf(out,"Zlo, zhi = %g, %g\n", domain->boxlo[2], domain->boxhi[2]);
+      fprintf(out,"xlo, xhi = %g, %g\n", domain->boxlo[0], domain->boxhi[0]);
+      fprintf(out,"ylo, yhi = %g, %g\n", domain->boxlo[1], domain->boxhi[1]);
+      fprintf(out,"zlo, zhi = %g, %g\n", domain->boxlo[2], domain->boxhi[2]);
       if (domain->triclinic)
           fprintf(out,"Xy, xz, yz = %g, %g, %g\n",
                   domain->xy, domain->xz, domain->yz);
@@ -476,9 +475,7 @@ bool Info::is_active(const char *category, const char *name)
   const int len = strlen(name);
 
   if (strcmp(category,"package") == 0) {
-    if (strcmp(name,"cuda") == 0) {
-      return (lmp->cuda && lmp->cuda->cuda_exists) ? true : false;
-    } else if (strcmp(name,"gpu") == 0) {
+    if (strcmp(name,"gpu") == 0) {
       return (modify->find_fix("package_gpu") >= 0) ? true : false;
     } else if (strcmp(name,"intel") == 0) {
       return (modify->find_fix("package_intel") >= 0) ? true : false;

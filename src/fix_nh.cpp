@@ -80,6 +80,11 @@ FixNH::FixNH(LAMMPS *lmp, int narg, char **arg) : Fix(lmp, narg, arg)
   flipflag = 1;
   dipole_flag = 0;
 
+  tcomputeflag = 0;
+  pcomputeflag = 0;
+  id_temp = NULL;
+  id_press = NULL;
+
   // turn on tilt factor scaling, whenever applicable
 
   dimension = domain->dimension;
@@ -558,7 +563,7 @@ FixNH::~FixNH()
 
   // delete temperature and pressure if fix created them
 
-  if (tflag) modify->delete_compute(id_temp);
+  if (tcomputeflag) modify->delete_compute(id_temp);
   delete [] id_temp;
 
   if (tstat_flag) {
@@ -569,7 +574,7 @@ FixNH::~FixNH()
   }
 
   if (pstat_flag) {
-    if (pflag) modify->delete_compute(id_press);
+    if (pcomputeflag) modify->delete_compute(id_press);
     delete [] id_press;
     if (mpchain) {
       delete [] etap;
@@ -1347,9 +1352,9 @@ int FixNH::modify_param(int narg, char **arg)
 {
   if (strcmp(arg[0],"temp") == 0) {
     if (narg < 2) error->all(FLERR,"Illegal fix_modify command");
-    if (tflag) {
+    if (tcomputeflag) {
       modify->delete_compute(id_temp);
-      tflag = 0;
+      tcomputeflag = 0;
     }
     delete [] id_temp;
     int n = strlen(arg[1]) + 1;
@@ -1381,9 +1386,9 @@ int FixNH::modify_param(int narg, char **arg)
   } else if (strcmp(arg[0],"press") == 0) {
     if (narg < 2) error->all(FLERR,"Illegal fix_modify command");
     if (!pstat_flag) error->all(FLERR,"Illegal fix_modify command");
-    if (pflag) {
+    if (pcomputeflag) {
       modify->delete_compute(id_press);
-      pflag = 0;
+      pcomputeflag = 0;
     }
     delete [] id_press;
     int n = strlen(arg[1]) + 1;
@@ -2158,7 +2163,7 @@ void FixNH::compute_press_target()
       p_target[i] = p_start[i] + delta * (p_stop[i]-p_start[i]);
       p_hydro += p_target[i];
     }
-  p_hydro /= pdim;
+  if (pdim > 0) p_hydro /= pdim;
 
   if (pstyle == TRICLINIC)
     for (int i = 3; i < 6; i++)
@@ -2210,7 +2215,7 @@ void FixNH::nh_omega_dot()
     for (int i = 0; i < 3; i++)
       if (p_flag[i])
         mtk_term2 += omega_dot[i];
-    mtk_term2 /= pdim * atom->natoms;
+    if (pdim > 0) mtk_term2 /= pdim * atom->natoms;
   }
 
   if (pstyle == TRICLINIC) {

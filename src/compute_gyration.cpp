@@ -57,6 +57,7 @@ double ComputeGyration::compute_scalar()
   invoked_scalar = update->ntimestep;
 
   double xcm[3];
+  if (group->dynamic[igroup]) masstotal = group->mass(igroup);
   group->xcm(igroup,masstotal,xcm);
   scalar = group->gyration(igroup,masstotal,xcm);
   return scalar;
@@ -108,6 +109,7 @@ void ComputeGyration::compute_vector()
     }
   MPI_Allreduce(rg,vector,6,MPI_DOUBLE,MPI_SUM,world);
 
-  if (masstotal == 0.0) return;
-  for (int i = 0; i < 6; i++) vector[i] = vector[i]/masstotal;
+  if (masstotal > 0.0) 
+    for (int i = 0; i < 6; i++)
+      vector[i] /= masstotal;
 }
