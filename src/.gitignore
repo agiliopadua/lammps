@@ -508,6 +508,8 @@ fix_gld.cpp
 fix_gld.h
 fix_oneway.cpp
 fix_oneway.h
+fix_orient_bcc.cpp
+fix_orient_bcc.h
 fix_orient_fcc.cpp
 fix_orient_fcc.h
 fix_thermal_conductivity.cpp
@@ -691,6 +693,8 @@ compute_erotate_rigid.cpp
 compute_erotate_rigid.h
 compute_ke_rigid.cpp
 compute_ke_rigid.h
+compute_rigid_local.cpp
+compute_rigid_local.h
 fix_ehex.cpp
 fix_ehex.h
 fix_rattle.cpp
@@ -890,6 +894,8 @@ angle_charmm_intel.cpp
 angle_charmm_intel.h
 angle_harmonic_intel.cpp
 angle_harmonic_intel.h
+bond_fene_intel.cpp
+bond_fene_intel.h
 bond_harmonic_intel.cpp
 bond_harmonic_intel.h
 dihedral_charmm_intel.cpp
