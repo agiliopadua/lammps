@@ -11,6 +11,7 @@
    See the README file in the top-level LAMMPS directory.
 ------------------------------------------------------------------------- */
 
+#include <string.h>
 #include "neighbor.h"
 #include "neigh_list.h"
 #include "atom.h"
@@ -30,7 +31,7 @@ using namespace LAMMPS_NS;
 
 void Neighbor::granular_nsq_no_newton(NeighList *list)
 {
-  int i,j,m,n,nn,bitmask;
+  int i,j,m,n,nn,bitmask,dnum,dnumbytes;
   double xtmp,ytmp,ztmp,delx,dely,delz,rsq;
   double radi,radsum,cutsq;
   int *neighptr,*touchptr;
@@ -39,7 +40,7 @@ void Neighbor::granular_nsq_no_newton(NeighList *list)
   NeighList *listgranhistory;
   int *npartner;
   tagint **partner;
-  double (**shearpartner)[3];
+  double **shearpartner;
   int **firsttouch;
   double **firstshear;
   MyPage<int> *ipage_touch;
@@ -75,6 +76,8 @@ void Neighbor::granular_nsq_no_newton(NeighList *list)
     firstshear = listgranhistory->firstdouble;
     ipage_touch = listgranhistory->ipage;
     dpage_shear = listgranhistory->dpage;
+    dnum = listgranhistory->dnum;
+    dnumbytes = dnum * sizeof(double);
   }
 
   int inum = 0;
@@ -120,20 +123,17 @@ void Neighbor::granular_nsq_no_newton(NeighList *list)
               if (partner[i][m] == tag[j]) break;
             if (m < npartner[i]) {
               touchptr[n] = 1;
-              shearptr[nn++] = shearpartner[i][m][0];
-              shearptr[nn++] = shearpartner[i][m][1];
-              shearptr[nn++] = shearpartner[i][m][2];
+              memcpy(&shearptr[nn],&shearpartner[i][dnum*m],dnumbytes);
+              nn += dnum;
             } else {
               touchptr[n] = 0;
-              shearptr[nn++] = 0.0;
-              shearptr[nn++] = 0.0;
-              shearptr[nn++] = 0.0;
+              memcpy(&shearptr[nn],zeroes,dnumbytes);
+              nn += dnum;
             }
           } else {
             touchptr[n] = 0;
-            shearptr[nn++] = 0.0;
-            shearptr[nn++] = 0.0;
-            shearptr[nn++] = 0.0;
+            memcpy(&shearptr[nn],zeroes,dnumbytes);
+            nn += dnum;
           }
         }
 
@@ -170,7 +170,7 @@ void Neighbor::granular_nsq_no_newton(NeighList *list)
 
 void Neighbor::granular_nsq_newton(NeighList *list)
 {
-  int i,j,m,n,nn,itag,jtag,bitmask;
+  int i,j,m,n,nn,itag,jtag,bitmask,dnum,dnumbytes;
   double xtmp,ytmp,ztmp,delx,dely,delz,rsq;
   double radi,radsum,cutsq;
   int *neighptr,*touchptr;
@@ -179,7 +179,7 @@ void Neighbor::granular_nsq_newton(NeighList *list)
   NeighList *listgranhistory;
   int *npartner;
   tagint **partner;
-  double (**shearpartner)[3];
+  double **shearpartner;
   int **firsttouch;
   double **firstshear;
   MyPage<int> *ipage_touch;
@@ -215,6 +215,8 @@ void Neighbor::granular_nsq_newton(NeighList *list)
     firstshear = listgranhistory->firstdouble;
     ipage_touch = listgranhistory->ipage;
     dpage_shear = listgranhistory->dpage;
+    dnum = listgranhistory->dnum;
+    dnumbytes = dnum * sizeof(double);
   }
 
   int inum = 0;
@@ -277,20 +279,17 @@ void Neighbor::granular_nsq_newton(NeighList *list)
               if (partner[i][m] == tag[j]) break;
             if (m < npartner[i]) {
               touchptr[n] = 1;
-              shearptr[nn++] = shearpartner[i][m][0];
-              shearptr[nn++] = shearpartner[i][m][1];
-              shearptr[nn++] = shearpartner[i][m][2];
+              memcpy(&shearptr[nn],&shearpartner[i][dnum*m],dnumbytes);
+              nn += dnum;
             } else {
               touchptr[n] = 0;
-              shearptr[nn++] = 0.0;
-              shearptr[nn++] = 0.0;
-              shearptr[nn++] = 0.0;
+              memcpy(&shearptr[nn],zeroes,dnumbytes);
+              nn += dnum;
             }
           } else {
             touchptr[n] = 0;
-            shearptr[nn++] = 0.0;
-            shearptr[nn++] = 0.0;
-            shearptr[nn++] = 0.0;
+            memcpy(&shearptr[nn],zeroes,dnumbytes);
+            nn += dnum;
           }
         }
 
@@ -318,6 +317,18 @@ void Neighbor::granular_nsq_newton(NeighList *list)
 
 /* ----------------------------------------------------------------------
    granular particles
+   N^2 / 2 search for neighbor pairs with partial Newton's 3rd law
+   shear history must be accounted for when a neighbor pair is added
+   pair added to list if atoms i and j are both owned and i < j
+   pair added if j is ghost (also stored by proc owning j)
+------------------------------------------------------------------------- */
+
+void Neighbor::granular_nsq_newton_onesided(NeighList *list)
+{
+}
+
+/* ----------------------------------------------------------------------
+   granular particles
    binned neighbor list construction with partial Newton's 3rd law
    shear history must be accounted for when a neighbor pair is added
    each owned atom i checks own bin and surrounding bins in non-Newton stencil
@@ -327,7 +338,7 @@ void Neighbor::granular_nsq_newton(NeighList *list)
 
 void Neighbor::granular_bin_no_newton(NeighList *list)
 {
-  int i,j,k,m,n,nn,ibin;
+  int i,j,k,m,n,nn,ibin,dnum,dnumbytes;
   double xtmp,ytmp,ztmp,delx,dely,delz,rsq;
   double radi,radsum,cutsq;
   int *neighptr,*touchptr;
@@ -336,7 +347,7 @@ void Neighbor::granular_bin_no_newton(NeighList *list)
   NeighList *listgranhistory;
   int *npartner;
   tagint **partner;
-  double (**shearpartner)[3];
+  double **shearpartner;
   int **firsttouch;
   double **firstshear;
   MyPage<int> *ipage_touch;
@@ -376,6 +387,8 @@ void Neighbor::granular_bin_no_newton(NeighList *list)
     firstshear = listgranhistory->firstdouble;
     ipage_touch = listgranhistory->ipage;
     dpage_shear = listgranhistory->dpage;
+    dnum = listgranhistory->dnum;
+    dnumbytes = dnum * sizeof(double);
   }
 
   int inum = 0;
@@ -426,20 +439,17 @@ void Neighbor::granular_bin_no_newton(NeighList *list)
                 if (partner[i][m] == tag[j]) break;
               if (m < npartner[i]) {
                 touchptr[n] = 1;
-                shearptr[nn++] = shearpartner[i][m][0];
-                shearptr[nn++] = shearpartner[i][m][1];
-                shearptr[nn++] = shearpartner[i][m][2];
+                memcpy(&shearptr[nn],&shearpartner[i][dnum*m],dnumbytes);
+                nn += dnum;
               } else {
                 touchptr[n] = 0;
-                shearptr[nn++] = 0.0;
-                shearptr[nn++] = 0.0;
-                shearptr[nn++] = 0.0;
+                memcpy(&shearptr[nn],zeroes,dnumbytes);
+                nn += dnum;
               }
             } else {
               touchptr[n] = 0;
-              shearptr[nn++] = 0.0;
-              shearptr[nn++] = 0.0;
-              shearptr[nn++] = 0.0;
+              memcpy(&shearptr[nn],zeroes,dnumbytes);
+              nn += dnum;
             }
           }
 
@@ -476,7 +486,7 @@ void Neighbor::granular_bin_no_newton(NeighList *list)
 
 void Neighbor::granular_bin_newton(NeighList *list)
 {
-  int i,j,k,m,n,nn,ibin;
+  int i,j,k,m,n,nn,ibin,dnum,dnumbytes;
   double xtmp,ytmp,ztmp,delx,dely,delz,rsq;
   double radi,radsum,cutsq;
   int *neighptr,*touchptr;
@@ -485,7 +495,7 @@ void Neighbor::granular_bin_newton(NeighList *list)
   NeighList *listgranhistory;
   int *npartner;
   tagint **partner;
-  double (**shearpartner)[3];
+  double **shearpartner;
   int **firsttouch;
   double **firstshear;
   MyPage<int> *ipage_touch;
@@ -525,6 +535,8 @@ void Neighbor::granular_bin_newton(NeighList *list)
     firstshear = listgranhistory->firstdouble;
     ipage_touch = listgranhistory->ipage;
     dpage_shear = listgranhistory->dpage;
+    dnum = listgranhistory->dnum;
+    dnumbytes = dnum * sizeof(double);
   }
 
   int inum = 0;
@@ -579,20 +591,17 @@ void Neighbor::granular_bin_newton(NeighList *list)
               if (partner[i][m] == tag[j]) break;
             if (m < npartner[i]) {
               touchptr[n] = 1;
-              shearptr[nn++] = shearpartner[i][m][0];
-              shearptr[nn++] = shearpartner[i][m][1];
-              shearptr[nn++] = shearpartner[i][m][2];
+              memcpy(&shearptr[nn],&shearpartner[i][dnum*m],dnumbytes);
+              nn += dnum;
             } else {
               touchptr[n] = 0;
-              shearptr[nn++] = 0.0;
-              shearptr[nn++] = 0.0;
-              shearptr[nn++] = 0.0;
+              memcpy(&shearptr[nn],zeroes,dnumbytes);
+              nn += dnum;
             }
           } else {
             touchptr[n] = 0;
-            shearptr[nn++] = 0.0;
-            shearptr[nn++] = 0.0;
-            shearptr[nn++] = 0.0;
+            memcpy(&shearptr[nn],zeroes,dnumbytes);
+            nn += dnum;
           }
         }
 
@@ -623,20 +632,17 @@ void Neighbor::granular_bin_newton(NeighList *list)
                 if (partner[i][m] == tag[j]) break;
               if (m < npartner[i]) {
                 touchptr[n] = 1;
-                shearptr[nn++] = shearpartner[i][m][0];
-                shearptr[nn++] = shearpartner[i][m][1];
-                shearptr[nn++] = shearpartner[i][m][2];
+                memcpy(&shearptr[nn],&shearpartner[i][dnum*m],dnumbytes);
+                nn += dnum;
               } else {
                 touchptr[n] = 0;
-                shearptr[nn++] = 0.0;
-                shearptr[nn++] = 0.0;
-                shearptr[nn++] = 0.0;
+                memcpy(&shearptr[nn],zeroes,dnumbytes);
+                nn += dnum;
               }
             } else {
               touchptr[n] = 0;
-              shearptr[nn++] = 0.0;
-              shearptr[nn++] = 0.0;
-              shearptr[nn++] = 0.0;
+              memcpy(&shearptr[nn],zeroes,dnumbytes);
+              nn += dnum;
             }
           }
           
@@ -665,6 +671,18 @@ void Neighbor::granular_bin_newton(NeighList *list)
 
 /* ----------------------------------------------------------------------
    granular particles
+   N^2 / 2 search for neighbor pairs with partial Newton's 3rd law
+   shear history must be accounted for when a neighbor pair is added
+   pair added to list if atoms i and j are both owned and i < j
+   pair added if j is ghost (also stored by proc owning j)
+------------------------------------------------------------------------- */
+
+void Neighbor::granular_bin_newton_onesided(NeighList *list)
+{
+}
+
+/* ----------------------------------------------------------------------
+   granular particles
    binned neighbor list construction with Newton's 3rd law for triclinic
    shear history must be accounted for when a neighbor pair is added
    each owned atom i checks its own bin and other bins in triclinic stencil
@@ -673,7 +691,7 @@ void Neighbor::granular_bin_newton(NeighList *list)
 
 void Neighbor::granular_bin_newton_tri(NeighList *list)
 {
-  int i,j,k,m,n,nn,ibin;
+  int i,j,k,m,n,nn,ibin,dnum,dnumbytes;
   double xtmp,ytmp,ztmp,delx,dely,delz,rsq;
   double radi,radsum,cutsq;
   int *neighptr,*touchptr;
@@ -682,7 +700,7 @@ void Neighbor::granular_bin_newton_tri(NeighList *list)
   NeighList *listgranhistory;
   int *npartner;
   tagint **partner;
-  double (**shearpartner)[3];
+  double **shearpartner;
   int **firsttouch;
   double **firstshear;
   MyPage<int> *ipage_touch;
@@ -722,6 +740,8 @@ void Neighbor::granular_bin_newton_tri(NeighList *list)
     firstshear = listgranhistory->firstdouble;
     ipage_touch = listgranhistory->ipage;
     dpage_shear = listgranhistory->dpage;
+    dnum = listgranhistory->dnum;
+    dnumbytes = dnum * sizeof(double);
   }
 
   int inum = 0;
@@ -781,20 +801,17 @@ void Neighbor::granular_bin_newton_tri(NeighList *list)
                 if (partner[i][m] == tag[j]) break;
               if (m < npartner[i]) {
                 touchptr[n] = 1;
-                shearptr[nn++] = shearpartner[i][m][0];
-                shearptr[nn++] = shearpartner[i][m][1];
-                shearptr[nn++] = shearpartner[i][m][2];
+                memcpy(&shearptr[nn],&shearpartner[i][dnum*m],dnumbytes);
+                nn += dnum;
               } else {
                 touchptr[n] = 0;
-                shearptr[nn++] = 0.0;
-                shearptr[nn++] = 0.0;
-                shearptr[nn++] = 0.0;
+                memcpy(&shearptr[nn],zeroes,dnumbytes);
+                nn += dnum;
               }
             } else {
               touchptr[n] = 0;
-              shearptr[nn++] = 0.0;
-              shearptr[nn++] = 0.0;
-              shearptr[nn++] = 0.0;
+              memcpy(&shearptr[nn],zeroes,dnumbytes);
+              nn += dnum;
             }
           }
 

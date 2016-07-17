@@ -29,15 +29,20 @@ class FixShardlow : public Fix {
   FixShardlow(class LAMMPS *, int, char **);
   ~FixShardlow();
   int setmask();
-  virtual void init_list(int,class NeighList *);
   virtual void setup(int);
   virtual void initial_integrate(int);
+  void setup_pre_exchange();
+  void pre_exchange();
+  void min_setup_pre_exchange();
+  void min_pre_exchange();
 
   void grow_arrays(int);
   void copy_arrays(int, int, int);
   void set_arrays(int);
 
-//  int pack_border(int, int *, double *);
+  void reset_dt();
+
+  int pack_border(int, int *, double *);
   int unpack_border(int, int, double *);
   int unpack_exchange(int, double *);
   void unpack_restart(int, int);
@@ -54,10 +59,12 @@ class FixShardlow : public Fix {
   class PairDPDfdtEnergy *pairDPDE;
   double (*v_t0)[3];
 
-  private:
-  class NeighList *list;
+ private:
+  double dtsqrt; // = sqrt(update->dt);
 
   int coord2ssaAIR(double *);  // map atom coord to an AIR number
+  void ssa_update(int, int *, int, class RanMars *);
+
 
 };
 
