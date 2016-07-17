@@ -1055,6 +1055,8 @@ dihedral_nharmonic.cpp
 dihedral_nharmonic.h
 dihedral_quadratic.cpp
 dihedral_quadratic.h
+dihedral_spherical.cpp
+dihedral_spherical.h
 dihedral_table.cpp
 dihedral_table.h
 fix_addtorque.cpp
