@@ -46,6 +46,11 @@ class NeighRequest : protected Pointers {
   int respaouter;        // 1 if a rRESPA outer list
   int half_from_full;    // 1 if half list computed from previous full list
 
+  // command_style only set if command = 1
+  // allows print_pair_info() to access command name
+
+  const char *command_style;
+
   // -----------------
   // optional settings
   // -----------------
@@ -100,6 +105,7 @@ class NeighRequest : protected Pointers {
   int skip;              // 1 if this list skips atom types from another list
   int *iskip;            // iskip[i] if atoms of type I are not in list
   int **ijskip;          // ijskip[i][j] if pairs of type I,J are not in list
+  int off2on;            // 1 if this is newton on list, but skips from off list
 
   int otherlist;         // index of other list to copy or skip from
 
