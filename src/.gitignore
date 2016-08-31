@@ -1063,6 +1063,8 @@ fix_addtorque.cpp
 fix_addtorque.h
 fix_ave_correlate_long.cpp
 fix_ave_correlate_long.h
+fix_flow_gauss.cpp
+fix_flow_gauss.h
 fix_gle.cpp
 fix_gle.h
 fix_imd.cpp
