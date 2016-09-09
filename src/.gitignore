@@ -287,11 +287,15 @@ fix_setforce_kokkos.cpp
 fix_setforce_kokkos.h
 fix_wall_reflect_kokkos.cpp
 fix_wall_reflect_kokkos.h
+gridcomm_kokkos.cpp
+gridcomm_kokkos.h
 improper_harmonic_kokkos.cpp
 improper_harmonic_kokkos.h
 kokkos.cpp
 kokkos.h
 kokkos_type.h
+math_special_kokkos.cpp
+math_special_kokkos.h
 memory_kokkos.h
 modify_kokkos.cpp
 modify_kokkos.h
@@ -367,6 +371,8 @@ pair_tersoff_mod_kokkos.cpp
 pair_tersoff_mod_kokkos.h
 pair_tersoff_zbl_kokkos.cpp
 pair_tersoff_zbl_kokkos.h
+pppm_kokkos.cpp
+pppm_kokkos.h
 region_block_kokkos.cpp
 region_block_kokkos.h
 verlet_kokkos.cpp
