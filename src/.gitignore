@@ -259,6 +259,8 @@ bond_harmonic_kokkos.cpp
 bond_harmonic_kokkos.h
 comm_kokkos.cpp
 comm_kokkos.h
+comm_tiled_kokkos.cpp
+comm_tiled_kokkos.h
 compute_temp_kokkos.cpp
 compute_temp_kokkos.h
 dihedral_charmm_kokkos.cpp
