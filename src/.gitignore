@@ -222,6 +222,8 @@ fix_pour.cpp
 fix_pour.h
 fix_wall_gran.cpp
 fix_wall_gran.h
+fix_wall_gran_region.cpp
+fix_wall_gran_region.h
 pair_gran_hertz_history.cpp
 pair_gran_hertz_history.h
 pair_gran_hooke.cpp
