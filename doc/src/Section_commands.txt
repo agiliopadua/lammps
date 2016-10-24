@@ -528,6 +528,8 @@ These are additional commands in USER packages, which can be used if
 package"_Section_start.html#start_3.
 
 "dump custom/vtk"_dump_custom_vtk.html,
+"dump nc"_dump_nc.html,
+"dump nc/mpiio"_dump_nc.html,
 "group2ndx"_group2ndx.html,
 "ndx2group"_group2ndx.html :tb(c=3,ea=c)
 
@@ -573,6 +575,7 @@ USER-INTEL, k = KOKKOS, o = USER-OMP, t = OPT.
 "gcmc"_fix_gcmc.html,
 "gld"_fix_gld.html,
 "gravity (o)"_fix_gravity.html,
+"halt"_fix_halt.html,
 "heat"_fix_heat.html,
 "indent"_fix_indent.html,
 "langevin (k)"_fix_langevin.html,
