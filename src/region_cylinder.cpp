@@ -30,14 +30,13 @@ enum{CONSTANT,VARIABLE};
 /* ---------------------------------------------------------------------- */
 
 RegCylinder::RegCylinder(LAMMPS *lmp, int narg, char **arg) :
-  Region(lmp, narg, arg)
+  Region(lmp, narg, arg), rstr(NULL)
 {
   options(narg-8,&arg[8]);
 
   // check open face settings
 
-  if (openflag && (open_faces[2] || open_faces[3] ||
-                   open_faces[4] || open_faces[5]))
+  if (openflag && (open_faces[3] || open_faces[4] || open_faces[5]))
     error->all(FLERR,"Invalid region cylinder open setting");
 
   if (strcmp(arg[2],"x") && strcmp(arg[2],"y") && strcmp(arg[2],"z"))
