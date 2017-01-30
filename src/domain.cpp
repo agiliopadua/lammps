@@ -1103,6 +1103,40 @@ int Domain::closest_image(int i, int j)
 }
 
 /* ----------------------------------------------------------------------
+   return local index of atom J or any of its images that is closest to pos
+   if J is not a valid index like -1, just return it
+------------------------------------------------------------------------- */
+
+int Domain::closest_image(double *pos, int j)
+{
+  if (j < 0) return j;
+
+  int *sametag = atom->sametag;
+  double **x = atom->x;
+
+  int closest = j;
+  double delx = pos[0] - x[j][0];
+  double dely = pos[1] - x[j][1];
+  double delz = pos[2] - x[j][2];
+  double rsqmin = delx*delx + dely*dely + delz*delz;
+  double rsq;
+
+  while (sametag[j] >= 0) {
+    j = sametag[j];
+    delx = pos[0] - x[j][0];
+    dely = pos[1] - x[j][1];
+    delz = pos[2] - x[j][2];
+    rsq = delx*delx + dely*dely + delz*delz;
+    if (rsq < rsqmin) {
+      rsqmin = rsq;
+      closest = j;
+    }
+  }
+
+  return closest;
+}
+
+/* ----------------------------------------------------------------------
    find and return Xj image = periodic image of Xj that is closest to Xi
    for triclinic, add/subtract tilt factors in other dims as needed
    not currently used (Jan 2017):
@@ -1566,10 +1600,10 @@ int Domain::ownatom(int id, double *x, imageint *image, int shrinkexceed)
     if (coord[0] < blo[0] && boundary[0][0] > 1) newcoord[0] = blo[0];
     else if (coord[0] >= bhi[0] && boundary[0][1] > 1) newcoord[0] = bhi[0];
     else newcoord[0] = coord[0];
-    if (coord[1] < blo[1] && boundary[1][1] > 1) newcoord[1] = blo[1];
+    if (coord[1] < blo[1] && boundary[1][0] > 1) newcoord[1] = blo[1];
     else if (coord[1] >= bhi[1] && boundary[1][1] > 1) newcoord[1] = bhi[1];
     else newcoord[1] = coord[1];
-    if (coord[2] < blo[2] && boundary[2][2] > 1) newcoord[2] = blo[2];
+    if (coord[2] < blo[2] && boundary[2][0] > 1) newcoord[2] = blo[2];
     else if (coord[2] >= bhi[2] && boundary[2][1] > 1) newcoord[2] = bhi[2];
     else newcoord[2] = coord[2];
 
