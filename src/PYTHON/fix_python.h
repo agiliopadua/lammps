@@ -11,37 +11,43 @@
    See the README file in the top-level LAMMPS directory.
 ------------------------------------------------------------------------- */
 
-#ifndef LMP_PYTHON_WRAPPER_H
-#define LMP_PYTHON_WRAPPER_H
+#ifdef FIX_CLASS
 
-// true interface to embedded Python
-// used when PYTHON package is installed
-
-#ifdef LMP_PYTHON
-
-#include "python.h"
+FixStyle(python,FixPython)
 
 #else
 
-// dummy interface to PYTHON
-// needed for compiling when PYTHON is not installed
+#ifndef LMP_FIX_PYTHON_H
+#define LMP_FIX_PYTHON_H
+
+#include "fix.h"
 
 namespace LAMMPS_NS {
 
-class Python {
+class FixPython : public Fix {
  public:
-  int python_exists;
+  FixPython(class LAMMPS *, int, char **);
+  virtual ~FixPython() {}
+  int setmask();
+  virtual void end_of_step();
+  virtual void post_force(int);
 
-  Python(class LAMMPS *) {python_exists = 0;}
-  ~Python() {}
-  void command(int, char **) {}
-  void invoke_function(int, char *) {}
-  int find(char *) {return -1;}
-  int variable_match(char *, char *, int) {return -1;}
-  char *long_string(int) {return NULL;}
+ private:
+  void * pFunc;
+  int selected_callback;
 };
 
 }
 
 #endif
 #endif
+
+/* ERROR/WARNING messages:
+
+E: Illegal ... command
+
+Self-explanatory.  Check the input script syntax and compare to the
+documentation for the command.  You can use -echo screen as a
+command-line option when running LAMMPS to see the offending line.
+
+*/

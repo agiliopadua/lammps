@@ -11,6 +11,10 @@
    See the README file in the top-level LAMMPS directory.
 ------------------------------------------------------------------------- */
 
+/* ----------------------------------------------------------------------
+   Contributing author: Richard Berger and Axel Kohlmeyer (Temple U)
+------------------------------------------------------------------------- */
+
 #include <Python.h>
 #include "python.h"
 #include "force.h"
@@ -18,6 +22,7 @@
 #include "variable.h"
 #include "memory.h"
 #include "error.h"
+#include "python_compat.h"
 
 using namespace LAMMPS_NS;
 
@@ -25,25 +30,35 @@ enum{NONE,INT,DOUBLE,STRING,PTR};
 
 #define VALUELENGTH 64               // also in variable.cpp
 
+
 /* ---------------------------------------------------------------------- */
 
-Python::Python(LAMMPS *lmp) : Pointers(lmp)
+PythonImpl::PythonImpl(LAMMPS *lmp) : Pointers(lmp)
 {
-  python_exists = 1;
-
-  pyMain = NULL;
-
   // pfuncs stores interface info for each Python function
 
   nfunc = 0;
   pfuncs = NULL;
 
-  external_interpreter = false;
+  // one-time initialization of Python interpreter
+  // pyMain stores pointer to main module
+  external_interpreter = Py_IsInitialized();
+
+  Py_Initialize();
+  PyEval_InitThreads();
+
+  PyGILState_STATE gstate = PyGILState_Ensure();
+
+  PyObject *pModule = PyImport_AddModule("__main__");
+  if (!pModule) error->all(FLERR,"Could not initialize embedded Python");
+
+  pyMain = (void *) pModule;
+  PyGILState_Release(gstate);
 }
 
 /* ---------------------------------------------------------------------- */
 
-Python::~Python()
+PythonImpl::~PythonImpl()
 {
   if(pyMain) {
     // clean up
@@ -71,7 +86,7 @@ Python::~Python()
 
 /* ---------------------------------------------------------------------- */
 
-void Python::command(int narg, char **arg)
+void PythonImpl::command(int narg, char **arg)
 {
   if (narg < 2) error->all(FLERR,"Invalid python command");
 
@@ -90,6 +105,23 @@ void Python::command(int narg, char **arg)
     }
 
     invoke_function(ifunc,str);
+    return;
+  }
+
+  // if source is only keyword, execute the python code
+
+  if (narg == 3 && strcmp(arg[1],"source") == 0) {
+    int err;
+
+    FILE *fp = fopen(arg[2],"r");
+    if (fp == NULL)
+      err = execute_string(arg[2]);
+    else
+      err = execute_file(arg[2]);
+
+    if (fp) fclose(fp);
+    if (err) error->all(FLERR,"Could not process Python source command");
+
     return;
   }
 
@@ -156,22 +188,7 @@ void Python::command(int narg, char **arg)
 
   int ifunc = create_entry(arg[0]);
 
-  // one-time initialization of Python interpreter
-  // pymain stores pointer to main module
-  PyGILState_STATE gstate;
-
-  if (pyMain == NULL) {
-    external_interpreter = Py_IsInitialized();
-    Py_Initialize();
-    PyEval_InitThreads();
-    gstate = PyGILState_Ensure();
-
-    PyObject *pModule = PyImport_AddModule("__main__");
-    if (!pModule) error->all(FLERR,"Could not initialize embedded Python");
-    pyMain = (void *) pModule;
-  } else {
-    gstate = PyGILState_Ensure();
-  }
+  PyGILState_STATE gstate = PyGILState_Ensure();
 
   // send Python code to Python interpreter
   // file: read the file via PyRun_SimpleFile()
@@ -230,7 +247,7 @@ void Python::command(int narg, char **arg)
 
 /* ------------------------------------------------------------------ */
 
-void Python::invoke_function(int ifunc, char *result)
+void PythonImpl::invoke_function(int ifunc, char *result)
 {
   PyGILState_STATE gstate = PyGILState_Ensure();
   PyObject *pValue;
@@ -259,8 +276,10 @@ void Python::invoke_function(int ifunc, char *result)
           error->all(FLERR,"Could not evaluate Python function input variable");
         }
 
-        pValue = PyInt_FromLong(atoi(str));
-      } else pValue = PyInt_FromLong(pfuncs[ifunc].ivalue[i]);
+        pValue = PY_INT_FROM_LONG(atoi(str));
+      } else {
+        pValue = PY_INT_FROM_LONG(pfuncs[ifunc].ivalue[i]);
+      }
     } else if (itype == DOUBLE) {
       if (pfuncs[ifunc].ivarflag[i]) {
         str = input->variable->retrieve(pfuncs[ifunc].svalue[i]);
@@ -271,7 +290,9 @@ void Python::invoke_function(int ifunc, char *result)
         }
 
         pValue = PyFloat_FromDouble(atof(str));
-      } else pValue = PyFloat_FromDouble(pfuncs[ifunc].dvalue[i]);
+      } else {
+        pValue = PyFloat_FromDouble(pfuncs[ifunc].dvalue[i]);
+      }
     } else if (itype == STRING) {
       if (pfuncs[ifunc].ivarflag[i]) {
         str = input->variable->retrieve(pfuncs[ifunc].svalue[i]);
@@ -279,10 +300,13 @@ void Python::invoke_function(int ifunc, char *result)
           PyGILState_Release(gstate);
           error->all(FLERR,"Could not evaluate Python function input variable");
         }
-        pValue = PyString_FromString(str);
-      } else pValue = PyString_FromString(pfuncs[ifunc].svalue[i]);
+
+        pValue = PY_STRING_FROM_STRING(str);
+      } else {
+        pValue = PY_STRING_FROM_STRING(pfuncs[ifunc].svalue[i]);
+      }
     } else if (itype == PTR) {
-      pValue = PyCObject_FromVoidPtr((void *) lmp,NULL);
+      pValue = PY_VOID_POINTER(lmp);
     }
     PyTuple_SetItem(pArgs,i,pValue);
   }
@@ -306,11 +330,11 @@ void Python::invoke_function(int ifunc, char *result)
   if (pfuncs[ifunc].noutput) {
     int otype = pfuncs[ifunc].otype;
     if (otype == INT) {
-      sprintf(result,"%ld",PyInt_AsLong(pValue));
+      sprintf(result,"%ld",PY_INT_AS_LONG(pValue));
     } else if (otype == DOUBLE) {
       sprintf(result,"%.15g",PyFloat_AsDouble(pValue));
     } else if (otype == STRING) {
-      char *pystr = PyString_AsString(pValue);
+      char *pystr = PY_STRING_AS_STRING(pValue);
       if (pfuncs[ifunc].longstr) 
         strncpy(pfuncs[ifunc].longstr,pystr,pfuncs[ifunc].length_longstr);
       else strncpy(result,pystr,VALUELENGTH-1);
@@ -323,7 +347,7 @@ void Python::invoke_function(int ifunc, char *result)
 
 /* ------------------------------------------------------------------ */
 
-int Python::find(char *name)
+int PythonImpl::find(char *name)
 {
   for (int i = 0; i < nfunc; i++)
     if (strcmp(name,pfuncs[i].name) == 0) return i;
@@ -332,7 +356,7 @@ int Python::find(char *name)
 
 /* ------------------------------------------------------------------ */
 
-int Python::variable_match(char *name, char *varname, int numeric)
+int PythonImpl::variable_match(char *name, char *varname, int numeric)
 {
   int ifunc = find(name);
   if (ifunc < 0) return -1;
@@ -344,14 +368,14 @@ int Python::variable_match(char *name, char *varname, int numeric)
 
 /* ------------------------------------------------------------------ */
 
-char *Python::long_string(int ifunc)
+char *PythonImpl::long_string(int ifunc)
 {
   return pfuncs[ifunc].longstr;
 }
 
 /* ------------------------------------------------------------------ */
 
-int Python::create_entry(char *name)
+int PythonImpl::create_entry(char *name)
 {
   // ifunc = index to entry by name in pfuncs vector, can be old or new
   // free old vectors if overwriting old pfunc
@@ -459,9 +483,35 @@ int Python::create_entry(char *name)
   return ifunc;
 }
 
+/* ---------------------------------------------------------------------- */
+
+int PythonImpl::execute_string(char *cmd)
+{
+  PyGILState_STATE gstate = PyGILState_Ensure();
+  int err = PyRun_SimpleString(cmd);
+  PyGILState_Release(gstate);
+
+  return err;
+}
+
+/* ---------------------------------------------------------------------- */
+
+int PythonImpl::execute_file(char *fname)
+{
+  FILE *fp = fopen(fname,"r");
+  if (fp == NULL) return -1;
+
+  PyGILState_STATE gstate = PyGILState_Ensure();
+  int err = PyRun_SimpleFile(fp,fname);
+  PyGILState_Release(gstate);
+
+  if (fp) fclose(fp);
+  return err;
+}
+
 /* ------------------------------------------------------------------ */
 
-void Python::deallocate(int i)
+void PythonImpl::deallocate(int i)
 {
   delete [] pfuncs[i].itype;
   delete [] pfuncs[i].ivarflag;

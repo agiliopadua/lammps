@@ -18,48 +18,44 @@
 
 namespace LAMMPS_NS {
 
-class Python : protected Pointers {
- public:
-  int python_exists;
-  bool external_interpreter;
+class PythonInterface {
+public:
+  virtual ~PythonInterface();
+  virtual void command(int, char **) = 0;
+  virtual void invoke_function(int, char *) = 0;
+  virtual int find(char *) = 0;
+  virtual int variable_match(char *, char *, int) = 0;
+  virtual char * long_string(int ifunc) = 0;
+  virtual int execute_string(char *) = 0;
+  virtual int execute_file(char *) = 0;
+};
 
+class Python : protected Pointers {
+public:
   Python(class LAMMPS *);
   ~Python();
+
   void command(int, char **);
   void invoke_function(int, char *);
   int find(char *);
   int variable_match(char *, char *, int);
-  char *long_string(int);
+  char * long_string(int ifunc);
+  int execute_string(char *);
+  int execute_file(char *);
 
- private:
-  int ninput,noutput,length_longstr;
-  char **istr;
-  char *ostr,*format;
-  void *pyMain;
+  bool is_enabled() const;
+  void init();
 
-  struct PyFunc {
-    char *name;
-    int ninput,noutput;
-    int *itype,*ivarflag;
-    int *ivalue;
-    double *dvalue;
-    char **svalue;
-    int otype;
-    char *ovarname;
-    char *longstr;
-    int length_longstr;
-    void *pFunc;
-  };
-
-  PyFunc *pfuncs;
-  int nfunc;
-
-  int create_entry(char *);
-  void deallocate(int);
+private:
+  PythonInterface * impl;
 };
 
 }
 
+#endif
+
+#if LMP_PYTHON
+#include "python_impl.h"
 #endif
 
 /* ERROR/WARNING messages:
