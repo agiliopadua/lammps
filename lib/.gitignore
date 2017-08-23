@@ -6,3 +6,5 @@ obj_mingw*
 =======
 >>>>>>> master
 Makefile.lammps
+.depend
+Makefile.auto
