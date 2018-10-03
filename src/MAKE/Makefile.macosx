@@ -30,7 +30,7 @@ SHLIBFLAGS =	-shared
 # LAMMPS ifdef settings
 # see possible settings in Section 2.2 (step 4) of manual
 
-LMP_INC =	-DLAMMPS_GZIP -DLAMMPS_PNG -DLAMMPS_JPEG -DLAMMPS_FFMPEG -DLAMMPS_EXCEPTIONS
+LMP_INC =	-DLAMMPS_GZIP -DLAMMPS_EXCEPTIONS
 
 # MPI library
 # see discussion in Section 2.2 (step 5) of manual
@@ -64,7 +64,7 @@ FFT_LIB =	-lfftw3
 # LIB = name(s) of JPEG library and/or PNG library
 
 JPG_INC =       
-JPG_PATH = 	-lpng -ljpeg
+JPG_PATH = 	
 JPG_LIB =	
 
 # ---------------------------------------------------------------------
