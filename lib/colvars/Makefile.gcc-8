@@ -6,7 +6,7 @@ EXTRAMAKE = Makefile.lammps.empty
 
 # ------ SETTINGS ------
 
-CXX =		gcc-5
+CXX =		gcc-8
 CXXFLAGS =	-O2 -g -fPIC -funroll-loops # -DCOLVARS_DEBUG
 ARCHIVE =	ar
 ARCHFLAG =	-rscv
