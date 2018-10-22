@@ -11,39 +11,38 @@
    See the README file in the top-level LAMMPS directory.
 ------------------------------------------------------------------------- */
 
-/* ----------------------------------------------------------------------
-   Contributing author: Axel Kohlmeyer (Temple U)
-------------------------------------------------------------------------- */
+#ifdef COMPUTE_CLASS
 
-#ifdef PAIR_CLASS
-
-//PairStyle(nb3b/harmonic/omp,PairNb3bHarmonicOMP)
-PairStyle(disabled,PairNb3bHarmonicOMP)
+ComputeStyle(ptm/atom,ComputePTMAtom)
 
 #else
 
-#ifndef LMP_PAIR_NB3BHARMONIC_OMP_H
-#define LMP_PAIR_NB3BHARMONIC_OMP_H
+#ifndef LMP_COMPUTE_PTM_ATOM_H
+#define LMP_COMPUTE_PTM_ATOM_H
 
-#include "pair_nb3b_harmonic.h"
-#include "thr_omp.h"
+#include "compute.h"
 
 namespace LAMMPS_NS {
 
-class PairNb3bHarmonicOMP : public PairNb3bHarmonic, public ThrOMP {
-
+class ComputePTMAtom : public Compute {
  public:
-  PairNb3bHarmonicOMP(class LAMMPS *);
-
-  virtual void compute(int, int);
-  virtual double memory_usage();
+  ComputePTMAtom(class LAMMPS *, int, char **);
+  ~ComputePTMAtom();
+  void init();
+  void init_list(int, class NeighList *);
+  void compute_peratom();
+  double memory_usage();
 
  private:
-  template <int EVFLAG, int EFLAG>
-  void eval(int ifrom, int ito, ThrData * const thr);
+  int nmax;
+  int32_t input_flags;
+  double rmsd_threshold;
+  class NeighList *list;
+  double **output;
 };
 
 }
 
 #endif
 #endif
+
