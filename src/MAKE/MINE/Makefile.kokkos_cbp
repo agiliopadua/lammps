@@ -1,4 +1,4 @@
-# kokkos = KOKKOS/CUDA package, OpenMPI with nvcc compiler, Pascal GPU
+# kokkos_cbp = KOKKOS/CUDA package, OpenMPI with nvcc compiler, Pascal GPU
 
 SHELL = /bin/sh
 
@@ -23,7 +23,7 @@ ARCHIVE =	ar
 ARFLAGS =	-rc
 SHLIBFLAGS =	-shared
 KOKKOS_DEVICES = Cuda
-KOKKOS_ARCH = Pascal61
+KOKKOS_ARCH = Pascal60
 
 # ---------------------------------------------------------------------
 # LAMMPS-specific settings, all OPTIONAL
@@ -55,7 +55,7 @@ MPI_LIB =
 # PATH = path for FFT library
 # LIB = name of FFT library
 
-FFT_INC = -I/usr/include/fftw3 -DFFT_FFTW3
+FFT_INC = -I/usr/include -DFFT_FFTW3
 FFT_PATH = -L/usr/lib/x86_64-linux-gnu
 FFT_LIB = -lfftw3
 
