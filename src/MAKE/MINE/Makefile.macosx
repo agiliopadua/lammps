@@ -1,4 +1,4 @@
-# macosx = g++, Xcode, Homebrew (gcc/gfortran, openmpi, fftw, voro++)
+# macosx = LLVM g++, Xcode, Homebrew (gfortran, openmpi, fftw, voro++, libomp)
 
 SHELL = /bin/sh
 
@@ -8,14 +8,14 @@ SHELL = /bin/sh
 
 OMPI_CXX :=     g++
 CC =		mpicxx
-#CCFLAGS =	-O3 -fopenmp
-CCFLAGS = -O3
+CCFLAGS =	-O3 -Xpreprocessor -fopenmp
+#CCFLAGS = -O3
 SHFLAGS =	-fPIC
 DEPFLAGS =	-M
 
 LINK =		mpicxx
-LINKFLAGS =	-O3 -framework Accelerate
-LIB =       -llapack 
+LINKFLAGS =	-O3 -framework Accelerate 
+LIB =           -llapack -lomp
 SIZE =		size
 
 ARCHIVE =	ar
