@@ -1,7 +1,7 @@
 # Settings for libraries used by specific LAMMPS packages
 # this file is auto-edited when those packages are included/excluded
 
-PKG_INC =   -DLMP_USER_OMP -I../../lib/voronoi/includelink -I../../lib/colvars 
+PKG_INC =   -I../../lib/voronoi/includelink -I../../lib/colvars 
 PKG_PATH =  -L../../lib/voronoi/liblink -L../../lib/colvars$(LIBOBJDIR) 
 PKG_LIB =   -lvoro++ -lcolvars 
 
