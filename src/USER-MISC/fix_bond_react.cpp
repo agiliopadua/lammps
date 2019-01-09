@@ -290,6 +290,8 @@ FixBondReact::FixBondReact(LAMMPS *lmp, int narg, char **arg) :
     open(files[i]);
     onemol = atom->molecules[unreacted_mol[i]];
     twomol = atom->molecules[reacted_mol[i]];
+    onemol->check_attributes(0);
+    twomol->check_attributes(0);
     if (onemol->natoms != twomol->natoms)
       error->all(FLERR,"Post-reacted template must contain the same "
                        "number of atoms as the pre-reacted template");
@@ -2560,7 +2562,7 @@ void FixBondReact::update_everything()
         else {
           for (int j = 0; j < atom->num_improper[i]; j++) {
             int m = atom->map(atom->improper_atom2[i][j]);
-            if (m >= 0 && m < nlocal) delta_imprp;
+            if (m >= 0 && m < nlocal) delta_imprp++;
           }
         }
       }
