@@ -4,16 +4,17 @@
 EXTRAMAKE = Makefile.lammps.empty
 
 # top level directory of Quantum ESPRESSO 5.4.1 or later
-QETOPDIR=$(HOME)/compile/espresso
+QETOPDIR=$(HOME)/sw/qe-6.3
 
 # import compiler settings from Quantum ESPRESSO
-sinclude $(QETOPDIR)/make.sys
+sinclude $(QETOPDIR)/make.inc
 
 # FLAGS for c++ OpenMPI 1.8.8 or later when QE was compiled with GNU Fortran 4.x
 MPICXX=mpicxx
 MPICXXFLAGS= -DMPICH_SKIP_MPICXX -DOMPI_SKIP_MPICXX=1 -O2 -g -fPIC\
-	-I../../src -I$(QETOPDIR)/COUPLE/include
-MPILIBS=-fopenmp -lgfortran -ldl -ljpeg -lpng -lz -lmpi_mpifh -lmpi
+	-I../../src -I$(QETOPDIR)/COUPLE/include -I/usr/local/include
+#MPILIBS=-fopenmp -lgfortran -ldl -ljpeg -lpng -lz -lmpi_mpifh -lmpi
+MPILIBS=-lm -L/usr/local/lib/gcc/8 -lgfortran -ldl -lz -lmpi_mpifh -lmpi -lfftw3 -llapack -lblas -lomp -lfftw3 -L$(QETOPDIR)/dft-d3 -ldftd3qe
 
 # location of required libraries
 # part 1: hi-level libraries for building pw.x
@@ -30,7 +31,7 @@ $(QETOPDIR)/iotk/src/libiotk.a
 
 # part 3: add-on libraries and main library for LAMMPS
 sinclude ../../src/Makefile.package
-LAMMPSCFG = mpi
+LAMMPSCFG = macosx
 LAMMPSLIB = ../../src/liblammps_$(LAMMPSCFG).a
 
 # part 4: local QM/MM library and progams
