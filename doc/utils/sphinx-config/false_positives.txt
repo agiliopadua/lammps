@@ -200,6 +200,7 @@ Berkowitz
 berlin
 Berne
 Bertotti
+Bessarab
 Beutler
 bgq
 Bh
@@ -289,6 +290,7 @@ Cao
 Capolungo
 Caro
 cartesian
+CasP
 Caswell
 Cates
 Cavium
@@ -348,6 +350,7 @@ Cii
 Cij
 cis
 civ
+Clang
 clearstore
 Cleary
 Clebsch
@@ -590,6 +593,7 @@ Dmax
 dmg
 dmi
 dnf
+DNi
 Dobson
 Dodds
 dodgerblue
@@ -656,6 +660,7 @@ ec
 Ec
 ecoul
 ecp
+Ecut
 edgeIDs
 edihed
 edim
@@ -960,6 +965,8 @@ gmail
 gmake
 gmask
 Gmask
+gneb
+GNEB
 googlemail
 Gordan
 GPa
@@ -1134,6 +1141,7 @@ infty
 inhomogeneities
 inhomogeneous
 init
+initio
 initializations
 InP
 inregion
@@ -1255,6 +1263,7 @@ Jy
 Jz
 jzimmer
 Kadiri
+Kai
 Kalia
 Kamberaj
 Kapfer
@@ -1285,6 +1294,7 @@ Keir
 Kelchner
 Kelkar
 Kemper
+keV
 Keyes
 Khersonskii
 Khrapak
@@ -1538,6 +1548,7 @@ Mattox
 Mattson
 maxangle
 maxbond
+maxelt
 maxeval
 maxfiles
 Maxfoo
@@ -1627,6 +1638,7 @@ minima
 minimizations
 minimizer
 minimizers
+minneigh
 minorder
 minSteps
 mintcream
@@ -2360,6 +2372,7 @@ rNEMD
 ro
 Rochus
 Rockett
+Rodrigues
 Rohart
 Ronchetti
 Rosati
@@ -2764,6 +2777,7 @@ tt
 Tt
 TThis
 ttm
+ttol
 tu
 Tuckerman
 tue
@@ -2809,6 +2823,7 @@ unimodal
 unitless
 Universite
 unix
+unmaintained
 unoptimized
 unpadded
 unphysical
@@ -2835,6 +2850,7 @@ utsa
 Uttormark
 uvm
 uwo
+Uzdin
 vacf
 valent
 Valeriu
@@ -2934,7 +2950,7 @@ wB
 Wbody
 webpage
 Weckner
-WeinenE
+WeinanE
 Wennberg
 Westview
 wget
@@ -2944,6 +2960,7 @@ Wi
 Wicaksono
 wih
 Wijk
+Wikipedia
 wildcard
 Wildcard
 Wirnsberger
