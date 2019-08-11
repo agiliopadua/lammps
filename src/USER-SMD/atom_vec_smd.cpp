@@ -22,24 +22,19 @@
  See the README file in the top-level LAMMPS directory.
  ------------------------------------------------------------------------- */
 
-#include <cmath>
-#include <cstdlib>
-#include <cstring>
 #include "atom_vec_smd.h"
+#include <cstring>
 #include "atom.h"
 #include "comm.h"
 #include "domain.h"
 #include "modify.h"
-#include "force.h"
 #include "fix.h"
-#include "fix_adapt.h"
-#include "math_const.h"
 #include "memory.h"
 #include "error.h"
 #include "utils.h"
 
 using namespace LAMMPS_NS;
-using namespace MathConst;
+
 #define NMAT_FULL 9
 #define NMAT_SYMM 6
 
@@ -1028,13 +1023,13 @@ void AtomVecSMD::data_atom(double *coord, imageint imagetmp, char **values) {
         if (nlocal == nmax)
                 grow(0);
 
-        tag[nlocal] = ATOTAGINT(values[0]);
+        tag[nlocal] = utils::tnumeric(FLERR,values[0],true,lmp);
 
         type[nlocal] = utils::inumeric(FLERR,values[1],true,lmp);
         if (type[nlocal] <= 0 || type[nlocal] > atom->ntypes)
                 error->one(FLERR, "Invalid atom type in Atoms section of data file");
 
-        molecule[nlocal] = ATOTAGINT(values[2]);
+        molecule[nlocal] = utils::tnumeric(FLERR,values[2],true,lmp);
         if (molecule[nlocal] <= 0)
                 error->one(FLERR, "Invalid molecule in Atoms section of data file");
 

@@ -15,12 +15,10 @@
    Contributing author: James Larentzos (U.S. Army Research Laboratory)
 ------------------------------------------------------------------------- */
 
-#include <cstdlib>
 #include "atom_vec_dpd.h"
 #include "atom.h"
 #include "comm.h"
 #include "domain.h"
-#include "force.h"
 #include "modify.h"
 #include "fix.h"
 #include "memory.h"
@@ -815,7 +813,7 @@ void AtomVecDPD::data_atom(double *coord, tagint imagetmp, char **values)
   int nlocal = atom->nlocal;
   if (nlocal == nmax) grow(0);
 
-  tag[nlocal] = ATOTAGINT(values[0]);
+  tag[nlocal] = utils::tnumeric(FLERR,values[0],true,lmp);
   type[nlocal] = utils::inumeric(FLERR,values[1],true,lmp);
   if (type[nlocal] <= 0 || type[nlocal] > atom->ntypes)
     error->one(FLERR,"Invalid atom type in Atoms section of data file");
