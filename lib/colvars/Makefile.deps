@@ -119,6 +119,7 @@ $(COLVARS_OBJ_DIR)colvarcomp_distances.o: colvarcomp_distances.cpp \
   lepton/include/lepton/ParsedExpression.h \
   lepton/include/lepton/Parser.h colvarcomp.h colvaratoms.h \
   colvarproxy.h
+$(COLVARS_OBJ_DIR)colvarcomp_gpath.o: colvarcomp_gpath.cpp
 $(COLVARS_OBJ_DIR)colvarcomp_protein.o: colvarcomp_protein.cpp \
   colvarmodule.h colvars_version.h colvarvalue.h colvartypes.h \
   colvarparse.h colvar.h colvardeps.h lepton/include/Lepton.h \

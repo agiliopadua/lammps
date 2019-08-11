@@ -11,12 +11,10 @@
    See the README file in the top-level LAMMPS directory.
 ------------------------------------------------------------------------- */
 
-#include <cstdlib>
 #include "atom_vec_dpd_kokkos.h"
 #include "atom_kokkos.h"
 #include "comm_kokkos.h"
 #include "domain.h"
-#include "force.h"
 #include "modify.h"
 #include "fix.h"
 #include "atom_masks.h"
@@ -1724,7 +1722,7 @@ void AtomVecDPDKokkos::data_atom(double *coord, tagint imagetmp,
   int nlocal = atom->nlocal;
   if (nlocal == nmax) grow(0);
 
-  h_tag[nlocal] = ATOTAGINT(values[0]);
+  h_tag[nlocal] = utils::tnumeric(FLERR,values[0],true,lmp);
   h_type[nlocal] = utils::inumeric(FLERR,values[1],true,lmp);
   if (type[nlocal] <= 0 || type[nlocal] > atom->ntypes)
     error->one(FLERR,"Invalid atom type in Atoms section of data file");
