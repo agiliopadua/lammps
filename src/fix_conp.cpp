@@ -66,7 +66,7 @@ FixConp::FixConp(LAMMPS *lmp, int narg, char **arg) :
 {
   if (narg < 11) error->all(FLERR,"Illegal fix conp command");
   maxiter = 100;
-  tolarence = 0.000001;
+  tolerance = 0.000001;
   everynum = force->numeric(FLERR,arg[3]);
   eta = force->numeric(FLERR,arg[4]);
   molidL = force->inumeric(FLERR,arg[5]);
@@ -901,7 +901,7 @@ void FixConp::cg()
       res[i] = res[i]-d*ap[i];
       resnorm += res[i]*res[i];
     }
-    if (resnorm/elenum_all < tolarence) {
+    if (resnorm/elenum_all < tolerance) {
       netcharge = 0.0;
       for (i = 0; i < elenum_all; ++i) netcharge += eleallq[i];
       if (me == 0) {
