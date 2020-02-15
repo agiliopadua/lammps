@@ -8,7 +8,7 @@ SHELL = /bin/sh
 
 OMPI_CXX :=     g++
 CC =		mpicxx
-CCFLAGS =	-O3 -Xpreprocessor -fopenmp
+CCFLAGS =	-std=c++11 -O3 -Xpreprocessor -fopenmp
 #CCFLAGS = -O3
 SHFLAGS =	-fPIC
 DEPFLAGS =	-M
@@ -30,7 +30,7 @@ SHLIBFLAGS =	-shared
 # LAMMPS ifdef settings
 # see possible settings in Section 2.2 (step 4) of manual
 
-LMP_INC =	-DLAMMPS_GZIP -DLAMMPS_EXCEPTIONS -DLAMMPS_CXX98
+LMP_INC =	-DLAMMPS_GZIP -DLAMMPS_EXCEPTIONS
 
 # MPI library
 # see discussion in Section 2.2 (step 5) of manual
