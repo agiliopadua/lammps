@@ -11,37 +11,30 @@
    See the README file in the top-level LAMMPS directory.
 ------------------------------------------------------------------------- */
 
-#ifdef FIX_CLASS
+#ifdef PAIR_CLASS
 
-FixStyle(EVENT/HYPER,FixEventHyper)
+PairStyle(coul/slater/cut,PairCoulSlaterCut)
 
 #else
 
-#ifndef LMP_FIX_EVENT_HYPER_H
-#define LMP_FIX_EVENT_HYPER_H
+#ifndef LMP_PAIR_COUL_SLATER_CUT_H
+#define LMP_PAIR_COUL_SLATER_CUT_H
 
-#include "fix_event.h"
+#include "pair_coul_cut.h"
 
 namespace LAMMPS_NS {
 
-class FixEventHyper : public FixEvent {
+class PairCoulSlaterCut : public PairCoulCut {
  public:
-  int event_number;      // event counter
-  bigint event_timestep; // timestep of last event on any replica
-  bigint clock;          // total elapsed timesteps across all replicas
-  int replica_number;    // replica where last event occurred
-  int correlated_event;  // 1 if last event was correlated, 0 otherwise
-  int ncoincident;       // # of simultaneous events on different replicas
+  PairCoulSlaterCut(class LAMMPS *);
+  virtual void compute(int, int);
+  void settings(int, char **);
+  void write_restart_settings(FILE *);
+  void read_restart_settings(FILE *);
+  double single(int, int, int, int, double, double, double, double &);
 
-  FixEventHyper(class LAMMPS *, int, char **);
-  ~FixEventHyper() {}
-
-  void write_restart(FILE *);
-  void restart(char *);
-
-  // methods specific to FixEventHyper, invoked by hyper
-
-  void store_event_hyper(bigint, int);
+ protected:
+  double lamda;
 };
 
 }
