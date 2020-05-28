@@ -1,4 +1,7 @@
-# macosx = LLVM g++, Xcode, Homebrew (gfortran, openmpi, fftw, voro++, libomp)
+# PSMN with iomkl-2017.4-3.0.0 = OpenMPI-3.0.0 with intel 2017.4
+#
+# module load icc/2017.4b intel/2017.4b/impi/2017.3.196
+# module load imkl/2017.4b
 
 SHELL = /bin/sh
 
@@ -6,20 +9,18 @@ SHELL = /bin/sh
 # compiler/linker settings
 # specify flags and libraries needed for your compiler
 
-OMPI_CXX :=     g++
-CC =		mpicxx
-CCFLAGS =	-std=c++11 -O3 -Xpreprocessor -fopenmp
-#CCFLAGS = -O3
-SHFLAGS =	-fPIC
-DEPFLAGS =	-M
+CC =			mpicxx
+CCFLAGS =		-g -O2 -restrict -fopenmp
+SHFLAGS =		-fPIC
+DEPFLAGS =		-M
 
-LINK =		mpicxx
-LINKFLAGS =	-O3 -framework Accelerate 
-LIB =           -llapack -lomp
-SIZE =		size
+LINK =			mpicxx
+LINKFLAGS =		-g -O -fopenmp
+LIB = 			
+SIZE =			size
 
-ARCHIVE =	ar
-ARFLAGS =	-rc
+ARCHIVE =		ar
+ARFLAGS =		-rc
 SHLIBFLAGS =	-shared
 
 # ---------------------------------------------------------------------
@@ -28,12 +29,12 @@ SHLIBFLAGS =	-shared
 # if you change any -D setting, do full re-compile after "make clean"
 
 # LAMMPS ifdef settings
-# see possible settings in Section 2.2 (step 4) of manual
+# see possible settings in Section 3.5 of the manual
 
-LMP_INC =	-DLAMMPS_GZIP -DLAMMPS_EXCEPTIONS
+LMP_INC =		-DLAMMPS_GZIP -DLAMMPS_MEMALIGN=64
 
 # MPI library
-# see discussion in Section 2.2 (step 5) of manual
+# see discussion in Section 3.4 of the manual
 # MPI wrapper compiler/linker can provide this info
 # can point to dummy MPI library in src/STUBS as in Makefile.serial
 # use -D MPICH and OMPI settings in INC to avoid C++ lib conflicts
@@ -42,19 +43,19 @@ LMP_INC =	-DLAMMPS_GZIP -DLAMMPS_EXCEPTIONS
 # LIB = name of MPI library
 
 MPI_INC =       -DMPICH_SKIP_MPICXX -DOMPI_SKIP_MPICXX=1
-MPI_PATH = 
-MPI_LIB =	
+MPI_PATH = 		
+MPI_LIB =		
 
 # FFT library
-# see discussion in Section 2.2 (step 6) of manaul
+# see discussion in Section 2.2 (step 6) of manual
 # can be left blank to use provided KISS FFT library
 # INC = -DFFT setting, e.g. -DFFT_FFTW, FFT compiler settings
 # PATH = path for FFT library
 # LIB = name of FFT library
 
-FFT_INC =    	-I/usr/local/include -DFFT_FFTW3
-FFT_PATH = 
-FFT_LIB =	-lfftw3
+FFT_INC =    	-DFFT_MKL
+FFT_PATH = 		
+FFT_LIB =		-lmkl_rt
 
 # JPEG and/or PNG library
 # see discussion in Section 2.2 (step 7) of manual
@@ -102,13 +103,7 @@ shlib:	$(OBJ) $(EXTRA_LINK_DEPENDS)
 
 # Compilation rules
 
-%.o:%.cpp $(EXTRA_CPP_DEPENDS)
-	$(CC) $(CCFLAGS) $(SHFLAGS) $(EXTRA_INC) -c $<
-
-%.d:%.cpp $(EXTRA_CPP_DEPENDS)
-	$(CC) $(CCFLAGS) $(EXTRA_INC) $(DEPFLAGS) $< > $@
-
-%.o:%.cu $(EXTRA_CPP_DEPENDS)
+%.o:%.cpp
 	$(CC) $(CCFLAGS) $(SHFLAGS) $(EXTRA_INC) -c $<
 
 # Individual dependencies
