@@ -9,18 +9,18 @@ SHELL = /bin/sh
 # compiler/linker settings
 # specify flags and libraries needed for your compiler
 
-CC =			mpicxx
-CCFLAGS =		-g -O2 -restrict -fopenmp
-SHFLAGS =		-fPIC
-DEPFLAGS =		-M
+CC =		mpicxx
+CCFLAGS =	-g -O2 -fopenmp
+SHFLAGS =	-fPIC
+DEPFLAGS =	-M
 
-LINK =			mpicxx
-LINKFLAGS =		-g -O -fopenmp
-LIB = 			
-SIZE =			size
+LINK =		mpicxx
+LINKFLAGS =	-g -O -fopenmp
+LIB = 		
+SIZE =		size
 
-ARCHIVE =		ar
-ARFLAGS =		-rc
+ARCHIVE =	ar
+ARFLAGS =	-rc
 SHLIBFLAGS =	-shared
 
 # ---------------------------------------------------------------------
@@ -31,7 +31,7 @@ SHLIBFLAGS =	-shared
 # LAMMPS ifdef settings
 # see possible settings in Section 3.5 of the manual
 
-LMP_INC =		-DLAMMPS_GZIP -DLAMMPS_MEMALIGN=64
+LMP_INC =	-DLAMMPS_GZIP -DLAMMPS_MEMALIGN=64
 
 # MPI library
 # see discussion in Section 3.4 of the manual
@@ -43,8 +43,8 @@ LMP_INC =		-DLAMMPS_GZIP -DLAMMPS_MEMALIGN=64
 # LIB = name of MPI library
 
 MPI_INC =       -DMPICH_SKIP_MPICXX -DOMPI_SKIP_MPICXX=1
-MPI_PATH = 		
-MPI_LIB =		
+MPI_PATH = 	
+MPI_LIB =	
 
 # FFT library
 # see discussion in Section 2.2 (step 6) of manual
@@ -54,8 +54,8 @@ MPI_LIB =
 # LIB = name of FFT library
 
 FFT_INC =    	-DFFT_MKL
-FFT_PATH = 		
-FFT_LIB =		-lmkl_rt
+FFT_PATH = 	
+FFT_LIB =	-lmkl_rt
 
 # JPEG and/or PNG library
 # see discussion in Section 2.2 (step 7) of manual
@@ -72,8 +72,8 @@ JPG_LIB =
 # build rules and dependencies
 # do not edit this section
 
-include	Makefile.package.settings
-include	Makefile.package
+include Makefile.package.settings
+include Makefile.package
 
 EXTRA_INC = $(LMP_INC) $(PKG_INC) $(MPI_INC) $(FFT_INC) $(JPG_INC) $(PKG_SYSINC)
 EXTRA_PATH = $(PKG_PATH) $(MPI_PATH) $(FFT_PATH) $(JPG_PATH) $(PKG_SYSPATH)
@@ -88,18 +88,23 @@ vpath %.h ..
 
 # Link target
 
-$(EXE):	$(OBJ) $(EXTRA_LINK_DEPENDS)
-	$(LINK) $(LINKFLAGS) $(EXTRA_PATH) $(OBJ) $(EXTRA_LIB) $(LIB) -o $(EXE)
-	$(SIZE) $(EXE)
+$(EXE): main.o $(LMPLIB) $(EXTRA_LINK_DEPENDS)
+	$(LINK) $(LINKFLAGS) main.o $(EXTRA_PATH) $(LMPLINK) $(EXTRA_LIB) $(LIB) -o $@
+	$(SIZE) $@
 
 # Library targets
 
-lib:	$(OBJ) $(EXTRA_LINK_DEPENDS)
-	$(ARCHIVE) $(ARFLAGS) $(EXE) $(OBJ)
+$(ARLIB): $(OBJ) $(EXTRA_LINK_DEPENDS)
+	@rm -f ../$(ARLIB)
+	$(ARCHIVE) $(ARFLAGS) ../$(ARLIB) $(OBJ)
+	@rm -f $(ARLIB)
+	@ln -s ../$(ARLIB) $(ARLIB)
 
-shlib:	$(OBJ) $(EXTRA_LINK_DEPENDS)
-	$(CC) $(CCFLAGS) $(SHFLAGS) $(SHLIBFLAGS) $(EXTRA_PATH) -o $(EXE) \
-        $(OBJ) $(EXTRA_LIB) $(LIB)
+$(SHLIB): $(OBJ) $(EXTRA_LINK_DEPENDS)
+	$(CC) $(CCFLAGS) $(SHFLAGS) $(SHLIBFLAGS) $(EXTRA_PATH) -o ../$(SHLIB) \
+		$(OBJ) $(EXTRA_LIB) $(LIB)
+	@rm -f $(SHLIB)
+	@ln -s ../$(SHLIB) $(SHLIB)
 
 # Compilation rules
 
