@@ -64,6 +64,7 @@ FixShake::FixShake(LAMMPS *lmp, int narg, char **arg) :
   thermo_virial = 1;
   create_attribute = 1;
   dof_flag = 1;
+  stores_ids = 1;
 
   // error check
 
@@ -228,9 +229,9 @@ FixShake::FixShake(LAMMPS *lmp, int narg, char **arg) :
 
   if (comm->me == 0) {
     if (screen)
-      fprintf(screen,"  find clusters CPU = %g secs\n",time2-time1);
+      fprintf(screen,"  find clusters CPU = %g seconds\n",time2-time1);
     if (logfile)
-      fprintf(logfile,"  find clusters CPU = %g secs\n",time2-time1);
+      fprintf(logfile,"  find clusters CPU = %g seconds\n",time2-time1);
   }
 
   // initialize list of SHAKE clusters to constrain
