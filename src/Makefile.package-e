@@ -7,4 +7,4 @@ PKG_LIB =   -lqmmm -lvoro++ -lcolvars
 
 PKG_SYSINC =  $(qmmm_SYSINC) $(voronoi_SYSINC) $(colvars_SYSINC) 
 PKG_SYSLIB =  $(qmmm_SYSLIB) $(voronoi_SYSLIB) $(colvars_SYSLIB) 
-PKG_SYSPATH = $(voronoi_SYSPATH) $(colvars_SYSPATH) 
+PKG_SYSPATH = $(qmmm_SYSPATH) $(voronoi_SYSPATH) $(colvars_SYSPATH) 
