@@ -6,7 +6,6 @@ fix bond/create command
 Syntax
 """"""
 
-
 .. parsed-literal::
 
    fix ID group-ID bond/create Nevery itype jtype Rmin bondtype keyword values ...
@@ -19,9 +18,9 @@ Syntax
 * bondtype = type of created bonds
 * zero or more keyword/value pairs may be appended to args
 * keyword = *iparam* or *jparam* or *prob* or *atype* or *dtype* or *itype*
-  
+
   .. parsed-literal::
-  
+
        *iparam* values = maxbond, newtype
          maxbond = max # of bonds of bondtype the itype atom can have
          newtype = change the itype atom to this type when maxbonds exist
@@ -38,13 +37,10 @@ Syntax
        *itype* value = impropertype
          impropertype = type of created impropers
 
-
-
 Examples
 """"""""
 
-
-.. parsed-literal::
+.. code-block:: LAMMPS
 
    fix 5 all bond/create 10 1 2 0.8 1
    fix 5 all bond/create 1 3 3 0.8 1 prob 0.5 85784 iparam 2 3
@@ -158,13 +154,13 @@ of type *angletype*\ , with parameters assigned by the corresponding
 .. note::
 
    LAMMPS stores and maintains a data structure with a list of the
-   1st, 2nd, and 3rd neighbors of each atom (within the bond topology of
+   first, second, and third neighbors of each atom (within the bond topology of
    the system) for use in weighting pairwise interactions for bonded
-   atoms.  Note that adding a single bond always adds a new 1st neighbor
-   but may also induce \*many\* new 2nd and 3rd neighbors, depending on the
+   atoms.  Note that adding a single bond always adds a new first neighbor
+   but may also induce \*many\* new second and third neighbors, depending on the
    molecular topology of your system.  The "extra special per atom"
    parameter must typically be set to allow for the new maximum total
-   size (1st + 2nd + 3rd neighbors) of this per-atom list.  There are 2
+   size (first + second + third neighbors) of this per-atom list.  There are 2
    ways to do this.  See the :doc:`read_data <read_data>` or
    :doc:`create_box <create_box>` commands for details.
 
@@ -176,12 +172,12 @@ of type *angletype*\ , with parameters assigned by the corresponding
    considered for pairwise interactions, using the weighting rules set by
    the :doc:`special_bonds <special_bonds>` command.  Consider a new bond
    created between atoms I,J.  If J has a bonded neighbor K, then K
-   becomes a 2nd neighbor of I.  Even if the *atype* keyword is not used
+   becomes a second neighbor of I.  Even if the *atype* keyword is not used
    to create angle I-J-K, the pairwise interaction between I and K will
    be potentially turned off or weighted by the 1-3 weighting specified
    by the :doc:`special_bonds <special_bonds>` command.  This is the case
    even if the "angle yes" option was used with that command.  The same
-   is true for 3rd neighbors (1-4 interactions), the *dtype* keyword, and
+   is true for third neighbors (1-4 interactions), the *dtype* keyword, and
    the "dihedral yes" option used with the
    :doc:`special_bonds <special_bonds>` command.
 
@@ -218,11 +214,9 @@ You can dump out snapshots of the current bond topology via the :doc:`dump local
    thermostat your system to compensate for energy changes resulting from
    created bonds (and angles, dihedrals, impropers).
 
-
 ----------
 
-
-**Restart, fix\_modify, output, run start/stop, minimize info:**
+**Restart, fix_modify, output, run start/stop, minimize info:**
 
 No information about this fix is written to :doc:`binary restart files <restart>`.  None of the :doc:`fix_modify <fix_modify>` options
 are relevant to this fix.
@@ -241,7 +235,6 @@ the :doc:`run <run>` command.  This fix is not invoked during :doc:`energy minim
 
 Restrictions
 """"""""""""
-
 
 This fix is part of the MC package.  It is only enabled if LAMMPS was
 built with that package.  See the :doc:`Build package <Build_package>`

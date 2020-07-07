@@ -110,7 +110,7 @@ of a center of mass, which requires summing mass\*position over the
 atoms and then dividing by summed mass.
 
 All of these computes produce a global vector or global array as
-output, wih one or more values per chunk.  The output can be used in
+output, with one or more values per chunk.  The output can be used in
 various ways:
 
 * As input to the :doc:`fix ave/time <fix_ave_time>` command, which can
@@ -150,7 +150,6 @@ properties:
 
 (1) Average velocity in each of 1000 2d spatial bins:
 
-
 .. code-block:: LAMMPS
 
    compute cc1 all chunk/atom bin/2d x 0.0 0.1 y lower 0.01 units reduced
@@ -158,7 +157,6 @@ properties:
 
 (2) Temperature in each spatial bin, after subtracting a flow
 velocity:
-
 
 .. code-block:: LAMMPS
 
@@ -168,7 +166,6 @@ velocity:
 
 (3) Center of mass of each molecule:
 
-
 .. code-block:: LAMMPS
 
    compute cc1 all chunk/atom molecule
@@ -176,7 +173,6 @@ velocity:
    fix 1 all ave/time 100 1 100 c_myChunk[*] file tmp.out mode vector
 
 (4) Total force on each molecule and ave/max across all molecules:
-
 
 .. code-block:: LAMMPS
 
@@ -188,7 +184,6 @@ velocity:
    thermo_style custom step temp v_xave v_xmax
 
 (5) Histogram of cluster sizes:
-
 
 .. code-block:: LAMMPS
 
@@ -202,7 +197,7 @@ compress individual polymer chains (molecules) in a mixture, is
 explained on the :doc:`compute chunk/spread/atom <compute_chunk_spread_atom>` command doc page.
 
 (7) An example for using one set of per-chunk values for molecule
-chunks, to create a 2nd set of micelle-scale chunks (clustered
+chunks, to create a second set of micelle-scale chunks (clustered
 molecules, due to hydrophobicity), is explained on the :doc:`compute chunk/reduce <compute_reduce_chunk>` command doc page.
 
 (8) An example for using one set of per-chunk values (dipole moment

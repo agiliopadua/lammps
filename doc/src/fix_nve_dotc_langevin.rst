@@ -6,7 +6,6 @@ fix nve/dotc/langevin command
 Syntax
 """"""
 
-
 .. parsed-literal::
 
    fix ID group-ID nve/dotc/langevin Tstart Tstop damp seed keyword value
@@ -17,17 +16,14 @@ Syntax
 * damp = damping parameter (time units)
 * seed = random number seed to use for white noise (positive integer)
 * keyword = *angmom*
-  
+
   .. parsed-literal::
-  
+
        *angmom* value = factor
          factor = do thermostat rotational degrees of freedom via the angular momentum and apply numeric scale factor as discussed below
 
-
-
 Examples
 """"""""
-
 
 .. code-block:: LAMMPS
 
@@ -60,7 +56,6 @@ over the standard integrator, permitting slightly larger timestep sizes.
 
 The total force on each atom will have the form:
 
-
 .. math::
 
    F =   & F_c + F_f + F_r \\
@@ -89,9 +84,7 @@ and magnitude of this force as described in :ref:`(Dunweg) <Dunweg5>`,
 where a uniform random number is used (instead of a Gaussian random
 number) for speed.
 
-
 ----------
-
 
 *Tstart* and *Tstop* have to be constant values, i.e. they cannot
 be variables. If used together with the oxDNA force field for
@@ -101,7 +94,7 @@ corresponds to T = 300 K.
 The *damp* parameter is specified in time units and determines how
 rapidly the temperature is relaxed.  For example, a value of 0.03
 means to relax the temperature in a timespan of (roughly) 0.03 time
-units tau (see the :doc:`units <units>` command).
+units :math:`\tau` (see the :doc:`units <units>` command).
 The damp factor can be thought of as inversely related to the
 viscosity of the solvent, i.e. a small relaxation time implies a
 high-viscosity solvent and vice versa.  See the discussion about gamma
@@ -131,13 +124,10 @@ An example input file can be found in examples/USER/cgdna/examples/duplex2/.
 Further details of the implementation and stability of the integrators are contained in :ref:`(Henrich) <Henrich5>`.
 The preprint version of the article can be found `here <PDF/USER-CGDNA.pdf>`_.
 
-
 ----------
-
 
 Restrictions
 """"""""""""
-
 
 These pair styles can only be used if LAMMPS was built with the
 :ref:`USER-CGDNA <PKG-USER-CGDNA>` package and the MOLECULE and ASPHERE package.
@@ -150,9 +140,7 @@ Related commands
 
 **Default:** none
 
-
 ----------
-
 
 .. _Davidchack5:
 

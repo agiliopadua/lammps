@@ -492,8 +492,12 @@ FixNPTCauchy::FixNPTCauchy(LAMMPS *lmp, int narg, char **arg) :
     if (p_flag[i]) pstat_flag = 1;
 
   if (pstat_flag) {
-    if (p_flag[0] || p_flag[1] || p_flag[2]) box_change_size = 1;
-    if (p_flag[3] || p_flag[4] || p_flag[5]) box_change_shape = 1;
+    if (p_flag[0]) box_change |= BOX_CHANGE_X;
+    if (p_flag[1]) box_change |= BOX_CHANGE_Y;
+    if (p_flag[2]) box_change |= BOX_CHANGE_Z;
+    if (p_flag[3]) box_change |= BOX_CHANGE_YZ;
+    if (p_flag[4]) box_change |= BOX_CHANGE_XZ;
+    if (p_flag[5]) box_change |= BOX_CHANGE_XY;
     no_change_box = 1;
     if (allremap == 0) restart_pbc = 1;
 
@@ -2534,7 +2538,7 @@ void FixNPTCauchy::CauchyStat_init()
   invH0(2,1)=0.0;       invH0(2,2)=h_inv[1];  invH0(2,3)=h_inv[3];
   invH0(3,1)=0.0;       invH0(3,2)=0.0;       invH0(3,3)=h_inv[2];
 
-  CSvol0 = abs(MathExtra::det3(H0));   //find reference volume
+  CSvol0 = fabs(MathExtra::det3(H0));   //find reference volume
 
 #undef H0
 #undef invH0

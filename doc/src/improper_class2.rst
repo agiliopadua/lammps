@@ -12,14 +12,12 @@ improper_style class2/kk command
 Syntax
 """"""
 
-
 .. code-block:: LAMMPS
 
    improper_style class2
 
 Examples
 """"""""
-
 
 .. code-block:: LAMMPS
 
@@ -40,7 +38,6 @@ The *class2* improper style uses the potential
             & M_2 (\theta_{ijk} - \theta_1) (\theta_{ijl} - \theta_2) + \\
             & M_3 (\theta_{ijl} - \theta_2) (\theta_{kjl} - \theta_3)
 
-
 where :math:`E_i` is the improper term and :math:`E_{aa}` is an
 angle-angle term.  The 3 :math:`\chi` terms in :math:`E_i` are an
 average over 3 out-of-plane angles.
@@ -51,7 +48,7 @@ the :doc:`read_data <read_data>` command) are ordered I,J,K,L.
 the plane of J,K,L, and the bond JK lies in both planes.  Similarly for
 :math:`\chi_{kjli}` and :math:`\chi_{ljik}`.
 Note that atom J appears in the common bonds (JI, JK, JL) of all 3 X
-terms.  Thus J (the 2nd atom in the quadruplet) is the atom of
+terms.  Thus J (the second atom in the quadruplet) is the atom of
 symmetry in the 3 :math:`\chi` angles.
 
 The subscripts on the various :math:`\theta`\ s refer to different
@@ -59,7 +56,7 @@ combinations of 3 atoms (I,J,K,L) used to form a particular angle.
 E.g. :math:`\theta_{ijl}` is the angle formed by atoms I,J,L with J
 in the middle.  :math:`\theta_1`, :math:`\theta_2`, :math:`\theta_3`
 are the equilibrium positions of those angles.  Again,
-atom J (the 2nd atom in the quadruplet) is the atom of symmetry in the
+atom J (the second atom in the quadruplet) is the atom of symmetry in the
 theta angles, since it is always the center atom.
 
 Since atom J is the atom of symmetry, normally the bonds J-I, J-K, J-L
@@ -101,9 +98,7 @@ listed under a *AngleAngle Coeffs* heading and you must leave out the
 The theta values are specified in degrees, but LAMMPS converts them to
 radians internally; hence the units of M are in energy/radian\^2.
 
-
 ----------
-
 
 Styles with a *gpu*\ , *intel*\ , *kk*\ , *omp*\ , or *opt* suffix are
 functionally the same as the corresponding style without the suffix.
@@ -123,13 +118,10 @@ by including their suffix, or you can use the :doc:`-suffix command-line switch 
 See the :doc:`Speed packages <Speed_packages>` doc page for more
 instructions on how to use the accelerated styles effectively.
 
-
 ----------
-
 
 Restrictions
 """"""""""""
-
 
 This improper style can only be used if LAMMPS was built with the
 CLASS2 package.  See the :doc:`Build package <Build_package>` doc
@@ -142,12 +134,8 @@ Related commands
 
 **Default:** none
 
-
 ----------
 
-
 .. _improper-Sun:
-
-
 
 **(Sun)** Sun, J Phys Chem B 102, 7338-7364 (1998).

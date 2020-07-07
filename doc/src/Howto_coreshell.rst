@@ -24,7 +24,6 @@ shell of a core/shell pair should be bonded to each other with a
 harmonic bond that provides the spring force. For example, a data file
 for NaCl, as found in examples/coreshell, has this format:
 
-
 .. parsed-literal::
 
    432   atoms  # core and shell atoms
@@ -87,7 +86,6 @@ Ewald solvers can be used.
 For the NaCL example problem, these pair style and bond style settings
 are used:
 
-
 .. code-block:: LAMMPS
 
    pair_style      born/coul/long/cs 20.0 20.0
@@ -121,7 +119,7 @@ non-polarized ions (ions without an attached satellite particle).  The
 groups, one for the core atoms, another for the shell atoms.
 Non-polarized ions which might also be included in the treated system
 should not be included into either of these groups, they are taken
-into account by the *group-ID* (2nd argument) of the compute.  The
+into account by the *group-ID* (second argument) of the compute.  The
 groups can be defined using the :doc:`group *type*\ <group>` command.
 Note that to perform thermostatting using this definition of
 temperature, the :doc:`fix modify temp <fix_modify>` command should be
@@ -130,7 +128,6 @@ used to assign the compute to the thermostat fix.  Likewise the
 this temperature be output for the overall system.
 
 For the NaCl example, this can be done as follows:
-
 
 .. code-block:: LAMMPS
 
@@ -149,7 +146,6 @@ use an additional :doc:`pressure <compute_pressure>` compute based on
 the default :doc:`temperature <compute_temp>` and specifying it as a
 second argument in :doc:`fix modify <fix_modify>` and
 :doc:`thermo_modify <thermo_modify>` resulting in:
-
 
 .. code-block:: LAMMPS
 
@@ -173,7 +169,6 @@ the core/shell particles, but only assign a center-of-mass velocity to
 the pairs.  This can be done by using the *bias* keyword of the
 :doc:`velocity create <velocity>` command and assigning the :doc:`compute temp/cs <compute_temp_cs>` command to the *temp* keyword of the
 :doc:`velocity <velocity>` command, e.g.
-
 
 .. code-block:: LAMMPS
 
@@ -211,7 +206,6 @@ pairs as chunks.
 
 For example if core/shell pairs are the only molecules:
 
-
 .. code-block:: LAMMPS
 
    read_data NaCl_CS_x0.1_prop.data
@@ -222,7 +216,6 @@ For example if core/shell pairs are the only molecules:
 
 For example if core/shell pairs and other molecules are present:
 
-
 .. code-block:: LAMMPS
 
    fix csinfo all property/atom i_CSID                       # property/atom command
@@ -231,7 +224,6 @@ For example if core/shell pairs and other molecules are present:
    (...)
 
 The additional section in the date file would be formatted like this:
-
 
 .. parsed-literal::
 
@@ -247,20 +239,14 @@ The additional section in the date file would be formatted like this:
    8   4
    (...)
 
-
 ----------
 
-
 .. _MitchellFincham:
-
-
 
 **(Mitchell and Fincham)** Mitchell, Fincham, J Phys Condensed Matter,
 5, 1031-1038 (1993).
 
 .. _MitchellFincham2:
-
-
 
 **(Fincham)** Fincham, Mackrodt and Mitchell, J Phys Condensed Matter,
 6, 393-404 (1994).

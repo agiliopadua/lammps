@@ -23,7 +23,7 @@ const char *lj_tip4p=0;
 
 #include "lal_lj_tip4p_long.h"
 #include <cassert>
-using namespace LAMMPS_AL;
+namespace LAMMPS_AL {
 #define LJTIP4PLongT LJ_TIP4PLong<numtyp, acctyp>
 
 extern Device<PRECISION,ACC_PRECISION> device;
@@ -250,22 +250,22 @@ void LJTIP4PLongT::copy_relations_data(int n, tagint *tag, int *map_array,
   if (ago == 0) {
     hneight.zero();
 
+
     {
-      UCL_H_Vec<tagint> host_tag_write(nall,*(this->ucl_device),UCL_WRITE_ONLY);
+      UCL_H_Vec<tagint> host_tag_write;
+      host_tag_write.view(tag, nall, *(this->ucl_device));
       this->tag.resize_ib(nall);
-      for(int i=0; i<nall; ++i) host_tag_write[i] = tag[i];
-      ucl_copy(this->tag, host_tag_write, nall, false);
+      ucl_copy(this->tag, host_tag_write, false);
     }
 
-    UCL_H_Vec<int> host_write(max_same,*(this->ucl_device),UCL_WRITE_ONLY);
+    UCL_H_Vec<int> host_write;
+    host_write.view(sametag, max_same, *(this->ucl_device));
     this->atom_sametag.resize_ib(max_same);
-    for(int i=0; i<max_same; ++i) host_write[i] = sametag[i];
-    ucl_copy(this->atom_sametag, host_write, max_same, false);
+    ucl_copy(this->atom_sametag, host_write, false);
 
-    host_write.resize_ib(map_size);
     this->map_array.resize_ib(map_size);
-    for(int i=0; i<map_size; ++i) host_write[i] = map_array[i];
-    ucl_copy(this->map_array, host_write, map_size, false);
+    host_write.view(map_array, map_size, *(this->ucl_device));
+    ucl_copy(this->map_array, host_write, false);
   }
 }
 
@@ -381,6 +381,5 @@ int** LJTIP4PLongT::compute(const int ago, const int inum_full,
 }
 
 
-
-
 template class LJ_TIP4PLong<PRECISION,ACC_PRECISION>;
+}

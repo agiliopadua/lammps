@@ -9,7 +9,6 @@ fix eos/table/rx/kk command
 Syntax
 """"""
 
-
 .. parsed-literal::
 
    fix ID group-ID eos/table/rx style file1 N keyword ...
@@ -28,8 +27,7 @@ Syntax
 Examples
 """"""""
 
-
-.. parsed-literal::
+.. code-block:: LAMMPS
 
    fix 1 all eos/table/rx linear eos.table 10000 KEYWORD thermo.table
    fix 1 all eos/table/rx linear eos.table 10000 KEYWORD 1.5
@@ -47,8 +45,7 @@ computed according to the following relation:
 
 .. math::
 
-   U_{i} = \displaystyle\sum_{j=1}^{m} c_{i,j}(u_{j} + \Delta H_{f,j}) + \frac{3k_{b}T}{2} + Nk_{b}T \\ 
-
+   U_{i} = \displaystyle\sum_{j=1}^{m} c_{i,j}(u_{j} + \Delta H_{f,j}) + \frac{3k_{b}T}{2} + Nk_{b}T \\
 
 where *m* is the number of species, :math:`c_{i,j}` is the
 concentration of species *j* in particle *i*\ , :math:`u_j` is the
@@ -92,13 +89,10 @@ value for the single species.  Additionally, the energy correction and
 temperature correction coefficients may also be specified as fix
 arguments.
 
-
 ----------
-
 
 The format of a tabulated file is as follows (without the
 parenthesized comments):
-
 
 .. parsed-literal::
 
@@ -112,7 +106,7 @@ parenthesized comments):
    ...
    500 10.0 0.500 ... 1.0000
 
-A section begins with a non-blank line whose 1st character is not a
+A section begins with a non-blank line whose first character is not a
 "#"; blank lines or lines starting with "#" can be used as comments
 between sections.  The first line begins with a keyword which
 identifies the section.  The line can contain additional text, but the
@@ -127,8 +121,8 @@ What LAMMPS does is a preliminary interpolation by creating splines
 using the Nfile tabulated values as nodal points.
 
 Following a blank line, the next N lines list the tabulated values.
-On each line, the 1st value is the index from 1 to N, the 2nd value is
-the internal temperature (in temperature units), the 3rd value until
+On each line, the first value is the index from 1 to N, the second value is
+the internal temperature (in temperature units), the third value until
 the *m+3* value are the internal energies of the m species (in energy units).
 
 Note that all internal temperature and internal energy values must
@@ -138,13 +132,10 @@ Note that one file can contain many sections, each with a tabulated
 potential.  LAMMPS reads the file section by section until it finds
 one that matches the specified keyword.
 
-
 ----------
-
 
 The format of a heat of formation file is as follows (without the
 parenthesized comments):
-
 
 .. parsed-literal::
 
@@ -166,7 +157,6 @@ three additional columns that correspond to the energy correction,
 the temperature correction coefficient and molecule correction
 coefficient.  In this case, the format of the file is as follows:
 
-
 .. parsed-literal::
 
    # HEAT OF FORMATION TABLE     (one or more comment or blank lines)
@@ -178,9 +168,7 @@ coefficient.  In this case, the format of the file is as follows:
    ...
    no      0.93 0.00 0.000 -1.76
 
-
 ----------
-
 
 Styles with a *gpu*\ , *intel*\ , *kk*\ , *omp*\ , or *opt* suffix are
 functionally the same as the corresponding style without the suffix.
@@ -200,13 +188,10 @@ by including their suffix, or you can use the :doc:`-suffix command-line switch 
 See the :doc:`Speed packages <Speed_packages>` doc page for more
 instructions on how to use the accelerated styles effectively.
 
-
 ----------
-
 
 Restrictions
 """"""""""""
-
 
 This command is part of the USER-DPD package.  It is only enabled if
 LAMMPS was built with that package.  See the :doc:`Build package <Build_package>` doc page for more info.

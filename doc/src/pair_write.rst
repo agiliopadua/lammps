@@ -6,7 +6,6 @@ pair_write command
 Syntax
 """"""
 
-
 .. code-block:: LAMMPS
 
    pair_write itype jtype N style inner outer file keyword Qi Qj
@@ -22,7 +21,6 @@ Syntax
 Examples
 """"""""
 
-
 .. code-block:: LAMMPS
 
    pair_write 1 3 500 r 1.0 10.0 table.txt LJ
@@ -36,7 +34,12 @@ the currently defined pair potential.  This is useful for plotting the
 potential function or otherwise debugging its values.  If the file
 already exists, the table of values is appended to the end of the file
 to allow multiple tables of energy and force to be included in one
-file.
+file.  In case a new file is created, the first line will be a comment
+containing a "DATE:" and "UNITS:" tag with the current date and the
+current :doc:`units <units>` setting as argument.  For subsequent
+invocations of the pair_write command, the current units setting is
+compared against the entry in the file, if present, and pair_write
+will refuse to add a table if the units are not the same.
 
 The energy and force values are computed at distances from inner to
 outer for 2 interacting atoms of type itype and jtype, using the
@@ -67,14 +70,13 @@ and a force (in force units).
 Restrictions
 """"""""""""
 
-
 All force field coefficients for pair and other kinds of interactions
 must be set before this command can be invoked.
 
 Due to how the pairwise force is computed, an inner value > 0.0 must
 be specified even if the potential has a finite value at r = 0.0.
 
-For EAM potentials, the pair\_write command only tabulates the
+For EAM potentials, the pair_write command only tabulates the
 pairwise portion of the potential, not the embedding portion.
 
 Related commands

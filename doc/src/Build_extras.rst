@@ -4,7 +4,6 @@ Packages with extra build options
 When building with some packages, additional steps may be required,
 in addition to:
 
-
 .. code-block:: bash
 
    $ cmake -D PKG_NAME=yes
@@ -15,7 +14,7 @@ or
 
    $ make yes-name
 
-as described on the :doc:`Build\_package <Build_package>` doc page.
+as described on the :doc:`Build_package <Build_package>` doc page.
 
 For a CMake build there may be additional optional or required
 variables to set.  For a build with make, a provided library under the
@@ -45,6 +44,7 @@ This is the list of packages that may require additional steps.
    * :ref:`USER-COLVARS <user-colvars>`
    * :ref:`USER-H5MD <user-h5md>`
    * :ref:`USER-INTEL <user-intel>`
+   * :ref:`USER-MESONT <user-mesont>`
    * :ref:`USER-MOLFILE <user-molfile>`
    * :ref:`USER-NETCDF <user-netcdf>`
    * :ref:`USER-PLUMED <user-plumed>`
@@ -53,38 +53,36 @@ This is the list of packages that may require additional steps.
    * :ref:`USER-QUIP <user-quip>`
    * :ref:`USER-SCAFACOS <user-scafacos>`
    * :ref:`USER-SMD <user-smd>`
-   * :ref:`USER-VTK <user-vtk>`   
+   * :ref:`USER-VTK <user-vtk>`
 
 ----------
-
 
 .. _compress:
 
 COMPRESS package
--------------------------------
+----------------
 
 To build with this package you must have the zlib compression library
 available on your system.
 
-**CMake build**\ :
+CMake build
+^^^^^^^^^^^
 
 If CMake cannot find the library, you can set these variables:
-
 
 .. code-block:: bash
 
    -D ZLIB_INCLUDE_DIR=path    # path to zlib.h header file
    -D ZLIB_LIBRARIES=path      # path to libz.a (.so) file
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
 If make cannot find the library, you can edit the file
-lib/compress/Makefile.lammps to specify the paths and library
+``lib/compress/Makefile.lammps`` to specify the paths and library
 name.
 
-
 ----------
-
 
 .. _gpu:
 
@@ -92,60 +90,92 @@ GPU package
 ---------------------
 
 To build with this package, you must choose options for precision and
-which GPU hardware to build for.
+which GPU hardware to build for. The GPU package currently supports
+three different types of backends: OpenCL, CUDA and HIP.
 
-**CMake build**\ :
-
+CMake build
+^^^^^^^^^^^
 
 .. code-block:: bash
 
-   -D GPU_API=value          # value = opencl (default) or cuda
-   -D GPU_PREC=value         # precision setting
-                             # value = double or mixed (default) or single
-   -D OCL_TUNE=value         # hardware choice for GPU_API=opencl
-                             # generic (default) or intel (Intel CPU) or fermi, kepler, cypress (NVIDIA)
-   -D GPU_ARCH=value         # primary GPU hardware choice for GPU_API=cuda
-                             # value = sm_XX, see below
-                             # default is sm_30
-   -D CUDPP_OPT=value        # optimization setting for GPU_API=cuda
-                             # enables CUDA Performance Primitives Optimizations
-                             # value = yes (default) or no
-   -D CUDA_MPS_SUPPORT=value # enables some tweaks required to run with active nvidia-cuda-mps daemon
-                             # value = yes or no (default)
+   -D GPU_API=value             # value = opencl (default) or cuda or hip
+   -D GPU_PREC=value            # precision setting
+                                # value = double or mixed (default) or single
+   -D OCL_TUNE=value            # hardware choice for GPU_API=opencl
+                                # generic (default) or intel (Intel CPU) or fermi, kepler, cypress (NVIDIA)
+   -D GPU_ARCH=value            # primary GPU hardware choice for GPU_API=cuda
+                                # value = sm_XX, see below
+                                # default is sm_30
+   -D HIP_ARCH=value            # primary GPU hardware choice for GPU_API=hip
+                                # value depends on selected HIP_PLATFORM
+                                # default is 'gfx906' for HIP_PLATFORM=hcc and 'sm_30' for HIP_PLATFORM=nvcc
+   -D HIP_USE_DEVICE_SORT=value # enables GPU sorting
+                                # value = yes (default) or no
+   -D CUDPP_OPT=value           # optimization setting for GPU_API=cuda
+                                # enables CUDA Performance Primitives Optimizations
+                                # value = yes (default) or no
+   -D CUDA_MPS_SUPPORT=value    # enables some tweaks required to run with active nvidia-cuda-mps daemon
+                                # value = yes or no (default)
 
-GPU\_ARCH settings for different GPU hardware is as follows:
+:code:`GPU_ARCH` settings for different GPU hardware is as follows:
 
-* sm\_12 or sm\_13 for GT200 (supported by CUDA 3.2 until CUDA 6.5)
-* sm\_20 or sm\_21 for Fermi (supported by CUDA 3.2 until CUDA 7.5)
-* sm\_30 or sm\_35 or sm\_37 for Kepler (supported since CUDA 5)
-* sm\_50 or sm\_52 for Maxwell (supported since CUDA 6)
-* sm\_60 or sm\_61 for Pascal (supported since CUDA 8)
-* sm\_70 for Volta (supported since CUDA 9)
-* sm\_75 for Turing (supported since CUDA 10)
+* sm_12 or sm_13 for GT200 (supported by CUDA 3.2 until CUDA 6.5)
+* sm_20 or sm_21 for Fermi (supported by CUDA 3.2 until CUDA 7.5)
+* sm_30 or sm_35 or sm_37 for Kepler (supported since CUDA 5)
+* sm_50 or sm_52 for Maxwell (supported since CUDA 6)
+* sm_60 or sm_61 for Pascal (supported since CUDA 8)
+* sm_70 for Volta (supported since CUDA 9)
+* sm_75 for Turing (supported since CUDA 10)
 
 A more detailed list can be found, for example,
 at `Wikipedia's CUDA article <https://en.wikipedia.org/wiki/CUDA#GPUs_supported>`_
 
 CMake can detect which version of the CUDA toolkit is used and thus can
 include support for **all** major GPU architectures supported by this toolkit.
-Thus the GPU\_ARCH setting is merely an optimization, to have code for
+Thus the GPU_ARCH setting is merely an optimization, to have code for
 the preferred GPU architecture directly included rather than having to wait
 for the JIT compiler of the CUDA driver to translate it.
 
-**Traditional make**\ :
+When building with CMake, you **must NOT** build the GPU library in ``lib/gpu``
+using the traditional build procedure. CMake will detect files generated by that
+process and will terminate with an error and a suggestion for how to remove them.
 
-Before building LAMMPS, you must build the GPU library in lib/gpu.
+If you are compiling with HIP, note that before running CMake you will have to
+set appropriate environment variables. Some variables such as
+:code:`HCC_AMDGPU_TARGET` or :code:`CUDA_PATH` are necessary for :code:`hipcc`
+and the linker to work correctly.
+
+.. code:: bash
+
+   # AMDGPU target
+   export HIP_PLATFORM=hcc
+   export HCC_AMDGPU_TARGET=gfx906
+   cmake -D PKG_GPU=on -D GPU_API=HIP -D HIP_ARCH=gfx906 -D CMAKE_CXX_COMPILER=hipcc ..
+   make -j 4
+
+.. code:: bash
+
+   # CUDA target
+   # !!! DO NOT set CMAKE_CXX_COMPILER !!!
+   export HIP_PLATFORM=nvcc
+   export CUDA_PATH=/usr/local/cuda
+   cmake -D PKG_GPU=on -D GPU_API=HIP -D HIP_ARCH=sm_70 ..
+   make -j 4
+
+Traditional make
+^^^^^^^^^^^^^^^^
+
+Before building LAMMPS, you must build the GPU library in ``lib/gpu``\ .
 You can do this manually if you prefer; follow the instructions in
-lib/gpu/README.  Note that the GPU library uses MPI calls, so you must
+``lib/gpu/README``.  Note that the GPU library uses MPI calls, so you must
 use the same MPI library (or the STUBS library) settings as the main
-LAMMPS code.  This also applies to the -DLAMMPS\_BIGBIG,
--DLAMMPS\_SMALLBIG, or -DLAMMPS\_SMALLSMALL settings in whichever
+LAMMPS code.  This also applies to the ``-DLAMMPS_BIGBIG``\ ,
+``-DLAMMPS_SMALLBIG``\ , or ``-DLAMMPS_SMALLSMALL`` settings in whichever
 Makefile you use.
 
-You can also build the library in one step from the lammps/src dir,
-using a command like these, which simply invoke the lib/gpu/Install.py
+You can also build the library in one step from the ``lammps/src`` dir,
+using a command like these, which simply invoke the ``lib/gpu/Install.py``
 script with the specified args:
-
 
 .. code-block:: bash
 
@@ -163,34 +193,32 @@ Makefile.machine you start from via the corresponding -c, -a, -p, -e
 switches (as in the examples above), and also save a copy of the new
 Makefile if desired:
 
-* CUDA\_HOME = where NVIDIA CUDA software is installed on your system
-* CUDA\_ARCH = sm\_XX, what GPU hardware you have, same as CMake GPU\_ARCH above
-* CUDA\_PRECISION = precision (double, mixed, single)
-* EXTRAMAKE = which Makefile.lammps.\* file to copy to Makefile.lammps
+* ``CUDA_HOME`` = where NVIDIA CUDA software is installed on your system
+* ``CUDA_ARCH`` = sm_XX, what GPU hardware you have, same as CMake GPU_ARCH above
+* ``CUDA_PRECISION`` = precision (double, mixed, single)
+* ``EXTRAMAKE`` = which Makefile.lammps.\* file to copy to Makefile.lammps
 
-The file Makefile.linux\_multi is set up to include support for multiple
+The file Makefile.linux_multi is set up to include support for multiple
 GPU architectures as supported by the CUDA toolkit in use. This is done
 through using the "--gencode " flag, which can be used multiple times and
 thus support all GPU architectures supported by your CUDA compiler.
 
 If the library build is successful, 3 files should be created:
-lib/gpu/libgpu.a, lib/gpu/nvc\_get\_devices, and
-lib/gpu/Makefile.lammps.  The latter has settings that enable LAMMPS
-to link with CUDA libraries.  If the settings in Makefile.lammps for
+``lib/gpu/libgpu.a``\ , ``lib/gpu/nvc_get_devices``\ , and
+``lib/gpu/Makefile.lammps``\ .  The latter has settings that enable LAMMPS
+to link with CUDA libraries.  If the settings in ``Makefile.lammps`` for
 your machine are not correct, the LAMMPS build will fail, and
-lib/gpu/Makefile.lammps may need to be edited.
+``lib/gpu/Makefile.lammps`` may need to be edited.
 
 .. note::
 
-   If you re-build the GPU library in lib/gpu, you should always
-   un-install the GPU package in lammps/src, then re-install it and
+   If you re-build the GPU library in ``lib/gpu``, you should always
+   un-install the GPU package in ``lammps/src``, then re-install it and
    re-build LAMMPS.  This is because the compilation of files in the GPU
-   package uses the library settings from the lib/gpu/Makefile.machine
+   package uses the library settings from the ``lib/gpu/Makefile.machine``
    used to build the GPU library.
 
-
 ----------
-
 
 .. _kim:
 
@@ -198,13 +226,27 @@ KIM package
 ---------------------
 
 To build with this package, the KIM library with API v2 must be downloaded
-and built on your system.  It must include the KIM models that you want to
-use with LAMMPS. If you want to use the :doc:`kim_query <kim_commands>`
+and built on your system. It must include the KIM models that you want to
+use with LAMMPS.
+
+If you would like to use the :doc:`kim_query <kim_commands>`
 command, you also need to have libcurl installed with the matching
 development headers and the curl-config tool.
 
-See the `Obtaining KIM Models <http://openkim.org/doc/usage/obtaining-models>`_
-web page to
+If you would like to use the :doc:`kim_property <kim_commands>`
+command, you need to build LAMMPS with the Python 3.6 or later package
+installed. See the :doc:`Python <python>` doc page for more info on building
+LAMMPS with the version of Python on your system.
+After successfully building LAMMPS with Python, you need to
+install the kim-property Python package, which can be easily done using
+*pip* as ``pip install kim-property``, or from the *conda-forge* channel as
+``conda install kim-property`` if LAMMPS is built in Conda. More detailed
+information is available at:
+`kim-property installation <https://github.com/openkim/kim-property#installing-kim-property>`_.
+
+In addition to installing the KIM API, it is also necessary to install the
+library of KIM models (interatomic potentials).
+See `Obtaining KIM Models <http://openkim.org/doc/usage/obtaining-models>`_ to
 learn how to install a pre-build binary of the OpenKIM Repository of Models.
 See the list of all KIM models here: https://openkim.org/browse/models
 
@@ -212,8 +254,8 @@ See the list of all KIM models here: https://openkim.org/browse/models
 the KIM API library with all its models, may take a long time (tens of
 minutes to hours) to build.  Of course you only need to do that once.)
 
-**CMake build**\ :
-
+CMake build
+^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -221,36 +263,37 @@ minutes to hours) to build.  Of course you only need to do that once.)
    -D LMP_DEBUG_CURL=value         # set libcurl verbose mode on/off, value = off (default) or on
    -D LMP_NO_SSL_CHECK=value       # tell libcurl to not verify the peer, value = no (default) or yes
 
-If DOWNLOAD\_KIM is set, the KIM library will be downloaded and built
+If ``DOWNLOAD_KIM`` is set, the KIM library will be downloaded and built
 inside the CMake build directory.  If the KIM library is already on
-your system (in a location CMake cannot find it), set the PKG\_CONFIG\_PATH
+your system (in a location CMake cannot find it), set the ``PKG_CONFIG_PATH``
 environment variable so that libkim-api can be found.
 
 *For using OpenKIM web queries in LAMMPS*\ :
 
-If LMP\_DEBUG\_CURL is set, the libcurl verbose mode will be on, and any
-libcurl calls within the KIM web query display a lot of information about
-libcurl operations. You hardly ever want this set in production use, you will
-almost always want this when you debug/report problems.
+If the ``LMP_DEBUG_CURL`` environment variable is set, the libcurl verbose
+mode will be on, and any libcurl calls within the KIM web query display a
+lot of information about libcurl operations.  You hardly ever want this
+set in production use, you will almost always want this when you debug or
+report problems.
 
 The libcurl performs peer SSL certificate verification by default. This
 verification is done using a CA certificate store that the SSL library can
 use to make sure the peer's server certificate is valid. If SSL reports an
 error ("certificate verify failed") during the handshake and thus refuses
-further communication with that server, you can set LMP\_NO\_SSL\_CHECK.
-If LMP\_NO\_SSL\_CHECK is set, libcurl does not verify the peer and connection
+further communication with that server, you can set ``LMP_NO_SSL_CHECK``\ .
+If ``LMP_NO_SSL_CHECK`` is set, libcurl does not verify the peer and connection
 succeeds regardless of the names in the certificate. This option is insecure.
 As an alternative, you can specify your own CA cert path by setting the
-environment variable CURL\_CA\_BUNDLE to the path of your choice. A call to the
-KIM web query would get this value from the environmental variable.
+environment variable ``CURL_CA_BUNDLE`` to the path of your choice. A call
+to the KIM web query would get this value from the environmental variable.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
 You can download and build the KIM library manually if you prefer;
-follow the instructions in lib/kim/README.  You can also do it in one
+follow the instructions in ``lib/kim/README``\ .  You can also do it in one
 step from the lammps/src dir, using a command like these, which simply
-invoke the lib/kim/Install.py script with the specified args.
-
+invoke the ``lib/kim/Install.py`` script with the specified args.
 
 .. code-block:: bash
 
@@ -263,7 +306,7 @@ invoke the lib/kim/Install.py script with the specified args.
   $ make lib-kim args="-p /usr/local -a EAM_Dynamo_Ackland_W__MO_141627196590_002" # ditto but add one model or driver
 
 Settings for OpenKIM web queries discussed above need to be applied by adding
-them to the LMP\_INC variable through editing the Makefile.machine you are
+them to the ``LMP_INC`` variable through editing the ``Makefile.machine`` you are
 using.  For example:
 
 .. code-block:: make
@@ -272,107 +315,214 @@ using.  For example:
 
 ----------
 
-
 .. _kokkos:
 
 KOKKOS package
----------------------------
+--------------
 
-To build with this package, you must choose which hardware you want to
-build for, either CPUs (multi-threading via OpenMP) or KNLs (OpenMP)
-or GPUs (NVIDIA Cuda).
+Using the KOKKOS package requires choosing several settings.  You have
+to select whether you want to compile with parallelization on the host
+and whether you want to include offloading of calculations to a device
+(e.g. a GPU).  The default setting is to have no host parallelization
+and no device offloading.  In addition, you can select the hardware
+architecture to select the instruction set.  Since most hardware is
+backward compatible, you may choose settings for an older architecture
+to have an executable that will run on this and newer architectures.
 
-For a CMake or make build, these are the possible choices for the
-KOKKOS\_ARCH settings described below.  Note that for CMake, these are
-really Kokkos variables, not LAMMPS variables.  Hence you must use
-case-sensitive values, e.g. BDW, not bdw.
+.. note::
 
-* AMDAVX = AMD 64-bit x86 CPUs
-* EPYC   = AMD EPYC Zen class CPUs
-* ARMv80 = ARMv8.0 Compatible CPU
-* ARMv81 = ARMv8.1 Compatible CPU
-* ARMv8-ThunderX = ARMv8 Cavium ThunderX CPU
-* ARMv8-TX2 = ARMv8 Cavium ThunderX2 CPU
-* WSM = Intel Westmere CPUs
-* SNB = Intel Sandy/Ivy Bridge CPUs
-* HSW = Intel Haswell CPUs
-* BDW = Intel Broadwell Xeon E-class CPUs
-* SKX = Intel Sky Lake Xeon E-class HPC CPUs (AVX512)
-* KNC = Intel Knights Corner Xeon Phi
-* KNL = Intel Knights Landing Xeon Phi
-* BGQ = IBM Blue Gene/Q CPUs
-* Power7 = IBM POWER8 CPUs
-* Power8 = IBM POWER8 CPUs
-* Power9 = IBM POWER9 CPUs
-* Kepler = NVIDIA Kepler default (generation CC 3.5)
-* Kepler30 = NVIDIA Kepler generation CC 3.0
-* Kepler32 = NVIDIA Kepler generation CC 3.2
-* Kepler35 = NVIDIA Kepler generation CC 3.5
-* Kepler37 = NVIDIA Kepler generation CC 3.7
-* Maxwell = NVIDIA Maxwell default (generation CC 5.0)
-* Maxwell50 = NVIDIA Maxwell generation CC 5.0
-* Maxwell52 = NVIDIA Maxwell generation CC 5.2
-* Maxwell53 = NVIDIA Maxwell generation CC 5.3
-* Pascal60 = NVIDIA Pascal generation CC 6.0
-* Pascal61 = NVIDIA Pascal generation CC 6.1
-* Volta70 = NVIDIA Volta generation CC 7.0
-* Volta72 = NVIDIA Volta generation CC 7.2
-* Turing75 = NVIDIA Turing generation CC 7.5
+   If you run Kokkos on a different GPU architecture than what LAMMPS
+   was compiled with, there will be a delay during device initialization
+   while the just-in-time compiler is recompiling all GPU kernels for
+   the new hardware.  This is, however, only supported for GPUs of the
+   **same** major hardware version and different minor hardware versions,
+   e.g. 5.0 and 5.2 but not 5.2 and 6.0.  LAMMPS will abort with an
+   error message indicating a mismatch, if that happens.
 
-**CMake build**\ :
+The settings discussed below have been tested with LAMMPS and are
+confirmed to work.  Kokkos is an active project with ongoing improvements
+and projects working on including support for additional architectures.
+More information on Kokkos can be found on the
+`Kokkos GitHub project <https://github.com/kokkos>`_.
 
+Available Architecture settings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These are the possible choices for the Kokkos architecture ID. They must
+be specified in uppercase.
+
+.. list-table::
+   :header-rows: 0
+   :widths: auto
+
+   *  - **Arch-ID**
+      - **HOST or GPU**
+      - **Description**
+   *  - AMDAVX
+      - HOST
+      - AMD 64-bit x86 CPU (AVX 1)
+   *  - EPYC
+      - HOST
+      - AMD EPYC Zen class CPU (AVX 2)
+   *  - ARMV80
+      - HOST
+      - ARMv8.0 Compatible CPU
+   *  - ARMV81
+      - HOST
+      - ARMv8.1 Compatible CPU
+   *  - ARMV8_THUNDERX
+      - HOST
+      - ARMv8 Cavium ThunderX CPU
+   *  - ARMV8_THUNDERX2
+      - HOST
+      - ARMv8 Cavium ThunderX2 CPU
+   *  - WSM
+      - HOST
+      - Intel Westmere CPU (SSE 4.2)
+   *  - SNB
+      - HOST
+      - Intel Sandy/Ivy Bridge CPU (AVX 1)
+   *  - HSW
+      - HOST
+      - Intel Haswell CPU (AVX 2)
+   *  - BDW
+      - HOST
+      - Intel Broadwell Xeon E-class CPU (AVX 2 + transactional mem)
+   *  - SKX
+      - HOST
+      - Intel Sky Lake Xeon E-class HPC CPU (AVX512 + transactional mem)
+   *  - KNC
+      - HOST
+      - Intel Knights Corner Xeon Phi
+   *  - KNL
+      - HOST
+      - Intel Knights Landing Xeon Phi
+   *  - BGQ
+      - HOST
+      - IBM Blue Gene/Q CPU
+   *  - POWER7
+      - HOST
+      - IBM POWER7 CPU
+   *  - POWER8
+      - HOST
+      - IBM POWER8 CPU
+   *  - POWER9
+      - HOST
+      - IBM POWER9 CPU
+   *  - KEPLER30
+      - GPU
+      - NVIDIA Kepler generation CC 3.0 GPU
+   *  - KEPLER32
+      - GPU
+      - NVIDIA Kepler generation CC 3.2 GPU
+   *  - KEPLER35
+      - GPU
+      - NVIDIA Kepler generation CC 3.5 GPU
+   *  - KEPLER37
+      - GPU
+      - NVIDIA Kepler generation CC 3.7 GPU
+   *  - MAXWELL50
+      - GPU
+      - NVIDIA Maxwell generation CC 5.0 GPU
+   *  - MAXWELL52
+      - GPU
+      - NVIDIA Maxwell generation CC 5.2 GPU
+   *  - MAXWELL53
+      - GPU
+      - NVIDIA Maxwell generation CC 5.3 GPU
+   *  - PASCAL60
+      - GPU
+      - NVIDIA Pascal generation CC 6.0 GPU
+   *  - PASCAL61
+      - GPU
+      - NVIDIA Pascal generation CC 6.1 GPU
+   *  - VOLTA70
+      - GPU
+      - NVIDIA Volta generation CC 7.0 GPU
+   *  - VOLTA72
+      - GPU
+      - NVIDIA Volta generation CC 7.2 GPU
+   *  - TURING75
+      - GPU
+      - NVIDIA Turing generation CC 7.5 GPU
+   *  - VEGA900
+      - GPU
+      - AMD GPU MI25 GFX900
+   *  - VEGA906
+      - GPU
+      - AMD GPU MI50/MI60 GFX906
+
+Basic CMake build settings:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 For multicore CPUs using OpenMP, set these 2 variables.
 
+.. code-block:: bash
+
+   -D Kokkos_ARCH_HOSTARCH=yes  # HOSTARCH = HOST from list above
+   -D Kokkos_ENABLE_OPENMP=yes
+   -D BUILD_OMP=yes
+
+Please note that enabling OpenMP for KOKKOS requires that OpenMP is
+also :ref:`enabled for the rest of LAMMPS <serial>`.
+
+For Intel KNLs using OpenMP, set these variables:
 
 .. code-block:: bash
 
-   -D KOKKOS_ARCH=archCPU         # archCPU = CPU from list above
-   -D KOKKOS_ENABLE_OPENMP=yes
+   -D Kokkos_ARCH_KNL=yes
+   -D Kokkos_ENABLE_OPENMP=yes
 
-For Intel KNLs using OpenMP, set these 2 variables:
-
-
-.. code-block:: bash
-
-   -D KOKKOS_ARCH=KNL
-   -D KOKKOS_ENABLE_OPENMP=yes
-
-For NVIDIA GPUs using CUDA, set these 4 variables:
-
+For NVIDIA GPUs using CUDA, set these variables:
 
 .. code-block:: bash
 
-   -D KOKKOS_ARCH="archCPU;archGPU"   # archCPU = CPU from list above that is hosting the GPU
-                                      # archGPU = GPU from list above
-   -D KOKKOS_ENABLE_CUDA=yes
-   -D KOKKOS_ENABLE_OPENMP=yes
-   -D CMAKE_CXX_COMPILER=wrapper      # wrapper = full path to Cuda nvcc wrapper
+   -D Kokkos_ARCH_HOSTARCH=yes   # HOSTARCH = HOST from list above
+   -D Kokkos_ARCH_GPUARCH=yes    # GPUARCH = GPU from list above
+   -D Kokkos_ENABLE_CUDA=yes
+   -D Kokkos_ENABLE_OPENMP=yes
+   -D CMAKE_CXX_COMPILER=wrapper # wrapper = full path to Cuda nvcc wrapper
 
-The wrapper value is the Cuda nvcc compiler wrapper provided in the
-Kokkos library: lib/kokkos/bin/nvcc\_wrapper.  The setting should
-include the full path name to the wrapper, e.g.
-
+This will also enable executing FFTs on the GPU, either via the internal
+KISSFFT library, or - by preference - with the cuFFT library bundled
+with the CUDA toolkit, depending on whether CMake can identify its
+location.  The *wrapper* value for ``CMAKE_CXX_COMPILER`` variable is
+the path to the CUDA nvcc compiler wrapper provided in the Kokkos
+library: ``lib/kokkos/bin/nvcc_wrapper``\ .  The setting should include
+the full path name to the wrapper, e.g.
 
 .. code-block:: bash
 
-   -D CMAKE_CXX_COMPILER=/home/username/lammps/lib/kokkos/bin/nvcc_wrapper
+   -D CMAKE_CXX_COMPILER=${HOME}/lammps/lib/kokkos/bin/nvcc_wrapper
 
-**Traditional make**\ :
+To simplify the compilation, three preset files are included in the
+``cmake/presets`` folder, ``kokkos-serial.cmake``, ``kokkos-openmp.cmake``,
+and ``kokkos-cuda.cmake``. They will enable the KOKKOS package and
+enable some hardware choice.  So to compile with OpenMP host parallelization,
+CUDA device parallelization (for GPUs with CC 5.0 and up) with some
+common packages enabled, you can do the following:
 
-Choose which hardware to support in Makefile.machine via
-KOKKOS\_DEVICES and KOKKOS\_ARCH settings.  See the
-src/MAKE/OPTIONS/Makefile.kokkos\* files for examples.
+.. code-block:: bash
+
+   mkdir build-kokkos-cuda
+   cd build-kokkos-cuda
+   cmake -C ../cmake/presets/minimal.cmake -C ../cmake/presets/kokkos-cuda.cmake ../cmake
+   cmake --build .
+
+Basic traditional make settings:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Choose which hardware to support in ``Makefile.machine`` via
+``KOKKOS_DEVICES`` and ``KOKKOS_ARCH`` settings.  See the
+``src/MAKE/OPTIONS/Makefile.kokkos*`` files for examples.
 
 For multicore CPUs using OpenMP:
-
 
 .. code-block:: make
 
    KOKKOS_DEVICES = OpenMP
-   KOKKOS_ARCH = archCPU      # archCPU = CPU from list above
+   KOKKOS_ARCH = HOSTARCH          # HOSTARCH = HOST from list above
 
 For Intel KNLs using OpenMP:
-
 
 .. code-block:: make
 
@@ -381,31 +531,77 @@ For Intel KNLs using OpenMP:
 
 For NVIDIA GPUs using CUDA:
 
-
 .. code-block:: make
 
    KOKKOS_DEVICES = Cuda
-   KOKKOS_ARCH = archCPU,archGPU    # archCPU = CPU from list above that is hosting the GPU
-                                    # archGPU = GPU from list above
-   FFT_INC = -DFFT_CUFFT            # enable use of cuFFT (optional)
-   FFT_LIB = -lcufft                # link to cuFFT library
+   KOKKOS_ARCH = HOSTARCH,GPUARCH  # HOSTARCH = HOST from list above that is hosting the GPU
+   KOKKOS_CUDA_OPTIONS = "enable_lambda"
+                                  # GPUARCH = GPU from list above
+   FFT_INC = -DFFT_CUFFT          # enable use of cuFFT (optional)
+   FFT_LIB = -lcufft              # link to cuFFT library
 
-For GPUs, you also need the following 2 lines in your Makefile.machine
-before the CC line is defined, in this case for use with OpenMPI mpicxx.
-The 2 lines define a nvcc wrapper compiler, which will use nvcc for
-compiling CUDA files and use a C++ compiler for non-Kokkos, non-CUDA
-files.
-
+For GPUs, you also need the following lines in your ``Makefile.machine``
+before the CC line is defined.  They tell ``mpicxx`` to use an ``nvcc``
+compiler wrapper, which will use ``nvcc`` for compiling CUDA files and a
+C++ compiler for non-Kokkos, non-CUDA files.
 
 .. code-block:: make
 
+   # For OpenMPI
    KOKKOS_ABSOLUTE_PATH = $(shell cd $(KOKKOS_PATH); pwd)
    export OMPI_CXX = $(KOKKOS_ABSOLUTE_PATH)/config/nvcc_wrapper
-   CC =            mpicxx
+   CC = mpicxx
 
+.. code-block:: make
+
+   # For MPICH and derivatives
+   KOKKOS_ABSOLUTE_PATH = $(shell cd $(KOKKOS_PATH); pwd)
+   CC = mpicxx -cxx=$(KOKKOS_ABSOLUTE_PATH)/config/nvcc_wrapper
+
+
+Advanced KOKKOS compilation settings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There are other allowed options when building with the KOKKOS package
+that can improve performance or assist in debugging or profiling. Below
+are some examples that may be useful in combination with LAMMPS.  For
+the full list (which keeps changing as the Kokkos package itself evolves),
+please consult the Kokkos library documentation.
+
+As alternative to using multi-threading via OpenMP
+(``-DKokkos_ENABLE_OPENMP=on`` or ``KOKKOS_DEVICES=OpenMP``) it is also
+possible to use Posix threads directly (``-DKokkos_ENABLE_PTHREAD=on``
+or ``KOKKOS_DEVICES=Pthread``).  While binding of threads to individual
+or groups of CPU cores is managed in OpenMP with environment variables,
+you need assistance from either the "hwloc" or "libnuma" library for the
+Pthread thread parallelization option. To enable use with CMake:
+``-DKokkos_ENABLE_HWLOC=on`` or ``-DKokkos_ENABLE_LIBNUMA=on``; and with
+conventional make: ``KOKKOS_USE_TPLS=hwloc`` or
+``KOKKOS_USE_TPLS=libnuma``.
+
+The CMake option ``-DKokkos_ENABLE_LIBRT=on`` or the makefile setting
+``KOKKOS_USE_TPLS=librt`` enables the use of a more accurate timer
+mechanism on many Unix-like platforms for internal profiling.
+
+The CMake option ``-DKokkos_ENABLE_DEBUG=on`` or the makefile setting
+``KOKKOS_DEBUG=yes`` enables printing of run-time
+debugging information that can be useful. It also enables runtime
+bounds checking on Kokkos data structures.  As to be expected, enabling
+this option will negatively impact the performance and thus is only
+recommended when developing a Kokkos-enabled style in LAMMPS.
+
+The CMake option ``-DKokkos_ENABLE_CUDA_UVM=on`` or the makefile
+setting ``KOKKOS_CUDA_OPTIONS=enable_lambda,force_uvm`` enables the
+use of CUDA "Unified Virtual Memory" (UVM) in Kokkos.  UVM allows to
+transparently use RAM on the host to supplement the memory used on the
+GPU (with some performance penalty) and thus enables running larger
+problems that would otherwise not fit into the RAM on the GPU.
+
+Please note, that the LAMMPS KOKKOS package must **always** be compiled
+with the *enable_lambda* option when using GPUs.  The CMake configuration
+will thus always enable it.
 
 ----------
-
 
 .. _latte:
 
@@ -415,28 +611,28 @@ LATTE package
 To build with this package, you must download and build the LATTE
 library.
 
-**CMake build**\ :
-
+CMake build
+^^^^^^^^^^^
 
 .. code-block:: bash
 
    -D DOWNLOAD_LATTE=value    # download LATTE for build, value = no (default) or yes
    -D LATTE_LIBRARY=path      # LATTE library file (only needed if a custom location)
 
-If DOWNLOAD\_LATTE is set, the LATTE library will be downloaded and
+If ``DOWNLOAD_LATTE`` is set, the LATTE library will be downloaded and
 built inside the CMake build directory.  If the LATTE library is
 already on your system (in a location CMake cannot find it),
-LATTE\_LIBRARY is the filename (plus path) of the LATTE library file,
+``LATTE_LIBRARY`` is the filename (plus path) of the LATTE library file,
 not the directory the library file is in.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
 You can download and build the LATTE library manually if you prefer;
-follow the instructions in lib/latte/README.  You can also do it in
-one step from the lammps/src dir, using a command like these, which
-simply invokes the lib/latte/Install.py script with the specified
+follow the instructions in ``lib/latte/README``\ .  You can also do it in
+one step from the ``lammps/src`` dir, using a command like these, which
+simply invokes the ``lib/latte/Install.py`` script with the specified
 args:
-
 
 .. code-block:: bash
 
@@ -444,17 +640,16 @@ args:
   $ make lib-latte args="-b"                # download and build in lib/latte/LATTE-master
   $ make lib-latte args="-p $HOME/latte"    # use existing LATTE installation in $HOME/latte
   $ make lib-latte args="-b -m gfortran"    # download and build in lib/latte and
-                                           #   copy Makefile.lammps.gfortran to Makefile.lammps
+                                            #   copy Makefile.lammps.gfortran to Makefile.lammps
 
-Note that 3 symbolic (soft) links, "includelink" and "liblink" and
-"filelink.o", are created in lib/latte to point into the LATTE home
-dir.  When LAMMPS itself is built it will use these links.  You should
-also check that the Makefile.lammps file you create is appropriate for
-the compiler you use on your system to build LATTE.
-
+Note that 3 symbolic (soft) links, ``includelink`` and ``liblink`` and
+``filelink.o``, are created in ``lib/latte`` to point to required
+folders and files in the LATTE home directory.  When LAMMPS itself is
+built it will use these links.  You should also check that the
+``Makefile.lammps`` file you create is appropriate for the compiler you
+use on your system to build LATTE.
 
 ----------
-
 
 .. _message:
 
@@ -465,8 +660,8 @@ This package can optionally include support for messaging via sockets,
 using the open-source `ZeroMQ library <http://zeromq.org>`_, which must
 be installed on your system.
 
-**CMake build**\ :
-
+CMake build
+^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -474,14 +669,14 @@ be installed on your system.
    -D ZMQ_LIBRARY=path     # ZMQ library file (only needed if a custom location)
    -D ZMQ_INCLUDE_DIR=path # ZMQ include directory (only needed if a custom location)
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
 Before building LAMMPS, you must build the CSlib library in
-lib/message.  You can build the CSlib library manually if you prefer;
-follow the instructions in lib/message/README.  You can also do it in
-one step from the lammps/src dir, using a command like these, which
-simply invoke the lib/message/Install.py script with the specified args:
-
+``lib/message``\ .  You can build the CSlib library manually if you prefer;
+follow the instructions in ``lib/message/README``\ .  You can also do it in
+one step from the ``lammps/src`` dir, using a command like these, which
+simply invoke the ``lib/message/Install.py`` script with the specified args:
 
 .. code-block:: bash
 
@@ -489,14 +684,12 @@ simply invoke the lib/message/Install.py script with the specified args:
   $ make lib-message args="-m -z"  # build with MPI and socket (ZMQ) support
   $ make lib-message args="-s"     # build as serial lib with no ZMQ support
 
-The build should produce two files: lib/message/cslib/src/libmessage.a
-and lib/message/Makefile.lammps.  The latter is copied from an
-existing Makefile.lammps.\* and has settings to link with the ZeroMQ
+The build should produce two files: ``lib/message/cslib/src/libmessage.a``
+and ``lib/message/Makefile.lammps``.  The latter is copied from an
+existing ``Makefile.lammps.*`` and has settings to link with the ZeroMQ
 library if requested in the build.
 
-
 ----------
-
 
 .. _mscg:
 
@@ -504,13 +697,13 @@ MSCG package
 -----------------------
 
 To build with this package, you must download and build the MS-CG
-library.  Building the MS-CG library and using it from LAMMPS requires
-a C++11 compatible compiler and that the GSL (GNU Scientific Library)
-headers and libraries are installed on your machine.  See the
-lib/mscg/README and MSCG/Install files for more details.
+library.  Building the MS-CG library requires that the GSL
+(GNU Scientific Library) headers and libraries are installed on your
+machine.  See the ``lib/mscg/README`` and ``MSCG/Install`` files for
+more details.
 
-**CMake build**\ :
-
+CMake build
+^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -518,20 +711,20 @@ lib/mscg/README and MSCG/Install files for more details.
    -D MSCG_LIBRARY=path      # MSCG library file (only needed if a custom location)
    -D MSCG_INCLUDE_DIR=path  # MSCG include directory (only needed if a custom location)
 
-If DOWNLOAD\_MSCG is set, the MSCG library will be downloaded and built
+If ``DOWNLOAD_MSCG`` is set, the MSCG library will be downloaded and built
 inside the CMake build directory.  If the MSCG library is already on
-your system (in a location CMake cannot find it), MSCG\_LIBRARY is the
+your system (in a location CMake cannot find it), ``MSCG_LIBRARY`` is the
 filename (plus path) of the MSCG library file, not the directory the
-library file is in.  MSCG\_INCLUDE\_DIR is the directory the MSCG
+library file is in.  ``MSCG_INCLUDE_DIR`` is the directory the MSCG
 include file is in.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
 You can download and build the MS-CG library manually if you prefer;
-follow the instructions in lib/mscg/README.  You can also do it in one
-step from the lammps/src dir, using a command like these, which simply
-invoke the lib/mscg/Install.py script with the specified args:
-
+follow the instructions in ``lib/mscg/README``\ .  You can also do it in one
+step from the ``lammps/src`` dir, using a command like these, which simply
+invoke the ``lib/mscg/Install.py`` script with the specified args:
 
 .. code-block:: bash
 
@@ -543,51 +736,50 @@ invoke the lib/mscg/Install.py script with the specified args:
   $ make lib-mscg args="-p /usr/local/mscg-release" # use the existing MS-CG installation in /usr/local/mscg-release
 
 Note that 2 symbolic (soft) links, "includelink" and "liblink", will
-be created in lib/mscg to point to the MS-CG src/installation dir.
-When LAMMPS is built in src it will use these links.  You should not
-need to edit the lib/mscg/Makefile.lammps file.
-
+be created in ``lib/mscg`` to point to the MS-CG ``src/installation``
+dir.  When LAMMPS is built in src it will use these links.  You should
+not need to edit the ``lib/mscg/Makefile.lammps`` file.
 
 ----------
-
 
 .. _opt:
 
 OPT package
 ---------------------
 
-**CMake build**\ :
+CMake build
+^^^^^^^^^^^
 
-No additional settings are needed besides "-D PKG\_OPT=yes".
+No additional settings are needed besides ``-D PKG_OPT=yes``
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
-The compile flag "-restrict" must be used to build LAMMPS with the OPT
+The compile flag ``-restrict`` must be used to build LAMMPS with the OPT
 package when using Intel compilers.  It should be added to the CCFLAGS
-line of your Makefile.machine.  See src/MAKE/OPTIONS/Makefile.opt for
-an example.
-
+line of your ``Makefile.machine``.  See
+``src/MAKE/OPTIONS/Makefile.opt`` for an example.
 
 ----------
-
 
 .. _poems:
 
 POEMS package
 -------------------------
 
-**CMake build**\ :
+CMake build
+^^^^^^^^^^^
 
-No additional settings are needed besides "-D PKG\_OPT=yes".
+No additional settings are needed besides ``-D PKG_OPT=yes``
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
-Before building LAMMPS, you must build the POEMS library in lib/poems.
+Before building LAMMPS, you must build the POEMS library in ``lib/poems``\ .
 You can do this manually if you prefer; follow the instructions in
-lib/poems/README.  You can also do it in one step from the lammps/src
+``lib/poems/README``\ .  You can also do it in one step from the ``lammps/src``
 dir, using a command like these, which simply invoke the
-lib/poems/Install.py script with the specified args:
-
+``lib/poems/Install.py`` script with the specified args:
 
 .. code-block:: bash
 
@@ -596,17 +788,15 @@ lib/poems/Install.py script with the specified args:
   $ make lib-poems args="-m mpi"     # build with default MPI C++ compiler (settings as with "make mpi")
   $ make lib-poems args="-m icc"     # build with Intel icc compiler
 
-The build should produce two files: lib/poems/libpoems.a and
-lib/poems/Makefile.lammps.  The latter is copied from an existing
-Makefile.lammps.\* and has settings needed to build LAMMPS with the
+The build should produce two files: ``lib/poems/libpoems.a`` and
+``lib/poems/Makefile.lammps``.  The latter is copied from an existing
+``Makefile.lammps.*`` and has settings needed to build LAMMPS with the
 POEMS library (though typically the settings are just blank).  If
-necessary, you can edit/create a new lib/poems/Makefile.machine file
-for your system, which should define an EXTRAMAKE variable to specify
-a corresponding Makefile.lammps.machine file.
-
+necessary, you can edit/create a new ``lib/poems/Makefile.machine`` file
+for your system, which should define an ``EXTRAMAKE`` variable to specify
+a corresponding ``Makefile.lammps.machine`` file.
 
 ----------
-
 
 .. _python:
 
@@ -614,12 +804,12 @@ PYTHON package
 ---------------------------
 
 Building with the PYTHON package requires you have a Python shared
-library available on your system, which needs to be a Python 2
-version, 2.6 or later.  Python 3 is not yet supported.  See
-lib/python/README for more details.
+library available on your system, which needs to be a Python 2.7
+version or a Python 3.x version.  See ``lib/python/README`` for more
+details.
 
-**CMake build**\ :
-
+CMake build
+^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -628,20 +818,19 @@ lib/python/README for more details.
 Without this setting, CMake will guess the default Python on your
 system.  To use a different Python version, you can either create a
 virtualenv, activate it and then run cmake.  Or you can set the
-PYTHON\_EXECUTABLE variable to specify which Python interpreter should
+PYTHON_EXECUTABLE variable to specify which Python interpreter should
 be used.  Note note that you will also need to have the development
 headers installed for this version, e.g. python2-devel.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
-The build uses the lib/python/Makefile.lammps file in the compile/link
+The build uses the ``lib/python/Makefile.lammps`` file in the compile/link
 process to find Python.  You should only need to create a new
-Makefile.lammps.\* file (and copy it to Makefile.lammps) if the LAMMPS
-build fails.
-
+``Makefile.lammps.*`` file (and copy it to ``Makefile.lammps``) if
+the LAMMPS build fails.
 
 ----------
-
 
 .. _voronoi:
 
@@ -652,10 +841,8 @@ To build with this package, you must download and build the `Voro++ library <vor
 
 .. _voro-home: http://math.lbl.gov/voro++
 
-
-
-**CMake build**\ :
-
+CMake build
+^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -663,21 +850,21 @@ To build with this package, you must download and build the `Voro++ library <vor
    -D VORO_LIBRARY=path      # Voro++ library file (only needed if at custom location)
    -D VORO_INCLUDE_DIR=path  # Voro++ include directory (only needed if at custom location)
 
-If DOWNLOAD\_VORO is set, the Voro++ library will be downloaded and
+If ``DOWNLOAD_VORO`` is set, the Voro++ library will be downloaded and
 built inside the CMake build directory.  If the Voro++ library is
 already on your system (in a location CMake cannot find it),
-VORO\_LIBRARY is the filename (plus path) of the Voro++ library file,
-not the directory the library file is in.  VORO\_INCLUDE\_DIR is the
+``VORO_LIBRARY`` is the filename (plus path) of the Voro++ library file,
+not the directory the library file is in.  ``VORO_INCLUDE_DIR`` is the
 directory the Voro++ include file is in.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
 You can download and build the Voro++ library manually if you prefer;
-follow the instructions in lib/voronoi/README.  You can also do it in
-one step from the lammps/src dir, using a command like these, which
-simply invoke the lib/voronoi/Install.py script with the specified
+follow the instructions in ``lib/voronoi/README``.  You can also do it in
+one step from the ``lammps/src`` dir, using a command like these, which
+simply invoke the ``lib/voronoi/Install.py`` script with the specified
 args:
-
 
 .. code-block:: bash
 
@@ -686,54 +873,52 @@ args:
   $ make lib-voronoi args="-p $HOME/voro++"   # use existing Voro++ installation in $HOME/voro++
   $ make lib-voronoi args="-b -v voro++0.4.6" # download and build the 0.4.6 version in lib/voronoi/voro++-0.4.6
 
-Note that 2 symbolic (soft) links, "includelink" and "liblink", are
-created in lib/voronoi to point to the Voro++ src dir.  When LAMMPS
-builds in src it will use these links.  You should not need to edit
-the lib/voronoi/Makefile.lammps file.
-
+Note that 2 symbolic (soft) links, ``includelink`` and ``liblink``, are
+created in lib/voronoi to point to the Voro++ source dir.  When LAMMPS
+builds in ``src`` it will use these links.  You should not need to edit
+the ``lib/voronoi/Makefile.lammps`` file.
 
 ----------
-
 
 .. _user-adios:
 
 USER-ADIOS package
 -----------------------------------
 
-The USER-ADIOS package requires the `ADIOS I/O library <https://github.com/ornladios/ADIOS2>`_,
-version 2.3.1 or newer. Make sure that you have ADIOS built either with or
-without MPI to match if you build LAMMPS with or without MPI.
-ADIOS compilation settings for LAMMPS are automatically detected, if the PATH
-and LD\_LIBRARY\_PATH environment variables have been updated for the local ADIOS
-installation and the instructions below are followed for the respective build systems.
+The USER-ADIOS package requires the `ADIOS I/O library
+<https://github.com/ornladios/ADIOS2>`_, version 2.3.1 or newer. Make
+sure that you have ADIOS built either with or without MPI to match if
+you build LAMMPS with or without MPI.  ADIOS compilation settings for
+LAMMPS are automatically detected, if the PATH and LD_LIBRARY_PATH
+environment variables have been updated for the local ADIOS installation
+and the instructions below are followed for the respective build
+systems.
 
-**CMake build**\ :
-
+CMake build
+^^^^^^^^^^^
 
 .. code-block:: bash
 
    -D ADIOS2_DIR=path        # path is where ADIOS 2.x is installed
    -D PKG_USER-ADIOS=yes
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
-Turn on the USER-ADIOS package before building LAMMPS. If the ADIOS 2.x software is installed in PATH, there is nothing else to do:
-
+Turn on the USER-ADIOS package before building LAMMPS. If the ADIOS 2.x
+software is installed in PATH, there is nothing else to do:
 
 .. code-block:: bash
 
   $ make yes-user-adios
 
-otherwise, set ADIOS2\_DIR environment variable when turning on the package:
-
+otherwise, set ADIOS2_DIR environment variable when turning on the package:
 
 .. code-block:: bash
 
   $ ADIOS2_DIR=path make yes-user-adios   # path is where ADIOS 2.x is installed
 
-
 ----------
-
 
 .. _user-atc:
 
@@ -742,19 +927,20 @@ USER-ATC package
 
 The USER-ATC package requires the MANYBODY package also be installed.
 
-**CMake build**\ :
+CMake build
+^^^^^^^^^^^
 
-No additional settings are needed besides "-D PKG\_USER-ATC=yes"
-and "-D PKG\_MANYBODY=yes".
+No additional settings are needed besides "-D PKG_USER-ATC=yes"
+and "-D PKG_MANYBODY=yes".
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
-Before building LAMMPS, you must build the ATC library in lib/atc.
+Before building LAMMPS, you must build the ATC library in ``lib/atc``.
 You can do this manually if you prefer; follow the instructions in
-lib/atc/README.  You can also do it in one step from the lammps/src
-dir, using a command like these, which simply invoke the
-lib/atc/Install.py script with the specified args:
-
+``lib/atc/README``.  You can also do it in one step from the
+``lammps/src`` dir, using a command like these, which simply invoke the
+``lib/atc/Install.py`` script with the specified args:
 
 .. code-block:: bash
 
@@ -763,20 +949,19 @@ lib/atc/Install.py script with the specified args:
   $ make lib-atc args="-m mpi"        # build with default MPI compiler (settings as with "make mpi")
   $ make lib-atc args="-m icc"        # build with Intel icc compiler
 
-The build should produce two files: lib/atc/libatc.a and
-lib/atc/Makefile.lammps.  The latter is copied from an existing
-Makefile.lammps.\* and has settings needed to build LAMMPS with the ATC
-library.  If necessary, you can edit/create a new
-lib/atc/Makefile.machine file for your system, which should define an
-EXTRAMAKE variable to specify a corresponding Makefile.lammps.machine
-file.
+The build should produce two files: ``lib/atc/libatc.a`` and
+``lib/atc/Makefile.lammps``.  The latter is copied from an existing
+``Makefile.lammps.*`` and has settings needed to build LAMMPS with the
+ATC library.  If necessary, you can edit/create a new
+``lib/atc/Makefile.machine`` file for your system, which should define
+an ``EXTRAMAKE`` variable to specify a corresponding
+``Makefile.lammps.<machine>`` file.
 
 Note that the Makefile.lammps file has settings for the BLAS and
-LAPACK linear algebra libraries.  As explained in lib/atc/README these
+LAPACK linear algebra libraries.  As explained in ``lib/atc/README`` these
 can either exist on your system, or you can use the files provided in
-lib/linalg.  In the latter case you also need to build the library in
-lib/linalg with a command like these:
-
+``lib/linalg``.  In the latter case you also need to build the library in
+``lib/linalg`` with a command like these:
 
 .. code-block:: bash
 
@@ -785,27 +970,26 @@ lib/linalg with a command like these:
   $ make lib-linalg args="-m mpi"       # build with default MPI Fortran compiler (settings as with "make mpi")
   $ make lib-linalg args="-m gfortran"  # build with GNU Fortran compiler
 
-
 ----------
-
 
 .. _user-awpmd:
 
 USER-AWPMD package
------------------------------------
+------------------
 
-**CMake build**\ :
+CMake build
+^^^^^^^^^^^
 
-No additional settings are needed besides "-D PKG\_USER-AQPMD=yes".
+No additional settings are needed besides ``-D PKG_USER-AQPMD=yes``.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
-Before building LAMMPS, you must build the AWPMD library in lib/awpmd.
+Before building LAMMPS, you must build the AWPMD library in ``lib/awpmd``.
 You can do this manually if you prefer; follow the instructions in
-lib/awpmd/README.  You can also do it in one step from the lammps/src
+``lib/awpmd/README``.  You can also do it in one step from the ``lammps/src``
 dir, using a command like these, which simply invoke the
-lib/awpmd/Install.py script with the specified args:
-
+``lib/awpmd/Install.py`` script with the specified args:
 
 .. code-block:: bash
 
@@ -814,20 +998,19 @@ lib/awpmd/Install.py script with the specified args:
   $ make lib-awpmd args="-m mpi"     # build with default MPI compiler (settings as with "make mpi")
   $ make lib-awpmd args="-m icc"     # build with Intel icc compiler
 
-The build should produce two files: lib/awpmd/libawpmd.a and
-lib/awpmd/Makefile.lammps.  The latter is copied from an existing
-Makefile.lammps.\* and has settings needed to build LAMMPS with the
+The build should produce two files: ``lib/awpmd/libawpmd.a`` and
+``lib/awpmd/Makefile.lammps``.  The latter is copied from an existing
+``Makefile.lammps.*`` and has settings needed to build LAMMPS with the
 AWPMD library.  If necessary, you can edit/create a new
-lib/awpmd/Makefile.machine file for your system, which should define
-an EXTRAMAKE variable to specify a corresponding
-Makefile.lammps.machine file.
+``lib/awpmd/Makefile.machine`` file for your system, which should define
+an ``EXTRAMAKE`` variable to specify a corresponding
+``Makefile.lammps.<machine>`` file.
 
-Note that the Makefile.lammps file has settings for the BLAS and
-LAPACK linear algebra libraries.  As explained in lib/awpmd/README
+Note that the ``Makefile.lammps`` file has settings for the BLAS and
+LAPACK linear algebra libraries.  As explained in ``lib/awpmd/README``
 these can either exist on your system, or you can use the files
-provided in lib/linalg.  In the latter case you also need to build the
-library in lib/linalg with a command like these:
-
+provided in ``lib/linalg``.  In the latter case you also need to build the
+library in ``lib/linalg`` with a command like these:
 
 .. code-block:: bash
 
@@ -836,9 +1019,7 @@ library in lib/linalg with a command like these:
   $ make lib-linalg args="-m mpi"       # build with default MPI Fortran compiler (settings as with "make mpi")
   $ make lib-linalg args="-m gfortran"  # build with GNU Fortran compiler
 
-
 ----------
-
 
 .. _user-colvars:
 
@@ -848,38 +1029,27 @@ USER-COLVARS package
 This package includes into the LAMMPS distribution the Colvars library, which
 can be built for the most part with all major versions of the C++ language.
 
-A few of the most recent features require C++11 support.  In particular, the
-library is optionally built together with the
-`Lepton <https://simtk.org/projects/lepton>`_ library, a copy of which is also
-included in the LAMMPS distribution.  Lepton implements the
-`customFunction <http://colvars.github.io/colvars-refman-lammps/colvars-refman-lammps.html#colvar|customFunction>`_
-feature, and requires C++11 support.
 
-See `here <https://colvars.github.io/README-c++11.html>`_ for a detailed list of
-C++11-only features.
-
-**CMake build**\ :
+CMake build
+^^^^^^^^^^^
 
 This is the recommended build recipe: no additional settings are normally
-needed besides "-D PKG\_USER-COLVARS=yes".
+needed besides ``-D PKG_USER-COLVARS=yes``.
 
-Building and linking of Lepton (or other C++11-only features) is enabled
-automatically when compilation is carried out with C++11 support, and disabled
-otherwise.  Optionally, Lepton build may be manually controlled with the flag
-"-D COLVARS\_LEPTON=yes\|no".
-
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
 Before building LAMMPS, one must build the Colvars library in lib/colvars.
 
-This can be done manually in the same folder by using or adapting one of the
-provided Makefiles: for example, Makefile.g++ for the GNU compiler.
+This can be done manually in the same folder by using or adapting one of
+the provided Makefiles: for example, ``Makefile.g++`` for the GNU C++
+compiler.  C++11 compatibility may need to be enabled for some older
+compilers (as is done in the example makefile).
 
 In general, it is safer to use build setting consistent with the rest of
 LAMMPS.  This is best carried out from the LAMMPS src directory using a
-command like these, which simply invoke the lib/colvars/Install.py script with
+command like these, which simply invoke the ``lib/colvars/Install.py`` script with
 the specified args:
-
 
 .. code-block:: bash
 
@@ -889,7 +1059,7 @@ the specified args:
   $ make lib-colvars args="-m g++-debug"  # build with GNU g++ compiler and colvars debugging enabled
 
 The "machine" argument of the "-m" flag is used to find a Makefile.machine to
-use as build recipe.  If it does not already exist in lib/colvars, it will be
+use as build recipe.  If it does not already exist in ``lib/colvars``, it will be
 auto-generated by using compiler flags consistent with those parsed from the
 core LAMMPS makefiles.
 
@@ -900,21 +1070,19 @@ Optional flags may be specified as environment variables:
     $ COLVARS_DEBUG=yes make lib-colvars args="-m machine"  # Build with debug code (much slower)
     $ COLVARS_LEPTON=no make lib-colvars args="-m machine"  # Build without Lepton (included otherwise)
 
-The build should produce two files: the library lib/colvars/libcolvars.a
+The build should produce two files: the library ``lib/colvars/libcolvars.a``
 (which also includes Lepton objects if enabled) and the specification file
-lib/colvars/Makefile.lammps.  The latter is auto-generated, and normally does
+``lib/colvars/Makefile.lammps``.  The latter is auto-generated, and normally does
 not need to be edited.
 
-
 ----------
-
 
 .. _user-plumed:
 
 USER-PLUMED package
 -------------------------------------
 
-.. _plumedinstall: http://plumed.github.io/doc-master/user-doc/html/\_installation.html
+.. _plumedinstall: https://plumed.github.io/doc-master/user-doc/html/_installation.html
 
 Before building LAMMPS with this package, you must first build PLUMED.
 PLUMED can be built as part of the LAMMPS build or installed separately
@@ -922,7 +1090,6 @@ from LAMMPS using the generic `plumed installation instructions <plumedinstall_>
 The USER-PLUMED package has been tested to work with Plumed versions
 2.4.x, 2.5.x, and 2.6.x and will error out, when trying to run calculations
 with a different version of the Plumed kernel.
-
 
 PLUMED can be linked into MD codes in three different modes: static,
 shared, and runtime.  With the "static" mode, all the code that PLUMED
@@ -937,7 +1104,7 @@ LAMMPS uses can be updated without the need for a recompile of LAMMPS
 for as long as the shared PLUMED library is ABI-compatible.
 
 The third linkage mode is "runtime" which allows the user to specify
-which PLUMED kernel should be used at runtime by using the PLUMED\_KERNEL
+which PLUMED kernel should be used at runtime by using the PLUMED_KERNEL
 environment variable. This variable should point to the location of the
 libplumedKernel.so dynamical shared object, which is then loaded at
 runtime. This mode of linking is particularly convenient for doing
@@ -952,37 +1119,39 @@ try a different one, switch to a different build system, consider a
 global PLUMED installation or consider downloading PLUMED during the
 LAMMPS build.
 
-**CMake build**\ :
+CMake build
+^^^^^^^^^^^
 
-When the "-D PKG\_USER-PLUMED" flag is included in the cmake command you
-must ensure that GSL is installed in locations that are specified in
-your environment.  There are then two additional commands that control
-the manner in which PLUMED is obtained and linked into LAMMPS.
-
+When the ``-D PKG_USER-PLUMED=yes`` flag is included in the cmake
+command you must ensure that GSL is installed in locations that are
+specified in your environment.  There are then two additional variables
+that control the manner in which PLUMED is obtained and linked into
+LAMMPS.
 
 .. code-block:: bash
 
    -D DOWNLOAD_PLUMED=value   # download PLUMED for build, value = no (default) or yes
    -D PLUMED_MODE=value       # Linkage mode for PLUMED, value = static (default), shared, or runtime
 
-If DOWNLOAD\_PLUMED is set to "yes", the PLUMED library will be
+If DOWNLOAD_PLUMED is set to "yes", the PLUMED library will be
 downloaded (the version of PLUMED that will be downloaded is hard-coded
 to a vetted version of PLUMED, usually a recent stable release version)
-and built inside the CMake build directory.  If DOWNLOAD\_PLUMED is set
-to "no" (the default), CMake will try to detect and link to an installed
-version of PLUMED.  For this to work, the PLUMED library has to be
-installed into a location where the pkg-config tool can find it or the
-PKG\_CONFIG\_PATH environment variable has to be set up accordingly.
-PLUMED should be installed in such a location if you compile it using
-the default make; make install commands.
+and built inside the CMake build directory.  If ``DOWNLOAD_PLUMED`` is
+set to "no" (the default), CMake will try to detect and link to an
+installed version of PLUMED.  For this to work, the PLUMED library has
+to be installed into a location where the ``pkg-config`` tool can find
+it or the PKG_CONFIG_PATH environment variable has to be set up
+accordingly.  PLUMED should be installed in such a location if you
+compile it using the default make; make install commands.
 
-The PLUMED\_MODE setting determines the linkage mode for the PLUMED
+The ``PLUMED_MODE`` setting determines the linkage mode for the PLUMED
 library.  The allowed values for this flag are "static" (default),
 "shared", or "runtime".  For a discussion of PLUMED linkage modes,
-please see above.  When DOWNLOAD\_PLUMED is enabled the static linkage
-mode is recommended.
+please see above.  When ``DOWNLOAD_PLUMED`` is enabled the static
+linkage mode is recommended.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
 PLUMED needs to be installed before the USER-PLUMED package is installed
 so that LAMMPS can find the right settings when compiling and linking
@@ -995,7 +1164,6 @@ discussion of PLUMED linkage modes, please see above.
 Download/compilation/configuration of the plumed library can be done
 from the src folder through the following make args:
 
-
 .. code-block:: bash
 
   $ make lib-plumed                         # print help message
@@ -1004,13 +1172,12 @@ from the src folder through the following make args:
   $ make lib-plumed args="-p /usr/local -m shared"  # use existing PLUMED installation in
                                                    # /usr/local and use shared linkage mode
 
-Note that 2 symbolic (soft) links, "includelink" and "liblink" are
+Note that 2 symbolic (soft) links, ``includelink`` and ``liblink`` are
 created in lib/plumed that point to the location of the PLUMED build to
-use. A new file lib/plumed/Makefile.lammps is also created with settings
+use. A new file ``lib/plumed/Makefile.lammps`` is also created with settings
 suitable for LAMMPS to compile and link PLUMED using the desired linkage
 mode. After this step is completed, you can install the USER-PLUMED
 package and compile LAMMPS in the usual manner:
-
 
 .. code-block:: bash
 
@@ -1020,7 +1187,7 @@ package and compile LAMMPS in the usual manner:
 Once this compilation completes you should be able to run LAMMPS in the
 usual way.  For shared linkage mode, libplumed.so must be found by the
 LAMMPS executable, which on many operating systems means, you have to
-set the LD\_LIBRARY\_PATH environment variable accordingly.
+set the LD_LIBRARY_PATH environment variable accordingly.
 
 Support for the different linkage modes in LAMMPS varies for different
 operating systems, using the static linkage is expected to be the most
@@ -1031,9 +1198,7 @@ lib-plumed" with the desired settings **and** do a re-install if the
 USER-PLUMED package with "make yes-user-plumed" to update the required
 makefile settings with the changes in the lib/plumed folder.
 
-
 ----------
-
 
 .. _user-h5md:
 
@@ -1044,9 +1209,10 @@ To build with this package you must have the HDF5 software package
 installed on your system, which should include the h5cc compiler and
 the HDF5 library.
 
-**CMake build**\ :
+CMake build
+^^^^^^^^^^^
 
-No additional settings are needed besides "-D PKG\_USER-H5MD=yes".
+No additional settings are needed besides ``-D PKG_USER-H5MD=yes``.
 
 This should auto-detect the H5MD library on your system.  Several
 advanced CMake H5MD options exist if you need to specify where it is
@@ -1054,31 +1220,29 @@ installed.  Use the ccmake (terminal window) or cmake-gui (graphical)
 tools to see these options and set them interactively from their user
 interfaces.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
-Before building LAMMPS, you must build the CH5MD library in lib/h5md.
-You can do this manually if you prefer; follow the instructions in
-lib/h5md/README.  You can also do it in one step from the lammps/src
-dir, using a command like these, which simply invoke the
-lib/h5md/Install.py script with the specified args:
-
+Before building LAMMPS, you must build the CH5MD library in
+``lib/h5md``.  You can do this manually if you prefer; follow the
+instructions in ``lib/h5md/README``.  You can also do it in one step
+from the ``lammps/src`` dir, using a command like these, which simply
+invoke the ``lib/h5md/Install.py`` script with the specified args:
 
 .. code-block:: bash
 
   $ make lib-h5md                     # print help message
   $ make lib-h5md args="-m h5cc"      # build with h5cc compiler
 
-The build should produce two files: lib/h5md/libch5md.a and
-lib/h5md/Makefile.lammps.  The latter is copied from an existing
-Makefile.lammps.\* and has settings needed to build LAMMPS with the
+The build should produce two files: ``lib/h5md/libch5md.a`` and
+``lib/h5md/Makefile.lammps``.  The latter is copied from an existing
+``Makefile.lammps.*`` and has settings needed to build LAMMPS with the
 system HDF5 library.  If necessary, you can edit/create a new
-lib/h5md/Makefile.machine file for your system, which should define an
-EXTRAMAKE variable to specify a corresponding Makefile.lammps.machine
-file.
-
+``lib/h5md/Makefile.machine`` file for your system, which should define
+an EXTRAMAKE variable to specify a corresponding
+``Makefile.lammps.<machine>`` file.
 
 ----------
-
 
 .. _user-intel:
 
@@ -1091,8 +1255,8 @@ also typically :ref:`install the USER-OMP package <user-omp>`, as it can be
 used in tandem with the USER-INTEL package to good effect, as explained
 on the :doc:`Speed intel <Speed_intel>` doc page.
 
-**CMake build**\ :
-
+CMake build
+^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -1111,15 +1275,15 @@ Best performance is achieved with Intel hardware, Intel compilers, as well as
 the Intel TBB and MKL libraries. However, the code also compiles, links, and
 runs with other compilers and without TBB and MKL.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
 Choose which hardware to compile for in Makefile.machine via the
-following settings.  See src/MAKE/OPTIONS/Makefile.intel\_cpu\* and
-Makefile.knl files for examples. and src/USER-INTEL/README for
+following settings.  See ``src/MAKE/OPTIONS/Makefile.intel_cpu*`` and
+``Makefile.knl`` files for examples. and ``src/USER-INTEL/README`` for
 additional information.
 
 For CPUs:
-
 
 .. code-block:: make
 
@@ -1130,7 +1294,6 @@ For CPUs:
 
 For KNLs:
 
-
 .. code-block:: make
 
    OPTFLAGS =      -xMIC-AVX512 -O2 -fp-model fast=2 -no-prec-div -qoverride-limits
@@ -1138,47 +1301,83 @@ For KNLs:
    LINKFLAGS =     -g -qopenmp $(OPTFLAGS)
    LIB =           -ltbbmalloc
 
-
 ----------
 
+.. _user-mesont:
+
+USER-MESONT package
+-------------------------
+
+This package includes a library written in Fortran 90 in the
+``lib/mesont`` folder, so a working Fortran 90 compiler is required to
+compile it.  Also, the files with the force field data for running the
+bundled examples are not included in the source distribution. Instead
+they will be downloaded the first time this package is installed.
+
+**CMake build**\ :
+
+No additional settings are needed besides ``-D PKG_USER-MESONT=yes``
+
+**Traditional make**\ :
+
+Before building LAMMPS, you must build the *mesont* library in ``lib/mesont``\ .
+You can also do it in one step from the ``lammps/src`` dir, using a command like
+these, which simply invoke the ``lib/mesont/Install.py`` script with the specified
+args:
+
+.. code-block:: bash
+
+  $ make lib-mesont                    # print help message
+  $ make lib-mesont args="-m gfortran" # build with GNU g++ compiler (settings as with "make serial")
+  $ make lib-mesont args="-m ifort"    # build with Intel icc compiler
+
+The build should produce two files: ``lib/mesont/libmesont.a`` and
+``lib/mesont/Makefile.lammps``\ .  The latter is copied from an existing
+``Makefile.lammps.\*`` and has settings needed to build LAMMPS with the
+*mesont* library (though typically the settings contain only the Fortran
+runtime library).  If necessary, you can edit/create a new
+``lib/mesont/Makefile.machine`` file for your system, which should
+define an ``EXTRAMAKE`` variable to specify a corresponding
+``Makefile.lammps.machine`` file.
+
+----------
 
 .. _user-molfile:
 
 USER-MOLFILE package
 ---------------------------------------
 
-**CMake build**\ :
-
+CMake build
+^^^^^^^^^^^
 
 .. code-block:: bash
 
    -D MOLFILE_INCLUDE_DIRS=path   # (optional) path where VMD molfile plugin headers are installed
    -D PKG_USER-MOLFILE=yes
 
-Using "-D PKG\_USER-MOLFILE=yes" enables the package, and setting
-"-D MOLFILE\_INCLUDE DIRS" allows to provide a custom location for
+Using "-D PKG_USER-MOLFILE=yes" enables the package, and setting
+"-D MOLFILE_INCLUDE DIRS" allows to provide a custom location for
 the molfile plugin header files. These should match the ABI of the
 plugin files used, and thus one typically sets them to include
 folder of the local VMD installation in use. LAMMPS ships with a
 couple of default header files that correspond to a popular VMD
 version, usually the latest release.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
-The lib/molfile/Makefile.lammps file has a setting for a dynamic
+The ``lib/molfile/Makefile.lammps`` file has a setting for a dynamic
 loading library libdl.a that is typically present on all systems.  It
 is required for LAMMPS to link with this package.  If the setting is
 not valid for your system, you will need to edit the Makefile.lammps
-file.  See lib/molfile/README and lib/molfile/Makefile.lammps for
+file.  See ``lib/molfile/README`` and ``lib/molfile/Makefile.lammps`` for
 details. It is also possible to configure a different folder with
 the VMD molfile plugin header files. LAMMPS ships with a couple of
 default headers, but these are not compatible with all VMD versions,
 so it is often best to change this setting to the location of the
 same include files of the local VMD installation in use.
 
-
 ----------
-
 
 .. _user-netcdf:
 
@@ -1188,60 +1387,58 @@ USER-NETCDF package
 To build with this package you must have the NetCDF library installed
 on your system.
 
-**CMake build**\ :
+CMake build
+^^^^^^^^^^^
 
-No additional settings are needed besides "-D PKG\_USER-NETCDF=yes".
+No additional settings are needed besides ``-D PKG_USER-NETCDF=yes``.
 
 This should auto-detect the NETCDF library if it is installed on your
 system at standard locations.  Several advanced CMake NETCDF options
-exist if you need to specify where it was installed.  Use the ccmake
-(terminal window) or cmake-gui (graphical) tools to see these options
-and set them interactively from their user interfaces.
+exist if you need to specify where it was installed.  Use the ``ccmake``
+(terminal window) or ``cmake-gui`` (graphical) tools to see these
+options and set them interactively from their user interfaces.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
-The lib/netcdf/Makefile.lammps file has settings for NetCDF include
+The ``lib/netcdf/Makefile.lammps`` file has settings for NetCDF include
 and library files which LAMMPS needs to build with this package.  If
 the settings are not valid for your system, you will need to edit the
-Makefile.lammps file.  See lib/netcdf/README for details.
-
+``Makefile.lammps`` file.  See ``lib/netcdf/README`` for details.
 
 ----------
-
 
 .. _user-omp:
 
 USER-OMP package
 -------------------------------
 
-**CMake build**\ :
+CMake build
+^^^^^^^^^^^
 
-No additional settings are required besides "-D PKG\_USER-OMP=yes".  If
+No additional settings are required besides ``-D PKG_USER-OMP=yes``.  If
 CMake detects OpenMP support, the USER-OMP code will be compiled with
 multi-threading support enabled, otherwise as optimized serial code.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
 To enable multi-threading support in the USER-OMP package (and other
-styles supporting OpenMP) the following compile and link flags must
-be added to your Makefile.machine file.
-See src/MAKE/OPTIONS/Makefile.omp for an example.
-
+styles supporting OpenMP) the following compile and link flags must be
+added to your Makefile.machine file.  See
+``src/MAKE/OPTIONS/Makefile.omp`` for an example.
 
 .. parsed-literal::
 
-   CCFLAGS: -fopenmp               # for GNU and Clang Compilers 
+   CCFLAGS: -fopenmp               # for GNU and Clang Compilers
    CCFLAGS: -qopenmp -restrict     # for Intel compilers on Linux
    LINKFLAGS: -fopenmp             # for GNU and Clang Compilers
    LINKFLAGS: -qopenmp             # for Intel compilers on Linux
 
 For other platforms and compilers, please consult the documentation
-about OpenMP support for your compiler. Please see the note about
-how to address compatibility :ref:`issues with the 'default(none)' directive <default-none-issues>` of some compilers.
-
+about OpenMP support for your compiler.
 
 ----------
-
 
 .. _user-qmmm:
 
@@ -1249,19 +1446,20 @@ USER-QMMM package
 ---------------------------------
 
 For using LAMMPS to do QM/MM simulations via the USER-QMMM package you
-need to build LAMMPS as a library.  A LAMMPS executable with fix qmmm
-included can be built, but will not be able to do a QM/MM simulation
-on as such.  You must also build a QM code - currently only Quantum
-ESPRESSO (QE) is supported - and create a new executable which links
-LAMMPS and the QM code together.  Details are given in the
-lib/qmmm/README file.  It is also recommended to read the instructions
-for :doc:`linking with LAMMPS as a library <Build_link>` for
-background information.  This requires compatible Quantum Espresso
-and LAMMPS versions.  The current interface and makefiles have last
-been verified to work in February 2020 with Quantum Espresso versions
-6.3 to 6.5.
+need to build LAMMPS as a library.  A LAMMPS executable with :doc:`fix
+qmmm <fix_qmmm>` included can be built, but will not be able to do a
+QM/MM simulation on as such.  You must also build a QM code - currently
+only Quantum ESPRESSO (QE) is supported - and create a new executable
+which links LAMMPS and the QM code together.  Details are given in the
+``lib/qmmm/README`` file.  It is also recommended to read the
+instructions for :doc:`linking with LAMMPS as a library <Build_link>`
+for background information.  This requires compatible Quantum Espresso
+and LAMMPS versions.  The current interface and makefiles have last been
+verified to work in February 2020 with Quantum Espresso versions 6.3 to
+6.5.
 
-**CMake build**\ :
+CMake build
+^^^^^^^^^^^
 
 When using CMake, building a LAMMPS library is required and it is
 recommended to build a shared library, since any libraries built from
@@ -1278,19 +1476,18 @@ would be:
 
 After completing the LAMMPS build and also configuring and compiling
 Quantum ESPRESSO with external library support (via "make couple"),
-go back to the lib/qmmm folder and follow the instructions on the
+go back to the ``lib/qmmm` folder and follow the instructions on the
 README file to build the combined LAMMPS/QE QM/MM executable
-(pwqmmm.x) in the lib/qmmm folder.  You need to make certain, that
+(pwqmmm.x) in the ``lib/qmmm`` folder.  You need to make certain, that
 
+Traditional make
+^^^^^^^^^^^^^^^^
 
-**Traditional make**\ :
-
-Before building LAMMPS, you must build the QMMM library in lib/qmmm.
+Before building LAMMPS, you must build the QMMM library in ``lib/qmmm``.
 You can do this manually if you prefer; follow the first two steps
-explained in lib/qmmm/README.  You can also do it in one step from the
-lammps/src dir, using a command like these, which simply invoke the
-lib/qmmm/Install.py script with the specified args:
-
+explained in ``lib/qmmm/README``.  You can also do it in one step from
+the ``lammps/src`` dir, using a command like these, which simply invoke
+the ``lib/qmmm/Install.py`` script with the specified args:
 
 .. code-block:: bash
 
@@ -1299,23 +1496,22 @@ lib/qmmm/Install.py script with the specified args:
   $ make lib-qmmm args="-m mpi"        # build with default MPI compiler (settings as in "make mpi")
   $ make lib-qmmm args="-m gfortran"   # build with GNU Fortran compiler
 
-The build should produce two files: lib/qmmm/libqmmm.a and
-lib/qmmm/Makefile.lammps.  The latter is copied from an existing
-Makefile.lammps.\* and has settings needed to build LAMMPS with the
+The build should produce two files: ``lib/qmmm/libqmmm.a`` and
+``lib/qmmm/Makefile.lammps``.  The latter is copied from an existing
+``Makefile.lammps.*`` and has settings needed to build LAMMPS with the
 QMMM library (though typically the settings are just blank).  If
-necessary, you can edit/create a new lib/qmmm/Makefile.machine file
-for your system, which should define an EXTRAMAKE variable to specify
-a corresponding Makefile.lammps.machine file.
+necessary, you can edit/create a new ``lib/qmmm/Makefile.<machine>`` file
+for your system, which should define an ``EXTRAMAKE`` variable to
+specify a corresponding ``Makefile.lammps.<machine>`` file.
 
 You can then install QMMM package and build LAMMPS in the usual
 manner.  After completing the LAMMPS build and compiling Quantum
 ESPRESSO with external library support (via "make couple"), go back to
-the lib/qmmm folder and follow the instructions in the README file to
+the ``lib/qmmm`` folder and follow the instructions in the README file to
 build the combined LAMMPS/QE QM/MM executable (pwqmmm.x) in the
 lib/qmmm folder.
 
 ----------
-
 
 .. _user-quip:
 
@@ -1326,46 +1522,44 @@ To build with this package, you must download and build the QUIP
 library.  It can be obtained from GitHub.  For support of GAP
 potentials, additional files with specific licensing conditions need
 to be downloaded and configured.  See step 1 and step 1.1 in the
-lib/quip/README file for details on how to do this.
+``lib/quip/README`` file for details on how to do this.
 
-**CMake build**\ :
-
+CMake build
+^^^^^^^^^^^
 
 .. code-block:: bash
 
    -D QUIP_LIBRARY=path     # path to libquip.a (only needed if a custom location)
 
 CMake will not download and build the QUIP library.  But once you have
-done that, a CMake build of LAMMPS with "-D PKG\_USER-QUIP=yes" should
-work.  Set QUIP\_LIBRARY if CMake cannot find the QUIP library.
+done that, a CMake build of LAMMPS with ``-D PKG_USER-QUIP=yes`` should
+work.  Set QUIP_LIBRARY if CMake cannot find the QUIP library.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
 The download/build procedure for the QUIP library, described in
-lib/quip/README file requires setting two environment variables,
-QUIP\_ROOT and QUIP\_ARCH.  These are accessed by the
+``lib/quip/README`` file requires setting two environment variables,
+QUIP_ROOT and QUIP_ARCH.  These are accessed by the
 lib/quip/Makefile.lammps file which is used when you compile and link
 LAMMPS with this package.  You should only need to edit
-Makefile.lammps if the LAMMPS build can not use its settings to
+``Makefile.lammps`` if the LAMMPS build can not use its settings to
 successfully build on your system.
 
-
 ----------
-
 
 .. _user-scafacos:
 
 USER-SCAFACOS package
 -----------------------------------------
 
-To build with this package, you must download and build the `ScaFaCoS Coulomb solver library <scafacos-home_>`_
+To build with this package, you must download and build the `ScaFaCoS
+Coulomb solver library <scafacos-home_>`_
 
 .. _scafacos-home: http://www.scafacos.de
 
-
-
-**CMake build**\ :
-
+CMake build
+^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -1373,33 +1567,32 @@ To build with this package, you must download and build the `ScaFaCoS Coulomb so
    -D SCAFACOS_LIBRARY=path      # ScaFaCos library file (only needed if at custom location)
    -D SCAFACOS_INCLUDE_DIR=path  # ScaFaCoS include directory (only needed if at custom location)
 
-If DOWNLOAD\_SCAFACOS is set, the ScaFaCoS library will be downloaded
+If DOWNLOAD_SCAFACOS is set, the ScaFaCoS library will be downloaded
 and built inside the CMake build directory.  If the ScaFaCoS library
 is already on your system (in a location CMake cannot find it),
-SCAFACOS\_LIBRARY is the filename (plus path) of the ScaFaCoS library
-file, not the directory the library file is in.  SCAFACOS\_INCLUDE\_DIR
+SCAFACOS_LIBRARY is the filename (plus path) of the ScaFaCoS library
+file, not the directory the library file is in.  SCAFACOS_INCLUDE_DIR
 is the directory the ScaFaCoS include file is in.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
 You can download and build the ScaFaCoS library manually if you
-prefer; follow the instructions in lib/scafacos/README.  You can also
-do it in one step from the lammps/src dir, using a command like these,
-which simply invoke the lib/scafacos/Install.py script with the
+prefer; follow the instructions in ``lib/scafacos/README``.  You can also
+do it in one step from the ``lammps/src`` dir, using a command like these,
+which simply invoke the ``lib/scafacos/Install.py`` script with the
 specified args:
 
 make lib-scafacos                         # print help message
 make lib-scafacos args="-b"               # download and build in lib/scafacos/scafacos-<version>
 make lib-scafacos args="-p $HOME/scafacos  # use existing ScaFaCoS installation in $HOME/scafacos
 
-Note that 2 symbolic (soft) links, "includelink" and "liblink", are
-created in lib/scafacos to point to the ScaFaCoS src dir.  When LAMMPS
+Note that 2 symbolic (soft) links, ``includelink`` and ``liblink``, are
+created in ``lib/scafacos`` to point to the ScaFaCoS src dir.  When LAMMPS
 builds in src it will use these links.  You should not need to edit
-the lib/scafacos/Makefile.lammps file.
-
+the ``lib/scafacos/Makefile.lammps`` file.
 
 ----------
-
 
 .. _user-smd:
 
@@ -1409,26 +1602,26 @@ USER-SMD package
 To build with this package, you must download the Eigen3 library.
 Eigen3 is a template library, so you do not need to build it.
 
-**CMake build**\ :
-
+CMake build
+^^^^^^^^^^^
 
 .. code-block:: bash
 
    -D DOWNLOAD_EIGEN3            # download Eigen3, value = no (default) or yes
    -D EIGEN3_INCLUDE_DIR=path    # path to Eigen library (only needed if a custom location)
 
-If DOWNLOAD\_EIGEN3 is set, the Eigen3 library will be downloaded and
+If ``DOWNLOAD_EIGEN3`` is set, the Eigen3 library will be downloaded and
 inside the CMake build directory.  If the Eigen3 library is already on
-your system (in a location CMake cannot find it), EIGEN3\_INCLUDE\_DIR
+your system (in a location CMake cannot find it), ``EIGEN3_INCLUDE_DIR``
 is the directory the Eigen3++ include file is in.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
 You can download the Eigen3 library manually if you prefer; follow the
-instructions in lib/smd/README.  You can also do it in one step from
-the lammps/src dir, using a command like these, which simply invoke
-the lib/smd/Install.py script with the specified args:
-
+instructions in ``lib/smd/README``.  You can also do it in one step from
+the ``lammps/src`` dir, using a command like these, which simply invoke
+the ``lib/smd/Install.py`` script with the specified args:
 
 .. code-block:: bash
 
@@ -1436,14 +1629,12 @@ the lib/smd/Install.py script with the specified args:
   $ make lib-smd args="-b"               # download to lib/smd/eigen3
   $ make lib-smd args="-p /usr/include/eigen3"    # use existing Eigen installation in /usr/include/eigen3
 
-Note that a symbolic (soft) link named "includelink" is created in
-lib/smd to point to the Eigen dir.  When LAMMPS builds it will use
-this link.  You should not need to edit the lib/smd/Makefile.lammps
+Note that a symbolic (soft) link named ``includelink`` is created in
+``lib/smd`` to point to the Eigen dir.  When LAMMPS builds it will use
+this link.  You should not need to edit the ``lib/smd/Makefile.lammps``
 file.
 
-
 ----------
-
 
 .. _user-vtk:
 
@@ -1453,21 +1644,23 @@ USER-VTK package
 To build with this package you must have the VTK library installed on
 your system.
 
-**CMake build**\ :
+CMake build
+^^^^^^^^^^^
 
-No additional settings are needed besides "-D PKG\_USER-VTK=yes".
+No additional settings are needed besides ``-D PKG_USER-VTK=yes``.
 
 This should auto-detect the VTK library if it is installed on your
 system at standard locations.  Several advanced VTK options exist if
-you need to specify where it was installed.  Use the ccmake (terminal
-window) or cmake-gui (graphical) tools to see these options and set
+you need to specify where it was installed.  Use the ``ccmake`` (terminal
+window) or ``cmake-gui`` (graphical) tools to see these options and set
 them interactively from their user interfaces.
 
-**Traditional make**\ :
+Traditional make
+^^^^^^^^^^^^^^^^
 
-The lib/vtk/Makefile.lammps file has settings for accessing VTK files
+The ``lib/vtk/Makefile.lammps`` file has settings for accessing VTK files
 and its library, which LAMMPS needs to build with this package.  If
 the settings are not valid for your system, check if one of the other
-lib/vtk/Makefile.lammps.\* files is compatible and copy it to
+``lib/vtk/Makefile.lammps.*`` files is compatible and copy it to
 Makefile.lammps.  If none of the provided files work, you will need to
-edit the Makefile.lammps file.  See lib/vtk/README for details.
+edit the ``Makefile.lammps`` file.  See ``lib/vtk/README`` for details.
