@@ -32,8 +32,8 @@ using namespace LAMMPS_NS;
 PairTriLJ::PairTriLJ(LAMMPS *lmp) : Pair(lmp)
 {
   dmax = nmax = 0;
-  discrete = NULL;
-  dnum = dfirst = NULL;
+  discrete = nullptr;
+  dnum = dfirst = nullptr;
 
   single_enable = 0;
   restartinfo = 0;
@@ -74,7 +74,6 @@ void PairTriLJ::compute(int eflag, int vflag)
   double dc1[3],dc2[3],dc3[3];
   int *ilist,*jlist,*numneigh,**firstneigh;
 
-  evdwl = 0.0;
   ev_init(eflag,vflag);
 
   AtomVecTri::Bonus *bonus = avec->bonus;
