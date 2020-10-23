@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -51,6 +51,7 @@ Update::Update(LAMMPS *lmp) : Pointers(lmp)
   multireplica = 0;
 
   eflag_global = vflag_global = -1;
+  eflag_atom = vflag_atom = 0;
 
   dt_default = 1;
   unit_style = nullptr;
@@ -123,7 +124,7 @@ void Update::init()
 void Update::set_units(const char *style)
 {
   // physical constants from:
-  // http://physics.nist.gov/cuu/Constants/Table/allascii.txt
+  // https://physics.nist.gov/cuu/Constants/Table/allascii.txt
   // using thermochemical calorie = 4.184 J
 
   double dt_old = dt;
