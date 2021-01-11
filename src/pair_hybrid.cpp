@@ -163,7 +163,7 @@ void PairHybrid::compute(int eflag, int vflag)
     }
 
     // substyles may be CENTROID_SAME or CENTROID_AVAIL
-    
+
     if (cvflag_atom) {
       n = atom->nlocal;
       if (force->newton_pair) n += atom->nghost;
@@ -385,7 +385,7 @@ void PairHybrid::flags()
   compute_flag = 0;
   respa_enable = 0;
   restartinfo = 0;
-  
+
   for (m = 0; m < nstyles; m++) {
     if (styles[m]->single_enable) ++single_enable;
     if (styles[m]->respa_enable) ++respa_enable;
@@ -418,7 +418,7 @@ void PairHybrid::flags()
     if (styles[m]->centroidstressflag == CENTROID_NOTAVAIL)
       centroidstressflag = CENTROID_NOTAVAIL;
     if (centroidstressflag == CENTROID_SAME &&
-	styles[m]->centroidstressflag == CENTROID_AVAIL)
+        styles[m]->centroidstressflag == CENTROID_AVAIL)
       centroidstressflag = CENTROID_AVAIL;
   }
 }
@@ -775,14 +775,14 @@ void PairHybrid::read_restart(FILE *fp)
     special_lj[m] = special_coul[m] = nullptr;
     if (me == 0) utils::sfread(FLERR,&n,sizeof(int),1,fp,nullptr,error);
     MPI_Bcast(&n,1,MPI_INT,0,world);
-    if (n > 0 ) {
+    if (n > 0) {
       special_lj[m] = new double[4];
       if (me == 0) utils::sfread(FLERR,special_lj[m],sizeof(double),4,fp,nullptr,error);
       MPI_Bcast(special_lj[m],4,MPI_DOUBLE,0,world);
     }
     if (me == 0) utils::sfread(FLERR,&n,sizeof(int),1,fp,nullptr,error);
     MPI_Bcast(&n,1,MPI_INT,0,world);
-    if (n > 0 ) {
+    if (n > 0) {
       special_coul[m] = new double[4];
       if (me == 0) utils::sfread(FLERR,special_coul[m],sizeof(double),4,fp,nullptr,error);
       MPI_Bcast(special_coul[m],4,MPI_DOUBLE,0,world);
