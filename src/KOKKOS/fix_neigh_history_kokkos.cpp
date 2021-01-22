@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -35,19 +35,15 @@ FixNeighHistoryKokkos<DeviceType>::FixNeighHistoryKokkos(LAMMPS *lmp, int narg, 
   memory->destroy(npartner);
   memory->sfree(partner);
   memory->sfree(valuepartner);
-  npartner = NULL;
-  partner = NULL;
-  valuepartner = NULL;
+  npartner = nullptr;
+  partner = nullptr;
+  valuepartner = nullptr;
 
   maxpartner = 8;
   grow_arrays(atom->nmax);
 
   d_resize = typename ArrayTypes<DeviceType>::t_int_scalar("FixNeighHistoryKokkos::resize");
-#ifndef KOKKOS_USE_CUDA_UVM
   h_resize = Kokkos::create_mirror_view(d_resize);
-#else
-  h_resize = d_resize;
-#endif
   h_resize() = 1;
 }
 

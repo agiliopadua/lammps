@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -69,7 +69,7 @@ const int THIS_IS_A_BIGINT   = -4;
 
 /* ---------------------------------------------------------------------- */
 
-#define NCERR(x) ncerr(x, NULL, __LINE__)
+#define NCERR(x) ncerr(x, nullptr, __LINE__)
 #define NCERRX(x, descr) ncerr(x, descr, __LINE__)
 #if !defined(NC_64BIT_DATA)
 #define NC_64BIT_DATA NC_64BIT_OFFSET
@@ -183,7 +183,7 @@ DumpNetCDF::DumpNetCDF(LAMMPS *lmp, int narg, char **arg) :
       for (int j = 0; j < DUMP_NC_MAX_DIMS; j++) {
         perat[inc].field[j] = -1;
       }
-      strcpy(perat[inc].name, mangled);
+      strncpy(perat[inc].name, mangled, NC_FIELD_NAME_MAX);
       n_perat++;
     }
 
@@ -193,13 +193,13 @@ DumpNetCDF::DumpNetCDF(LAMMPS *lmp, int narg, char **arg) :
   }
 
   n_buffer = 0;
-  int_buffer = NULL;
-  double_buffer = NULL;
+  int_buffer = nullptr;
+  double_buffer = nullptr;
 
   double_precision = false;
 
   thermo = false;
-  thermovar = NULL;
+  thermovar = nullptr;
 
   framei = 0;
 }
@@ -512,7 +512,7 @@ void DumpNetCDF::openfile()
       NCERR( nc_put_att_text(ncid, NC_GLOBAL, "program",
                  6, "LAMMPS") );
       NCERR( nc_put_att_text(ncid, NC_GLOBAL, "programVersion",
-                 strlen(universe->version), universe->version) );
+                 strlen(lmp->version), lmp->version) );
 
       // units
       if (!strcmp(update->unit_style, "lj")) {

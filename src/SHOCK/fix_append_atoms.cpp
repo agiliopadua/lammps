@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -35,8 +35,8 @@ using namespace FixConst;
 /* ---------------------------------------------------------------------- */
 
 FixAppendAtoms::FixAppendAtoms(LAMMPS *lmp, int narg, char **arg) :
-  Fix(lmp, narg, arg), randomx(NULL), randomt(NULL), basistype(NULL),
-  spatialid(NULL), gfactor1(NULL), gfactor2(NULL)
+  Fix(lmp, narg, arg), randomx(nullptr), randomt(nullptr), basistype(nullptr),
+  spatialid(nullptr), gfactor1(nullptr), gfactor2(nullptr)
 {
   force_reneighbor = 1;
   next_reneighbor = -1;
@@ -48,7 +48,7 @@ FixAppendAtoms::FixAppendAtoms(LAMMPS *lmp, int narg, char **arg) :
 
   scaleflag = 1;
   spatflag=0;
-  spatialid = NULL;
+  spatialid = nullptr;
   xloflag = xhiflag = yloflag = yhiflag = zloflag = zhiflag = 0;
 
   tempflag = 0;
@@ -58,8 +58,8 @@ FixAppendAtoms::FixAppendAtoms(LAMMPS *lmp, int narg, char **arg) :
   rany = 0.0;
   ranz = 0.0;
 
-  randomx = NULL;
-  randomt = NULL;
+  randomx = nullptr;
+  randomt = nullptr;
 
   if (domain->lattice->nbasis == 0)
     error->all(FLERR,"Fix append/atoms requires a lattice be defined");
@@ -358,7 +358,7 @@ void FixAppendAtoms::post_force(int /*vflag*/)
     }
     for (int i = 0; i < nlocal; i++) {
       // SET TEMP AHEAD OF SHOCK
-      if (tempflag && x[i][2] >= domain->boxhi[2] - t_extent ) {
+      if (tempflag && x[i][2] >= domain->boxhi[2] - t_extent) {
         gamma1 = gfactor1[type[i]];
         gamma2 = gfactor2[type[i]] * tsqrt;
         f[i][0] += gamma1*v[i][0] + gamma2*(randomt->uniform()-0.5);
@@ -386,7 +386,7 @@ void FixAppendAtoms::post_force(int /*vflag*/)
 
       // set temp ahead of shock
 
-      if (tempflag && x[i][2] >= domain->boxhi[2] - t_extent ) {
+      if (tempflag && x[i][2] >= domain->boxhi[2] - t_extent) {
         gamma1 = -rmass[i] / t_period / ftm2v;
         gamma2 = sqrt(rmass[i]) * sqrt(24.0*boltz/t_period/dt/mvv2e) / ftm2v;
         gamma2 *= tsqrt;
@@ -515,7 +515,7 @@ void FixAppendAtoms::pre_exchange()
       if (atom->natoms < 0)
         error->all(FLERR,"Too many total atoms");
       if (atom->tag_enable) atom->tag_extend();
-      if (atom->map_style) {
+      if (atom->map_style != Atom::MAP_NONE) {
         atom->nghost = 0;
         atom->map_init();
         atom->map_set();

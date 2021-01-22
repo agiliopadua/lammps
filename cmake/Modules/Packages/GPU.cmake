@@ -2,6 +2,7 @@ set(GPU_SOURCES_DIR ${LAMMPS_SOURCE_DIR}/GPU)
 set(GPU_SOURCES ${GPU_SOURCES_DIR}/gpu_extra.h
                 ${GPU_SOURCES_DIR}/fix_gpu.h
                 ${GPU_SOURCES_DIR}/fix_gpu.cpp)
+target_compile_definitions(lammps PRIVATE -DLMP_GPU)
 
 set(GPU_API "opencl" CACHE STRING "API used by GPU package")
 set(GPU_API_VALUES opencl cuda hip)
@@ -309,7 +310,7 @@ elseif(GPU_API STREQUAL "HIP")
     endif()
 
     add_custom_command(OUTPUT ${CUBIN_H_FILE}
-      COMMAND ${CMAKE_COMMAND} -D SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR} -D VARNAME=${CU_NAME} -D HEADER_FILE=${CUBIN_H_FILE} -D SOURCE_FILES=${CUBIN_FILE} -P ${CMAKE_CURRENT_SOURCE_DIR}/Modules/GenerateBinaryHeader.cmake
+      COMMAND ${CMAKE_COMMAND} -D SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR} -D VARNAME=${CU_NAME} -D HEADER_FILE=${CUBIN_H_FILE} -D SOURCE_FILE=${CUBIN_FILE} -P ${CMAKE_CURRENT_SOURCE_DIR}/Modules/GenerateBinaryHeader.cmake
       DEPENDS ${CUBIN_FILE}
       COMMENT "Generating ${CU_NAME}_cubin.h")
 

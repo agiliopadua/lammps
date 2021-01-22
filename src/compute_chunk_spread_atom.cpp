@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -37,7 +37,7 @@ enum{COMPUTE,FIX};
 ComputeChunkSpreadAtom::
 ComputeChunkSpreadAtom(LAMMPS *lmp, int narg, char **arg) :
   Compute(lmp, narg, arg),
-  idchunk(NULL), ids(NULL), which(NULL), argindex(NULL), value2index(NULL)
+  idchunk(nullptr), ids(nullptr), which(nullptr), argindex(nullptr), value2index(nullptr)
 {
   if (narg < 5) error->all(FLERR,"Illegal compute chunk/spread/atom command");
 
@@ -68,7 +68,7 @@ ComputeChunkSpreadAtom(LAMMPS *lmp, int narg, char **arg) :
 
   iarg = 0;
   while (iarg < nargnew) {
-    ids[nvalues] = NULL;
+    ids[nvalues] = nullptr;
 
     if (strncmp(arg[iarg],"c_",2) == 0 ||
         strncmp(arg[iarg],"f_",2) == 0) {
@@ -161,8 +161,8 @@ ComputeChunkSpreadAtom(LAMMPS *lmp, int narg, char **arg) :
   // per-atom vector or array
 
   nmax = 0;
-  vector_atom = NULL;
-  array_atom = NULL;
+  vector_atom = nullptr;
+  array_atom = nullptr;
 }
 
 /* ---------------------------------------------------------------------- */

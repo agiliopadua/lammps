@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -34,7 +34,7 @@ enum{COMPUTE,FIX,VARIABLE};
 
 ComputeSlice::ComputeSlice(LAMMPS *lmp, int narg, char **arg) :
   Compute(lmp, narg, arg),
-  nvalues(0), which(NULL), argindex(NULL), value2index(NULL), ids(NULL)
+  nvalues(0), which(nullptr), argindex(nullptr), value2index(nullptr), ids(nullptr)
 {
   if (narg < 7) error->all(FLERR,"Illegal compute slice command");
 
@@ -224,6 +224,7 @@ ComputeSlice::~ComputeSlice()
   for (int m = 0; m < nvalues; m++) delete [] ids[m];
   delete [] ids;
   delete [] value2index;
+  delete [] extlist;
 
   memory->destroy(vector);
   memory->destroy(array);

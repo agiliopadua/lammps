@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -39,7 +39,7 @@ using namespace LAMMPS_NS;
 
 ComputePressureBocs::ComputePressureBocs(LAMMPS *lmp, int narg, char **arg) :
   Compute(lmp, narg, arg),
-  vptr(NULL), id_temp(NULL)
+  vptr(nullptr), id_temp(nullptr)
 {
   if (narg < 4) error->all(FLERR,"Illegal compute pressure/bocs command");
   if (igroup) error->all(FLERR,"Compute pressure/bocs must use group all");
@@ -52,12 +52,12 @@ ComputePressureBocs::ComputePressureBocs(LAMMPS *lmp, int narg, char **arg) :
   timeflag = 1;
 
   p_match_flag = 0;
-  phi_coeff = NULL;
+  phi_coeff = nullptr;
 
   // store temperature ID used by pressure computation
   // insure it is valid for temperature computation
 
-  if (strcmp(arg[3],"NULL") == 0) id_temp = NULL;
+  if (strcmp(arg[3],"NULL") == 0) id_temp = nullptr;
   else {
     int n = strlen(arg[3]) + 1;
     id_temp = new char[n];
@@ -104,15 +104,15 @@ ComputePressureBocs::ComputePressureBocs(LAMMPS *lmp, int narg, char **arg) :
 
   // error check
 
-  if (keflag && id_temp == NULL)
+  if (keflag && id_temp == nullptr)
     error->all(FLERR,"Compute pressure/bocs requires temperature ID "
                "to include kinetic energy");
 
   vector = new double[size_vector];
   nvirial = 0;
-  vptr = NULL;
+  vptr = nullptr;
 
-  splines = NULL;
+  splines = nullptr;
   spline_length = 0;
 }
 
@@ -149,13 +149,15 @@ void ComputePressureBocs::init()
 
   delete [] vptr;
   nvirial = 0;
-  vptr = NULL;
+  vptr = nullptr;
 
   if (pairflag && force->pair) nvirial++;
-  if (bondflag && atom->molecular && force->bond) nvirial++;
-  if (angleflag && atom->molecular && force->angle) nvirial++;
-  if (dihedralflag && atom->molecular && force->dihedral) nvirial++;
-  if (improperflag && atom->molecular && force->improper) nvirial++;
+  if (atom->molecular != Atom::ATOMIC) {
+    if (bondflag && force->bond) nvirial++;
+    if (angleflag && force->angle) nvirial++;
+    if (dihedralflag && force->dihedral) nvirial++;
+    if (improperflag && force->improper) nvirial++;
+  }
   if (fixflag)
     for (int i = 0; i < modify->nfix; i++)
       if (modify->fix[i]->virial_flag) nvirial++;
@@ -179,7 +181,7 @@ void ComputePressureBocs::init()
   // flag Kspace contribution separately, since not summed across procs
 
   if (kspaceflag && force->kspace) kspace_virial = force->kspace->virial;
-  else kspace_virial = NULL;
+  else kspace_virial = nullptr;
 }
 
 /* Extra functions added for BOCS */
@@ -318,11 +320,11 @@ double ComputePressureBocs::compute_scalar()
     volume = (domain->xprd * domain->yprd * domain->zprd);
 
     /* MRD NJD if block */
-    if ( p_basis_type == BASIS_ANALYTIC )
+    if (p_basis_type == BASIS_ANALYTIC)
     {
       correction = get_cg_p_corr(N_basis,phi_coeff,N_mol,vavg,volume);
     }
-    else if ( p_basis_type == BASIS_LINEAR_SPLINE || p_basis_type == BASIS_CUBIC_SPLINE )
+    else if (p_basis_type == BASIS_LINEAR_SPLINE || p_basis_type == BASIS_CUBIC_SPLINE)
     {
       correction = get_cg_p_corr(splines, p_basis_type, volume);
     }

@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -33,7 +33,7 @@ using namespace FixConst;
 
 FixSpringSelf::FixSpringSelf(LAMMPS *lmp, int narg, char **arg) :
   Fix(lmp, narg, arg),
-  xoriginal(NULL)
+  xoriginal(nullptr)
 {
   if ((narg < 4) || (narg > 5))
     error->all(FLERR,"Illegal fix spring/self command");
@@ -70,10 +70,10 @@ FixSpringSelf::FixSpringSelf(LAMMPS *lmp, int narg, char **arg) :
   // perform initial allocation of atom-based array
   // register with Atom class
 
-  xoriginal = NULL;
+  xoriginal = nullptr;
   grow_arrays(atom->nmax);
-  atom->add_callback(0);
-  atom->add_callback(1);
+  atom->add_callback(Atom::GROW);
+  atom->add_callback(Atom::RESTART);
 
   // xoriginal = initial unwrapped positions of atoms
 
@@ -96,8 +96,8 @@ FixSpringSelf::~FixSpringSelf()
 {
   // unregister callbacks to this fix from Atom class
 
-  atom->delete_callback(id,0);
-  atom->delete_callback(id,1);
+  atom->delete_callback(id,Atom::GROW);
+  atom->delete_callback(id,Atom::RESTART);
 
   // delete locally stored array
 

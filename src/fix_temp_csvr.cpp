@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -105,7 +105,7 @@ double FixTempCSVR::sumnoises(int nn) {
   the system so it samples the canonical ensemble
 ---------------------------------------------------------------------- */
 
-double FixTempCSVR::resamplekin(double ekin_old, double ekin_new){
+double FixTempCSVR::resamplekin(double ekin_old, double ekin_new) {
   const double tdof = temperature->dof;
   const double c1 = exp(-update->dt/t_period);
   const double c2 = (1.0-c1)*ekin_new/ekin_old/tdof;
@@ -120,7 +120,7 @@ double FixTempCSVR::resamplekin(double ekin_old, double ekin_new){
 
 FixTempCSVR::FixTempCSVR(LAMMPS *lmp, int narg, char **arg) :
   Fix(lmp, narg, arg),
-  tstr(NULL), id_temp(NULL), random(NULL)
+  tstr(nullptr), id_temp(nullptr), random(nullptr)
 {
   if (narg != 7) error->all(FLERR,"Illegal fix temp/csvr command");
 
@@ -133,7 +133,7 @@ FixTempCSVR::FixTempCSVR(LAMMPS *lmp, int narg, char **arg) :
   dynamic_group_allow = 1;
   extscalar = 1;
 
-  tstr = NULL;
+  tstr = nullptr;
   if (strstr(arg[3],"v_") == arg[3]) {
     int n = strlen(&arg[3][2]) + 1;
     tstr = new char[n];
@@ -338,16 +338,17 @@ double FixTempCSVR::compute_scalar()
 
 void FixTempCSVR::write_restart(FILE *fp)
 {
-  int nsize = (98+2+3)*comm->nprocs+2; // pRNG state per proc + nprocs + energy
+  const int PRNGSIZE = 98+2+3;
+  int nsize = PRNGSIZE*comm->nprocs+2; // pRNG state per proc + nprocs + energy
   double *list = nullptr;
   if (comm->me == 0) {
     list = new double[nsize];
     list[0] = energy;
     list[1] = comm->nprocs;
   }
-  double state[103];
+  double state[PRNGSIZE];
   random->get_state(state);
-  MPI_Gather(state,103,MPI_DOUBLE,list+2,103*comm->nprocs,MPI_DOUBLE,0,world);
+  MPI_Gather(state,PRNGSIZE,MPI_DOUBLE,list+2,PRNGSIZE,MPI_DOUBLE,0,world);
 
   if (comm->me == 0) {
     int size = nsize * sizeof(double);
@@ -383,5 +384,5 @@ void *FixTempCSVR::extract(const char *str, int &dim)
   if (strcmp(str,"t_target") == 0) {
     return &t_target;
   }
-  return NULL;
+  return nullptr;
 }

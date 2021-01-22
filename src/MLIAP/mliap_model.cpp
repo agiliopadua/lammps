@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -9,6 +9,10 @@
    the GNU General Public License.
 
    See the README file in the top-level LAMMPS directory.
+------------------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------------
+   Contributing author: Aidan Thompson (SNL)
 ------------------------------------------------------------------------- */
 
 #include "mliap_model.h"
@@ -28,13 +32,9 @@ using namespace LAMMPS_NS;
 
 MLIAPModel::MLIAPModel(LAMMPS* lmp, char* coefffilename) : Pointers(lmp)
 {
-  coeffelem = NULL;
-  if (coefffilename) read_coeffs(coefffilename);
-  else {
-    nparams = 0;
-    nelements = 0;
-    ndescriptors = 0;
-  }
+  nparams = 0;
+  nelements = 0;
+  ndescriptors = 0;
   nonlinearflag = 0;
 }
 
@@ -42,8 +42,8 @@ MLIAPModel::MLIAPModel(LAMMPS* lmp, char* coefffilename) : Pointers(lmp)
 
 MLIAPModel::~MLIAPModel()
 {
-  memory->destroy(coeffelem);
 }
+
 
 /* ----------------------------------------------------------------------
    placeholder
@@ -73,7 +73,22 @@ void MLIAPModel::set_ndescriptors(int ndescriptors_in)
 
 /* ---------------------------------------------------------------------- */
 
-void MLIAPModel::read_coeffs(char *coefffilename)
+
+MLIAPModelSimple::MLIAPModelSimple(LAMMPS* lmp, char* coefffilename) : MLIAPModel(lmp, coefffilename)
+{
+  coeffelem = nullptr;
+  if (coefffilename) read_coeffs(coefffilename);
+}
+
+/* ---------------------------------------------------------------------- */
+
+MLIAPModelSimple::~MLIAPModelSimple()
+{
+  memory->destroy(coeffelem);
+}
+
+
+void MLIAPModelSimple::read_coeffs(char *coefffilename)
 {
 
   // open coefficient file on proc 0
@@ -81,7 +96,7 @@ void MLIAPModel::read_coeffs(char *coefffilename)
   FILE *fpcoeff;
   if (comm->me == 0) {
     fpcoeff = utils::open_potential(coefffilename,lmp,nullptr);
-    if (fpcoeff == NULL)
+    if (fpcoeff == nullptr)
       error->one(FLERR,fmt::format("Cannot open MLIAPModel coeff file {}: {}",
                                    coefffilename,utils::getsyserror()));
   }
@@ -94,7 +109,7 @@ void MLIAPModel::read_coeffs(char *coefffilename)
   while (nwords == 0) {
     if (comm->me == 0) {
       ptr = fgets(line,MAXLINE,fpcoeff);
-      if (ptr == NULL) {
+      if (ptr == nullptr) {
         eof = 1;
         fclose(fpcoeff);
       } else n = strlen(line) + 1;
@@ -119,7 +134,7 @@ void MLIAPModel::read_coeffs(char *coefffilename)
   int iword = 0;
   words[iword] = strtok(line,"' \t\n\r\f");
   iword = 1;
-  words[iword] = strtok(NULL,"' \t\n\r\f");
+  words[iword] = strtok(nullptr,"' \t\n\r\f");
 
   nelements = atoi(words[0]);
   nparams = atoi(words[1]);
@@ -134,7 +149,7 @@ void MLIAPModel::read_coeffs(char *coefffilename)
     for (int icoeff = 0; icoeff < nparams; icoeff++) {
       if (comm->me == 0) {
         ptr = fgets(line,MAXLINE,fpcoeff);
-        if (ptr == NULL) {
+        if (ptr == nullptr) {
           eof = 1;
           fclose(fpcoeff);
         } else n = strlen(line) + 1;
@@ -165,7 +180,7 @@ void MLIAPModel::read_coeffs(char *coefffilename)
    memory usage
 ------------------------------------------------------------------------- */
 
-double MLIAPModel::memory_usage()
+double MLIAPModelSimple::memory_usage()
 {
   double bytes = 0;
 

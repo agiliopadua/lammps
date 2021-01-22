@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -223,7 +223,7 @@ void FixSMD::smd_tether()
   if (!zflag) dz = 0.0;
   r = sqrt(dx*dx + dy*dy + dz*dz);
   if (styleflag & SMD_CVEL) {
-    if(r > SMALL) {
+    if (r > SMALL) {
       dr = r - r0 - r_old;
       fx = k_smd*dx*dr/r;
       fy = k_smd*dy*dr/r;

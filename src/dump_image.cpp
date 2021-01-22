@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -50,12 +50,12 @@ enum{NO,YES};
 /* ---------------------------------------------------------------------- */
 
 DumpImage::DumpImage(LAMMPS *lmp, int narg, char **arg) :
-  DumpCustom(lmp, narg, arg), thetastr(NULL), phistr(NULL), cxstr(NULL),
-  cystr(NULL), czstr(NULL), upxstr(NULL), upystr(NULL), upzstr(NULL),
-  zoomstr(NULL), perspstr(NULL), diamtype(NULL), diamelement(NULL),
-  bdiamtype(NULL), colortype(NULL), colorelement(NULL), bcolortype(NULL),
-  avec_line(NULL), avec_tri(NULL), avec_body(NULL), fixptr(NULL), image(NULL),
-  chooseghost(NULL), bufcopy(NULL)
+  DumpCustom(lmp, narg, arg), thetastr(nullptr), phistr(nullptr), cxstr(nullptr),
+  cystr(nullptr), czstr(nullptr), upxstr(nullptr), upystr(nullptr), upzstr(nullptr),
+  zoomstr(nullptr), diamtype(nullptr), diamelement(nullptr),
+  bdiamtype(nullptr), colortype(nullptr), colorelement(nullptr), bcolortype(nullptr),
+  avec_line(nullptr), avec_tri(nullptr), avec_body(nullptr), fixptr(nullptr), image(nullptr),
+  chooseghost(nullptr), bufcopy(nullptr)
 {
   if (binary || multiproc) error->all(FLERR,"Invalid dump image filename");
 
@@ -124,16 +124,15 @@ DumpImage::DumpImage(LAMMPS *lmp, int narg, char **arg) :
     bdiam = NUMERIC;
     bdiamvalue = 0.5;
   }
-  char *fixID = NULL;
+  char *fixID = nullptr;
 
-  thetastr = phistr = NULL;
+  thetastr = phistr = nullptr;
   cflag = STATIC;
   cx = cy = cz = 0.5;
-  cxstr = cystr = czstr = NULL;
+  cxstr = cystr = czstr = nullptr;
 
-  upxstr = upystr = upzstr = NULL;
-  zoomstr = NULL;
-  perspstr = NULL;
+  upxstr = upystr = upzstr = nullptr;
+  zoomstr = nullptr;
   boxflag = YES;
   boxdiam = 0.02;
   axesflag = NO;
@@ -305,20 +304,6 @@ DumpImage::DumpImage(LAMMPS *lmp, int narg, char **arg) :
       }
       iarg += 2;
 
-    } else if (strcmp(arg[iarg],"persp") == 0) {
-      error->all(FLERR,"Dump image persp option is not yet supported");
-      if (iarg+2 > narg) error->all(FLERR,"Illegal dump image command");
-      if (strstr(arg[iarg+1],"v_") == arg[iarg+1]) {
-        int n = strlen(&arg[iarg+1][2]) + 1;
-        perspstr = new char[n];
-        strcpy(perspstr,&arg[iarg+1][2]);
-      } else {
-        double persp = utils::numeric(FLERR,arg[iarg+1],false,lmp);
-        if (persp < 0.0) error->all(FLERR,"Illegal dump image command");
-        image->persp = persp;
-      }
-      iarg += 2;
-
     } else if (strcmp(arg[iarg],"box") == 0) {
       if (iarg+3 > narg) error->all(FLERR,"Illegal dump image command");
       if (strcmp(arg[iarg+1],"yes") == 0) boxflag = YES;
@@ -441,15 +426,15 @@ DumpImage::DumpImage(LAMMPS *lmp, int narg, char **arg) :
       else if (i % 6 == 0) bcolortype[i] = image->color2rgb("cyan");
     }
   } else {
-    bdiamtype = NULL;
-    bcolortype = NULL;
+    bdiamtype = nullptr;
+    bcolortype = nullptr;
   }
 
   // viewflag = DYNAMIC if any view parameter is dynamic
 
   viewflag = STATIC;
   if (thetastr || phistr || cflag == DYNAMIC ||
-      upxstr || upystr || upzstr || zoomstr || perspstr) viewflag = DYNAMIC;
+      upxstr || upystr || upzstr || zoomstr) viewflag = DYNAMIC;
 
   box_bounds();
   if (cflag == STATIC) box_center();
@@ -458,8 +443,8 @@ DumpImage::DumpImage(LAMMPS *lmp, int narg, char **arg) :
   // local data
 
   maxbufcopy = 0;
-  chooseghost = NULL;
-  bufcopy = NULL;
+  chooseghost = nullptr;
+  bufcopy = nullptr;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -553,20 +538,13 @@ void DumpImage::init_style()
     if (!input->variable->equalstyle(zoomvar))
       error->all(FLERR,"Variable for dump image zoom is invalid style");
   }
-  if (perspstr) {
-    perspvar = input->variable->find(perspstr);
-    if (perspvar < 0)
-      error->all(FLERR,"Variable name for dump image persp does not exist");
-    if (!input->variable->equalstyle(perspvar))
-      error->all(FLERR,"Variable for dump image persp is invalid style");
-  }
 
   // set up type -> element mapping
 
   if (atomflag && acolor == ELEMENT) {
     for (int i = 1; i <= ntypes; i++) {
       colorelement[i] = image->element2color(typenames[i]);
-      if (colorelement[i] == NULL)
+      if (colorelement[i] == nullptr)
         error->all(FLERR,"Invalid dump image element name");
     }
   }
@@ -606,7 +584,7 @@ void DumpImage::write()
 
   // pack buf with color & diameter
 
-  pack(NULL);
+  pack(nullptr);
 
   // set minmax color range if using dynamic atom color map
 
@@ -641,7 +619,7 @@ void DumpImage::write()
     else image->write_PPM(fp);
     if (multifile) {
       fclose(fp);
-      fp = NULL;
+      fp = nullptr;
     }
   }
 }
@@ -719,12 +697,10 @@ void DumpImage::view_params()
   if (upystr) image->up[1] = input->variable->compute_equal(upyvar);
   if (upzstr) image->up[2] = input->variable->compute_equal(upzvar);
 
-  // zoom and perspective
+  // zoom
 
   if (zoomstr) image->zoom = input->variable->compute_equal(zoomvar);
   if (image->zoom <= 0.0) error->all(FLERR,"Invalid dump image zoom value");
-  if (perspstr) image->persp = input->variable->compute_equal(perspvar);
-  if (image->persp < 0.0) error->all(FLERR,"Invalid dump image persp value");
 
   // remainder of view setup is internal to Image class
 
@@ -952,7 +928,7 @@ void DumpImage::create_image()
 
     for (i = 0; i < nchoose; i++) {
       atom1 = clist[i];
-      if (molecular == 1) n = num_bond[atom1];
+      if (molecular == Atom::MOLECULAR) n = num_bond[atom1];
       else {
         if (molindex[atom1] < 0) continue;
         imol = molindex[atom1];
@@ -961,7 +937,7 @@ void DumpImage::create_image()
       }
 
       for (m = 0; m < n; m++) {
-        if (molecular == 1) {
+        if (molecular == Atom::MOLECULAR) {
           btype = bond_type[atom1][m];
           atom2 = atom->map(bond_atom[atom1][m]);
         } else {
@@ -1261,7 +1237,7 @@ int DumpImage::modify_param(int narg, char **arg)
     char **ptrs = new char*[ncount+1];
     ncount = 0;
     ptrs[ncount++] = strtok(arg[2],"/");
-    while ((ptrs[ncount++] = strtok(NULL,"/")));
+    while ((ptrs[ncount++] = strtok(nullptr,"/")));
     ncount--;
 
     // assign each of ncount colors in round-robin fashion to types
@@ -1269,7 +1245,7 @@ int DumpImage::modify_param(int narg, char **arg)
     int m = 0;
     for (int i = nlo; i <= nhi; i++) {
       colortype[i] = image->color2rgb(ptrs[m%ncount]);
-      if (colortype[i] == NULL)
+      if (colortype[i] == nullptr)
         error->all(FLERR,"Invalid color in dump_modify command");
       m++;
     }
@@ -1324,7 +1300,7 @@ int DumpImage::modify_param(int narg, char **arg)
     char **ptrs = new char*[ncount+1];
     ncount = 0;
     ptrs[ncount++] = strtok(arg[2],"/");
-    while ((ptrs[ncount++] = strtok(NULL,"/")));
+    while ((ptrs[ncount++] = strtok(nullptr,"/")));
     ncount--;
 
     // assign each of ncount colors in round-robin fashion to types
@@ -1332,7 +1308,7 @@ int DumpImage::modify_param(int narg, char **arg)
     int m = 0;
     for (int i = nlo; i <= nhi; i++) {
       bcolortype[i] = image->color2rgb(ptrs[m%ncount]);
-      if (bcolortype[i] == NULL)
+      if (bcolortype[i] == nullptr)
         error->all(FLERR,"Invalid color in dump_modify command");
       m++;
     }
@@ -1356,7 +1332,7 @@ int DumpImage::modify_param(int narg, char **arg)
   if (strcmp(arg[0],"backcolor") == 0) {
     if (narg < 2) error->all(FLERR,"Illegal dump_modify command");
     double *color = image->color2rgb(arg[1]);
-    if (color == NULL) error->all(FLERR,"Invalid color in dump_modify command");
+    if (color == nullptr) error->all(FLERR,"Invalid color in dump_modify command");
     image->background[0] = static_cast<int> (color[0]*255.0);
     image->background[1] = static_cast<int> (color[1]*255.0);
     image->background[2] = static_cast<int> (color[2]*255.0);
@@ -1366,7 +1342,7 @@ int DumpImage::modify_param(int narg, char **arg)
   if (strcmp(arg[0],"boxcolor") == 0) {
     if (narg < 2) error->all(FLERR,"Illegal dump_modify command");
     image->boxcolor = image->color2rgb(arg[1]);
-    if (image->boxcolor == NULL)
+    if (image->boxcolor == nullptr)
       error->all(FLERR,"Invalid color in dump_modify command");
     return 2;
   }

@@ -101,6 +101,7 @@ class Modify : protected Pointers {
   void add_fix(int, char **, int trysuffix=1);
   void add_fix(const std::string &, int trysuffix=1);
   void replace_fix(const char *, int, char **, int trysuffix=1);
+  void replace_fix(const std::string &, const std::string &, int trysuffix=1);
   void modify_fix(int, char **);
   void delete_fix(const std::string &);
   void delete_fix(int);
@@ -125,7 +126,7 @@ class Modify : protected Pointers {
   int read_restart(FILE *);
   void restart_deallocate(int);
 
-  bigint memory_usage();
+  double memory_usage();
 
  protected:
 

@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -118,13 +118,13 @@ FixAveCorrelateLong::FixAveCorrelateLong(LAMMPS * lmp, int narg, char **arg):
 
   type = AUTO;
   startstep = 0;
-  fp = NULL;
+  fp = nullptr;
   overwrite = 0;
   numcorrelators=20;
   p = 16;
   m = 2;
-  char *title1 = NULL;
-  char *title2 = NULL;
+  char *title1 = nullptr;
+  char *title2 = nullptr;
 
   while (iarg < narg) {
     if (strcmp(arg[iarg],"type") == 0) {
@@ -163,7 +163,7 @@ FixAveCorrelateLong::FixAveCorrelateLong(LAMMPS * lmp, int narg, char **arg):
         error->all(FLERR,"Illegal fix ave/correlate/long command");
       if (me == 0) {
         fp = fopen(arg[iarg+1],"w");
-        if (fp == NULL) {
+        if (fp == nullptr) {
           char str[128];
           snprintf(str,128,"Cannot open fix ave/correlate/long file %s",arg[iarg+1]);
           error->one(FLERR,str);
@@ -491,7 +491,7 @@ void FixAveCorrelateLong::end_of_step()
   evaluate();
 
   if (fp && me == 0) {
-    if(overwrite) fseek(fp,filepos,SEEK_SET);
+    if (overwrite) fseek(fp,filepos,SEEK_SET);
     fprintf(fp,"# Timestep: " BIGINT_FORMAT "\n", ntimestep);
     for (unsigned int i=0;i<npcorr;++i) {
       fprintf(fp, "%lg ", t[i]*update->dt*nevery);
@@ -590,7 +590,7 @@ void FixAveCorrelateLong::accumulate()
 /* ----------------------------------------------------------------------
    Add a scalar value to the autocorrelator k of pair i
 ------------------------------------------------------------------------- */
-void FixAveCorrelateLong::add(const int i, const double w, const int k){
+void FixAveCorrelateLong::add(const int i, const double w, const int k) {
   // If we exceed the correlator side, the value is discarded
   if (k == numcorrelators) return;
   if (k > kmax) kmax=k;

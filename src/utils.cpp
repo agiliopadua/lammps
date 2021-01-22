@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -70,6 +70,16 @@ extern "C"
    * (regexp will be compiled automatically). */
   static int  re_match(const char *text, const char *pattern);
 }
+
+////////////////////////////////////////////////////////////////////////
+// Merge sort support functions
+
+static void do_merge(int *idx, int *buf, int llo, int lhi, int rlo, int rhi,
+                     void *ptr, int (*comp)(int, int, void *));
+static void insertion_sort(int *index, int num, void *ptr,
+                           int (*comp)(int, int, void*));
+
+////////////////////////////////////////////////////////////////////////
 
 using namespace LAMMPS_NS;
 
@@ -142,7 +152,7 @@ void utils::sfgets(const char *srcname, int srcline, char *s, int size,
                    FILE *fp, const char *filename, Error *error)
 {
   char *rv = fgets(s,size,fp);
-  if (rv == NULL) { // something went wrong
+  if (rv == nullptr) { // something went wrong
     char buf[MAXPATHLENBUF];
     std::string errmsg;
 
@@ -161,7 +171,7 @@ void utils::sfgets(const char *srcname, int srcline, char *s, int size,
     errmsg += "'";
 
     if (error) error->one(srcname,srcline,errmsg);
-    if (s) *s = '\0'; // truncate string to empty in case error is NULL
+    if (s) *s = '\0'; // truncate string to empty in case error is null pointer
   }
   return;
 }
@@ -367,19 +377,19 @@ void utils::bounds(const char *file, int line, const std::string &str,
 
   nlo = nhi = -1;
   if (found == std::string::npos) {    // contains no '*'
-    nlo = nhi = strtol(str.c_str(),NULL,10);
+    nlo = nhi = strtol(str.c_str(),nullptr,10);
   } else if (str.size() == 1) {        // is only '*'
     nlo = nmin;
     nhi = nmax;
   } else if (found == 0) {             // is '*j'
     nlo = nmin;
-    nhi = strtol(str.substr(1).c_str(),NULL,10);
+    nhi = strtol(str.substr(1).c_str(),nullptr,10);
   } else if (str.size() == found+1) {  // is 'i*'
-    nlo = strtol(str.c_str(),NULL,10);
+    nlo = strtol(str.c_str(),nullptr,10);
     nhi = nmax;
   } else {                             // is 'i*j'
-    nlo = strtol(str.c_str(),NULL,10);
-    nhi = strtol(str.substr(found+1).c_str(),NULL,10);
+    nlo = strtol(str.c_str(),nullptr,10);
+    nhi = strtol(str.substr(found+1).c_str(),nullptr,10);
   }
 
   if (error) {
@@ -412,7 +422,7 @@ int utils::expand_args(const char *file, int line, int narg, char **arg,
   int n,iarg,index,nlo,nhi,nmax,expandflag,icompute,ifix;
   char *ptr1,*ptr2,*str;
 
-  ptr1 = NULL;
+  ptr1 = nullptr;
   for (iarg = 0; iarg < narg; iarg++) {
     ptr1 = strchr(arg[iarg],'*');
     if (ptr1) break;
@@ -608,7 +618,7 @@ size_t utils::count_words(const std::string &text, const std::string &separators
     size_t end = text.find_first_of(separators, start);
     ++count;
 
-    if(end == std::string::npos) {
+    if (end == std::string::npos) {
       return count;
     } else {
       start = text.find_first_not_of(separators, end + 1);
@@ -763,6 +773,22 @@ std::string utils::path_basename(const std::string &path) {
 }
 
 /* ----------------------------------------------------------------------
+   Return only the leading part of a path, return just the directory
+------------------------------------------------------------------------- */
+
+std::string utils::path_dirname(const std::string &path) {
+#if defined(_WIN32)
+  size_t start = path.find_last_of("/\\");
+#else
+  size_t start = path.find_last_of("/");
+#endif
+
+  if (start == std::string::npos) return ".";
+
+  return path.substr(0,start);
+}
+
+/* ----------------------------------------------------------------------
    join two paths
 ------------------------------------------------------------------------- */
 
@@ -780,7 +806,7 @@ std::string utils::path_join(const std::string &a, const std::string &b) {
 
 bool utils::file_is_readable(const std::string &path) {
   FILE * fp = fopen(path.c_str(), "r");
-  if(fp) {
+  if (fp) {
     fclose(fp);
     return true;
   }
@@ -802,13 +828,13 @@ std::string utils::get_potential_file_path(const std::string &path) {
   std::string filepath = path;
   std::string filename = utils::path_basename(path);
 
-  if(utils::file_is_readable(filepath)) {
+  if (utils::file_is_readable(filepath)) {
     return filepath;
   } else {
     // try the environment variable directory
     const char *var = getenv("LAMMPS_POTENTIALS");
 
-    if (var != nullptr){
+    if (var != nullptr) {
       Tokenizer dirs(var,OS_PATH_VAR_SEP);
 
       while (dirs.has_next()) {
@@ -836,6 +862,7 @@ std::string utils::get_potential_date(const std::string &path, const std::string
   reader.ignore_comments = false;
 
   char *line = reader.next_line();
+  if (line == nullptr) return "";
   Tokenizer words(line);
   while (words.has_next()) {
     if (words.next() == "DATE:") {
@@ -855,6 +882,7 @@ std::string utils::get_potential_units(const std::string &path, const std::strin
   reader.ignore_comments = false;
 
   char *line = reader.next_line();
+  if (line == nullptr) return "";
   Tokenizer words(line);
   while (words.has_next()) {
     if (words.next() == "UNITS:") {
@@ -907,12 +935,12 @@ FILE *utils::open_potential(const std::string &name, LAMMPS *lmp,
 
   std::string filepath = get_potential_file_path(name);
 
-  if(!filepath.empty()) {
+  if (!filepath.empty()) {
     std::string unit_style = lmp->update->unit_style;
     std::string date       = get_potential_date(filepath, "potential");
     std::string units      = get_potential_units(filepath, "potential");
 
-    if(!date.empty() && (me == 0)) {
+    if (!date.empty() && (me == 0)) {
       logmesg(lmp, fmt::format("Reading potential file {} "
                                "with DATE: {}\n", name, date));
     }
@@ -990,10 +1018,10 @@ double utils::timespec2seconds(const std::string &timespec)
 int utils::date2num(const std::string &date)
 {
   std::size_t found = date.find_first_not_of("0123456789 ");
-  int num = strtol(date.substr(0,found).c_str(),NULL,10);
+  int num = strtol(date.substr(0,found).c_str(),nullptr,10);
   auto month = date.substr(found);
   found = month.find_first_of("0123456789 ");
-  num += strtol(month.substr(found).c_str(),NULL,10)*10000;
+  num += strtol(month.substr(found).c_str(),nullptr,10)*10000;
   if (num < 1000000) num += 20000000;
 
   if (strmatch(month,"^Jan")) num += 100;
@@ -1009,6 +1037,113 @@ int utils::date2num(const std::string &date)
   else if (strmatch(month,"^Nov")) num += 1100;
   else if (strmatch(month,"^Dec")) num += 1200;
   return num;
+}
+
+/* ----------------------------------------------------------------------
+ * Merge sort part 1: Loop over sublists doubling in size with each iteration.
+ * Pre-sort small sublists with insertion sort for better overall performance.
+------------------------------------------------------------------------- */
+
+void utils::merge_sort(int *index, int num, void *ptr,
+                       int (*comp)(int, int, void *))
+{
+  if (num < 2) return;
+
+  int chunk,i,j;
+
+  // do insertion sort on chunks of up to 64 elements
+
+  chunk = 64;
+  for (i=0; i < num; i += chunk) {
+    j = (i+chunk > num) ? num-i : chunk;
+    insertion_sort(index+i,j,ptr,comp);
+  }
+
+  // already done?
+
+  if (chunk >= num) return;
+
+  // continue with merge sort on the pre-sorted chunks.
+  // we need an extra buffer for temporary storage and two
+  // pointers to operate on, so we can swap the pointers
+  // rather than copying to the hold buffer in each pass
+
+  int *buf = new int[num];
+  int *dest = index;
+  int *hold = buf;
+
+  while (chunk < num) {
+    int m;
+
+    // swap hold and destination buffer
+
+    int *tmp = dest; dest = hold; hold = tmp;
+
+    // merge from hold array to destination array
+
+    for (i=0; i < num-1; i += 2*chunk) {
+      j = i + 2*chunk;
+      if (j > num) j=num;
+      m = i+chunk;
+      if (m > num) m=num;
+      do_merge(dest,hold,i,m,m,j,ptr,comp);
+    }
+
+    // copy all indices not handled by the chunked merge sort loop
+
+    for (; i < num ; i++) dest[i] = hold[i];
+    chunk *= 2;
+  }
+
+  // if the final sorted data is in buf, copy back to index
+
+  if (dest == buf) memcpy(index,buf,sizeof(int)*num);
+
+  delete[] buf;
+}
+
+/* ------------------------------------------------------------------ */
+
+/* ----------------------------------------------------------------------
+ * Merge sort part 2: Insertion sort for pre-sorting of small chunks
+------------------------------------------------------------------------- */
+
+void insertion_sort(int *index, int num, void *ptr,
+                           int (*comp)(int, int, void*))
+{
+  if (num < 2) return;
+  for (int i=1; i < num; ++i) {
+    int tmp = index[i];
+    for (int j=i-1; j >= 0; --j) {
+      if ((*comp)(index[j],tmp,ptr) > 0) {
+        index[j+1] = index[j];
+      } else {
+        index[j+1] = tmp;
+        break;
+      }
+      if (j == 0) index[0] = tmp;
+    }
+  }
+}
+
+/* ----------------------------------------------------------------------
+ * Merge sort part 3: Merge two sublists
+------------------------------------------------------------------------- */
+
+static void do_merge(int *idx, int *buf, int llo, int lhi, int rlo, int rhi,
+                     void *ptr, int (*comp)(int, int, void *))
+{
+  int i = llo;
+  int l = llo;
+  int r = rlo;
+  while ((l < lhi) && (r < rhi)) {
+    if ((*comp)(buf[l],buf[r],ptr) < 0)
+      idx[i++] = buf[l++];
+    else idx[i++] = buf[r++];
+  }
+
+  while (l < lhi) idx[i++] = buf[l++];
+  while (r < rhi) idx[i++] = buf[r++];
 }
 
 /* ------------------------------------------------------------------ */

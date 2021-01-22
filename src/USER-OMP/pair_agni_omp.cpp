@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    This software is distributed under the GNU General Public License.
@@ -56,7 +56,7 @@ void PairAGNIOMP::compute(int eflag, int vflag)
     loop_setup_thr(ifrom, ito, tid, inum, nthreads);
     ThrData *thr = fix->get_thr(tid);
     thr->timer(Timer::START);
-    ev_setup_thr(eflag, vflag, nall, eatom, vatom, NULL, thr);
+    ev_setup_thr(eflag, vflag, nall, eatom, vatom, nullptr, thr);
 
     if (evflag) eval<1>(ifrom, ito, thr);
     else eval<0>(ifrom, ito, thr);
@@ -137,7 +137,7 @@ void PairAGNIOMP::eval(int iifrom, int iito, ThrData * const thr)
       double ky = 0.0;
       double kz = 0.0;
 
-      for(int k = 0; k < iparam.numeta; ++k) {
+      for (int k = 0; k < iparam.numeta; ++k) {
         const double xu = iparam.xU[k][j];
         kx += square(Vx[k] - xu);
         ky += square(Vy[k] - xu);

@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
    DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains
@@ -36,7 +36,7 @@ static const char cite_fix_rhok[] =
   "title = {Direct calculation of the solid-liquid Gibbs free energy difference in a single equilibrium simulation},\n"
   "volume = {139},\n"
   "number = {10},\n"
-  "url = {http://aip.scitation.org/doi/10.1063/1.4818747},\n"
+  "url = {https://aip.scitation.org/doi/10.1063/1.4818747},\n"
   "doi = {10.1063/1.4818747},\n"
   "urldate = {2017-10-03},\n"
   "journal = {J. Chem. Phys.},\n"
@@ -111,7 +111,7 @@ FixRhok::init()
   int nThisLocal = 0;
   int *mask = atom->mask;
   int nlocal = atom->nlocal;
-  for( int i = 0; i < nlocal; i++ ) {   // Iterate through all atoms on this CPU
+  for (int i = 0; i < nlocal; i++) {   // Iterate through all atoms on this CPU
     if (mask[i] & groupbit) {          // ...only those affected by this fix
       nThisLocal++;
     }
@@ -156,7 +156,7 @@ FixRhok::post_force( int /*inVFlag*/ )
   mRhoKLocal[0] = 0.0;
   mRhoKLocal[1] = 0.0;
 
-  for( int i = 0; i < nlocal; i++ ) {   // Iterate through all atoms on this CPU
+  for (int i = 0; i < nlocal; i++) {   // Iterate through all atoms on this CPU
     if (mask[i] & groupbit) {          // ...only those affected by this fix
 
       // rho_k = sum_i exp( - i k.r_i )
@@ -179,7 +179,7 @@ FixRhok::post_force( int /*inVFlag*/ )
   double rhoK = sqrt( mRhoKGlobal[0]*mRhoKGlobal[0]
                       + mRhoKGlobal[1]*mRhoKGlobal[1] );
 
-  for( int i = 0; i < nlocal; i++ ) {   // Iterate through all atoms on this CPU
+  for (int i = 0; i < nlocal; i++) {   // Iterate through all atoms on this CPU
     if (mask[i] & groupbit) {          // ...only those affected by this fix
 
       // Calculate forces
@@ -235,9 +235,9 @@ FixRhok::compute_vector( int inI )
 {
   if (inI == 0)
     return mRhoKGlobal[0];   // Real part
-  else if( inI == 1 )
+  else if (inI == 1)
     return mRhoKGlobal[1];   // Imagniary part
-  else if( inI == 2 )
+  else if (inI == 2)
     return sqrt( mRhoKGlobal[0]*mRhoKGlobal[0]
                  + mRhoKGlobal[1]*mRhoKGlobal[1] );
   else

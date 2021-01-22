@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -37,7 +37,7 @@ enum{NOMSG,YESMSG};
 /* ---------------------------------------------------------------------- */
 
 FixHalt::FixHalt(LAMMPS *lmp, int narg, char **arg) :
-  Fix(lmp, narg, arg), idvar(NULL), dlimit_path(NULL)
+  Fix(lmp, narg, arg), idvar(nullptr), dlimit_path(nullptr)
 {
   if (narg < 7) error->all(FLERR,"Illegal fix halt command");
   nevery = utils::inumeric(FLERR,arg[3],false,lmp);
@@ -45,7 +45,7 @@ FixHalt::FixHalt(LAMMPS *lmp, int narg, char **arg) :
 
   // comparison args
 
-  idvar = NULL;
+  idvar = nullptr;
   int iarg = 4;
 
   if (strcmp(arg[iarg],"tlimit") == 0) {
@@ -107,7 +107,7 @@ FixHalt::FixHalt(LAMMPS *lmp, int narg, char **arg) :
       dlimit_path = new char[len];
       // strip off quotes, if present
       if ( ((arg[iarg][0] == '"') || (arg[iarg][0] == '\''))
-           && (arg[iarg][0] == arg[iarg][len-2]) ) {
+           && (arg[iarg][0] == arg[iarg][len-2])) {
         strcpy(dlimit_path,&arg[iarg][1]);
         dlimit_path[len-3] = '\0';
       } else strcpy(dlimit_path,arg[iarg]);

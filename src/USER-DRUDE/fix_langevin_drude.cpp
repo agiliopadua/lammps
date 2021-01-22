@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -48,7 +48,7 @@ FixLangevinDrude::FixLangevinDrude(LAMMPS *lmp, int narg, char **arg) :
   comm_reverse = 3;
 
   // core temperature
-  tstr_core = NULL;
+  tstr_core = nullptr;
   if (strstr(arg[3],"v_") == arg[3]) {
     int n = strlen(&arg[3][2]) + 1;
     tstr_core = new char[n];
@@ -63,7 +63,7 @@ FixLangevinDrude::FixLangevinDrude(LAMMPS *lmp, int narg, char **arg) :
   int seed_core = utils::inumeric(FLERR,arg[5],false,lmp);
 
   // drude temperature
-  tstr_drude = NULL;
+  tstr_drude = nullptr;
   if (strstr(arg[7],"v_") == arg[6]) {
     int n = strlen(&arg[6][2]) + 1;
     tstr_drude = new char[n];
@@ -102,9 +102,9 @@ FixLangevinDrude::FixLangevinDrude(LAMMPS *lmp, int narg, char **arg) :
 
   tflag = 0; // no external compute/temp is specified yet (for bias)
   energy = 0.;
-  fix_drude = NULL;
-  temperature = NULL;
-  id_temp = NULL;
+  fix_drude = nullptr;
+  temperature = nullptr;
+  id_temp = nullptr;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -271,7 +271,7 @@ void FixLangevinDrude::post_force(int /*vflag*/)
         Gcore  = mi / t_period_core  / ftm2v;
         Ccore  = sqrt(2.0 * Gcore  * kb * t_target_core  / dt / ftm2v / mvv2e);
         if (temperature) temperature->remove_bias(i, v[i]);
-        for(int k = 0; k < dim; k++){
+        for (int k = 0; k < dim; k++) {
             fcore[k] = Ccore  * random_core->gaussian()  - Gcore  * v[i][k];
             if (zero) fcoreloc[k] += fcore[k];
             f[i][k] += fcore[k];
@@ -326,7 +326,7 @@ void FixLangevinDrude::post_force(int /*vflag*/)
     }
   }
 
-  if(zero) { // Remove the drift
+  if (zero) { // Remove the drift
     MPI_Allreduce(fcoreloc, fcoresum, dim, MPI_DOUBLE, MPI_SUM, world);
     for (int k=0; k<dim; k++) fcoresum[k] /= ncore;
     for (int i=0; i<nlocal; i++) {
@@ -379,7 +379,7 @@ void *FixLangevinDrude::extract(const char *str, int &dim)
   } else if (strcmp(str,"t_target_drude") == 0) {
     return &t_target_drude;
   } else error->all(FLERR, "Illegal extract string in fix langevin/drude");
-  return NULL;
+  return nullptr;
 }
 
 /* ---------------------------------------------------------------------- */
