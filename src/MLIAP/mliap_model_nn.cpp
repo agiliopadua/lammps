@@ -18,9 +18,9 @@
 #include "mliap_model_nn.h"
 #include "pair_mliap.h"
 #include "mliap_data.h"
-#include "error.h"
 
 #include "comm.h"
+#include "error.h"
 #include "memory.h"
 #include "tokenizer.h"
 
@@ -73,8 +73,8 @@ void MLIAPModelNN::read_coeffs(char *coefffilename)
   if (comm->me == 0) {
     fpcoeff = utils::open_potential(coefffilename,lmp,nullptr);
     if (fpcoeff == nullptr)
-      error->one(FLERR,fmt::format("Cannot open MLIAPModel coeff file {}: {}",
-                                   coefffilename,utils::getsyserror()));
+      error->one(FLERR,"Cannot open MLIAPModel coeff file {}: {}",
+                                   coefffilename,utils::getsyserror());
   }
 
   char line[MAXLINE], *ptr, *tstr;
@@ -111,8 +111,8 @@ void MLIAPModelNN::read_coeffs(char *coefffilename)
     nelements = coeffs.next_int();
     nparams = coeffs.next_int();
   } catch (TokenizerException &e) {
-    error->all(FLERR,fmt::format("Incorrect format in MLIAPModel coefficient "
-                                 "file: {}",e.what()));
+    error->all(FLERR,"Incorrect format in MLIAPModel coefficient "
+                                 "file: {}",e.what());
   }
 
   // set up coeff lists

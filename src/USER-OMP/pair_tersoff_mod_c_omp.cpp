@@ -20,6 +20,8 @@
 #include "neigh_list.h"
 #include "suffix.h"
 
+#include <cmath>
+
 #include "omp_compat.h"
 using namespace LAMMPS_NS;
 using namespace MathExtra;
@@ -157,7 +159,7 @@ void PairTersoffMODCOMP::eval(int iifrom, int iito, ThrData * const thr)
         rsq = rsqtmp;
       }
 
-      iparam_ij = elem2param[itype][jtype][jtype];
+      iparam_ij = elem3param[itype][jtype][jtype];
       if (rsq > params[iparam_ij].cutsq) continue;
 
       repulsive(&params[iparam_ij],rsq,fpair,EFLAG,evdwl);
@@ -185,7 +187,7 @@ void PairTersoffMODCOMP::eval(int iifrom, int iito, ThrData * const thr)
       j = jlist[jj];
       j &= NEIGHMASK;
       jtype = map[type[j]];
-      iparam_ij = elem2param[itype][jtype][jtype];
+      iparam_ij = elem3param[itype][jtype][jtype];
 
       delr1[0] = x[j].x - xtmp;
       delr1[1] = x[j].y - ytmp;
@@ -210,7 +212,7 @@ void PairTersoffMODCOMP::eval(int iifrom, int iito, ThrData * const thr)
         k = jlist[kk];
         k &= NEIGHMASK;
         ktype = map[type[k]];
-        iparam_ijk = elem2param[itype][jtype][ktype];
+        iparam_ijk = elem3param[itype][jtype][ktype];
 
         delr2[0] = x[k].x - xtmp;
         delr2[1] = x[k].y - ytmp;
@@ -251,7 +253,7 @@ void PairTersoffMODCOMP::eval(int iifrom, int iito, ThrData * const thr)
         k = jlist[kk];
         k &= NEIGHMASK;
         ktype = map[type[k]];
-        iparam_ijk = elem2param[itype][jtype][ktype];
+        iparam_ijk = elem3param[itype][jtype][ktype];
 
         delr2[0] = x[k].x - xtmp;
         delr2[1] = x[k].y - ytmp;

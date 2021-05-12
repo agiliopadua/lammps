@@ -1,6 +1,6 @@
 /* -*- c++ -*- -------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   http://lammps.sandia.gov, Sandia National Laboratories
+   https://lammps.sandia.gov/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -123,6 +123,9 @@ inline
   void compute_zi(const int&, const int&, const int&);    // ForceSNAP
   KOKKOS_INLINE_FUNCTION
   void compute_yi(int,int,int,
+   const Kokkos::View<real_type***, Kokkos::LayoutLeft, DeviceType> &beta_pack); // ForceSNAP
+  KOKKOS_INLINE_FUNCTION
+  void compute_yi_with_zlist(int,int,int,
    const Kokkos::View<real_type***, Kokkos::LayoutLeft, DeviceType> &beta_pack); // ForceSNAP
   KOKKOS_INLINE_FUNCTION
   void compute_bi(const int&, const int&, const int&);    // ForceSNAP

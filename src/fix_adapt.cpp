@@ -302,7 +302,7 @@ void FixAdapt::init()
   // allow a dynamic group only if ATOM attribute not used
 
   if (group->dynamic[igroup])
-    for (int i = 0; i < nadapt; i++)
+    for (i = 0; i < nadapt; i++)
       if (adapt[i].which == ATOM)
         error->all(FLERR,"Cannot use dynamic group with fix adapt atom");
 
@@ -462,7 +462,7 @@ void FixAdapt::init()
     fix_chg = (FixStore *) modify->fix[ifix];
   }
 
-  if (strstr(update->integrate_style,"respa"))
+  if (utils::strmatch(update->integrate_style,"^respa"))
     nlevels_respa = ((Respa *) update->integrate)->nlevels;
 }
 
