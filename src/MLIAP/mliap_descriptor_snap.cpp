@@ -1,6 +1,7 @@
+// clang-format off
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   https://lammps.sandia.gov/, Sandia National Laboratories
+   https://www.lammps.org/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -38,8 +39,6 @@ using namespace LAMMPS_NS;
 MLIAPDescriptorSNAP::MLIAPDescriptorSNAP(LAMMPS *lmp, char *paramfilename):
   MLIAPDescriptor(lmp)
 {
-  nelements = 0;
-  elements = nullptr;
   radelem = nullptr;
   wjelem = nullptr;
   snaptr = nullptr;
@@ -50,25 +49,15 @@ MLIAPDescriptorSNAP::MLIAPDescriptorSNAP(LAMMPS *lmp, char *paramfilename):
                    chemflag, bnormflag, wselfallflag, nelements);
 
   ndescriptors = snaptr->ncoeff;
-
 }
 
 /* ---------------------------------------------------------------------- */
 
 MLIAPDescriptorSNAP::~MLIAPDescriptorSNAP()
 {
-
-  if (nelements) {
-    for (int i = 0; i < nelements; i++)
-      delete[] elements[i];
-    delete[] elements;
-    memory->destroy(radelem);
-    memory->destroy(wjelem);
-    memory->destroy(cutsq);
-  }
-
+  memory->destroy(radelem);
+  memory->destroy(wjelem);
   delete snaptr;
-
 }
 
 /* ----------------------------------------------------------------------
@@ -373,6 +362,12 @@ void MLIAPDescriptorSNAP::read_paramfile(char *paramfilename)
   bnormflag = 0;
   wselfallflag = 0;
 
+  for (int i = 0; i < nelements; i++) delete[] elements[i];
+  delete[] elements;
+  memory->destroy(radelem);
+  memory->destroy(wjelem);
+  memory->destroy(cutsq);
+
   // open SNAP parameter file on proc 0
 
   FILE *fpparam;
@@ -509,13 +504,8 @@ void MLIAPDescriptorSNAP::read_paramfile(char *paramfilename)
 
 double MLIAPDescriptorSNAP::memory_usage()
 {
-  double bytes = 0;
-
-  bytes += (double)nelements*sizeof(double);            // radelem
-  bytes += (double)nelements*sizeof(double);            // welem
-  bytes += (double)nelements*nelements*sizeof(int);     // cutsq
+  double bytes = MLIAPDescriptor::memory_usage();
   bytes += snaptr->memory_usage();                      // SNA object
 
   return bytes;
 }
-

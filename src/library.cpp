@@ -1,6 +1,7 @@
+// clang-format off
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   https://lammps.sandia.gov/, Sandia National Laboratories
+   https://www.lammps.org/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -18,6 +19,7 @@
 #include "library.h"
 #include <mpi.h>
 
+#include "accelerator_kokkos.h"
 #include "atom.h"
 #include "atom_vec.h"
 #include "comm.h"
@@ -332,8 +334,8 @@ The MPI standard requires that any MPI application calls
 do any MPI calls, MPI is still initialized internally to avoid errors
 accessing any MPI functions.  This function should then be called right
 before exiting the program to wait until all (parallel) tasks are
-completed and then MPI is cleanly shut down.  After this function no
-more MPI calls may be made.
+completed and then MPI is cleanly shut down.  After calling this
+function no more MPI calls may be made.
 
 .. versionadded:: 18Sep2020
 
@@ -350,6 +352,28 @@ void lammps_mpi_finalize()
       MPI_Finalize();
     }
   }
+}
+
+/* ---------------------------------------------------------------------- */
+
+/** Shut down the Kokkos library environment.
+ *
+\verbatim embed:rst
+
+The Kokkos library may only be initialized once during the execution of
+a process.  This is done automatically the first time Kokkos
+functionality is used.  This requires that the Kokkos environment
+must be explicitly shut down after any LAMMPS instance using it is
+closed (to release associated resources).
+After calling this function no Kokkos functionality may be used.
+
+.. versionadded:: TBD
+
+\endverbatim */
+
+void lammps_kokkos_finalize()
+{
+  KokkosLMP::finalize();
 }
 
 // ----------------------------------------------------------------------
@@ -673,7 +697,8 @@ void lammps_extract_box(void *handle, double *boxlo, double *boxhi,
 
 This function sets the simulation box dimensions (upper and lower bounds
 and tilt factors) from the provided data and then re-initializes the box
-information and all derived settings.
+information and all derived settings. It may only be called before atoms
+are created.
 
 \endverbatim
  *
@@ -692,12 +717,16 @@ void lammps_reset_box(void *handle, double *boxlo, double *boxhi,
 
   BEGIN_CAPTURE
   {
-    // error if box does not exist
-    if ((lmp->domain->box_exist == 0)
-        && (lmp->comm->me == 0)) {
-      lmp->error->warning(FLERR,"Calling lammps_reset_box without a box");
+    if (lmp->atom->natoms > 0)
+      lmp->error->all(FLERR,"Calling lammps_reset_box not supported when atoms exist");
+
+    // warn and do nothing if no box exists
+    if (lmp->domain->box_exist == 0) {
+      if (lmp->comm->me == 0)
+        lmp->error->warning(FLERR,"Ignoring call to lammps_reset_box without a box");
       return;
     }
+
     domain->boxlo[0] = boxlo[0];
     domain->boxlo[1] = boxlo[1];
     domain->boxlo[2] = boxlo[2];
