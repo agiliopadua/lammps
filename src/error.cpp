@@ -1,6 +1,7 @@
+// clang-format off
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   https://lammps.sandia.gov/, Sandia National Laboratories
+   https://www.lammps.org/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -80,7 +81,7 @@ void Error::universe_all(const std::string &file, int line, const std::string &s
 
   throw LAMMPSException(mesg);
 #else
-  if (lmp->kokkos) Kokkos::finalize();
+  KokkosLMP::finalize();
   MPI_Finalize();
   exit(1);
 #endif
@@ -106,6 +107,7 @@ void Error::universe_one(const std::string &file, int line, const std::string &s
 
   throw LAMMPSAbortException(mesg, universe->uworld);
 #else
+  KokkosLMP::finalize();
   MPI_Abort(universe->uworld,1);
   exit(1); // to trick "smart" compilers into believing this does not return
 #endif
@@ -172,8 +174,8 @@ void Error::all(const std::string &file, int line, const std::string &str)
   if (screen && screen != stdout) fclose(screen);
   if (logfile) fclose(logfile);
 
+  KokkosLMP::finalize();
   if (universe->nworlds > 1) MPI_Abort(universe->uworld,1);
-  if (lmp->kokkos) Kokkos::finalize();
   MPI_Finalize();
   exit(1);
 #endif
@@ -212,6 +214,7 @@ void Error::one(const std::string &file, int line, const std::string &str)
 #else
   if (screen) fflush(screen);
   if (logfile) fflush(logfile);
+  KokkosLMP::finalize();
   MPI_Abort(world,1);
   exit(1); // to trick "smart" compilers into believing this does not return
 #endif
@@ -314,7 +317,7 @@ void Error::done(int status)
   if (screen && screen != stdout) fclose(screen);
   if (logfile) fclose(logfile);
 
-  if (lmp->kokkos) Kokkos::finalize();
+  KokkosLMP::finalize();
   MPI_Finalize();
   exit(status);
 }

@@ -1,6 +1,6 @@
 # ----------------------------------------------------------------------
 #   LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-#   http://lammps.sandia.gov, Sandia National Laboratories
+#   https://www.lammps.org/ Sandia National Laboratories
 #   Steve Plimpton, sjplimp@sandia.gov
 #
 #   Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -20,7 +20,7 @@ import warnings
 from ctypes import POINTER, c_double, c_int, c_int32, c_int64, cast
 
 
-from .constants import *
+from .constants import *                # lgtm [py/polluting-import]
 from .data import NeighList
 
 

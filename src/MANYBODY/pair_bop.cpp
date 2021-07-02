@@ -1,6 +1,7 @@
+// clang-format off
 /* ----------------------------------------------------------------------
    LAMMPS - Large-scale Atomic/Molecular Massively Parallel Simulator
-   https://lammps.sandia.gov/, Sandia National Laboratories
+   https://www.lammps.org/, Sandia National Laboratories
    Steve Plimpton, sjplimp@sandia.gov
 
    Copyright (2003) Sandia Corporation.  Under the terms of Contract
@@ -29,7 +30,7 @@
    pairbop v 1.0 comes with no warranty of any kind.  pairbop v 1.0 is a
    copyrighted code that is distributed free-of-charge, under the terms
    of the GNU Public License (GPL).  See "Open-Source Rules"
-   https://lammps.sandia.gov/open_source.html
+   https://www.lammps.org/open_source.html
 ------------------------------------------------------------------------- */
 
 // uncomment define to enable writing table files for debugging
@@ -404,6 +405,15 @@ void PairBOP::init_style()
     error->all(FLERR,"Pair style BOP requires atom IDs");
   if (force->newton_pair == 0)
     error->all(FLERR,"Pair style BOP requires newton pair on");
+
+  if (utils::strmatch(force->pair_style,"^hybrid"))
+    error->all(FLERR,"Pair style BOP is not compatible with hybrid pair styles");
+
+  if ((neighbor->style == Neighbor::MULTI) || (neighbor->style == Neighbor::MULTI_OLD))
+    error->all(FLERR,"Pair style BOP is not compatible with multi-cutoff neighbor lists");
+
+  if (comm->mode != Comm::SINGLE)
+    error->all(FLERR,"Pair style BOP is not compatible with multi-cutoff communication");
 
   // check that user sets comm->cutghostuser to 3x the max BOP cutoff
 
