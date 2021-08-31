@@ -230,8 +230,8 @@ void PPPMIntel::compute_first(int eflag, int vflag)
   //   to fully sum contribution in their 3d bricks
   // remap from 3d decomposition to FFT decomposition
 
-  gc->reverse_comm_kspace(this,1,sizeof(FFT_SCALAR),REVERSE_RHO,
-                          gc_buf1,gc_buf2,MPI_FFT_SCALAR);
+  gc->reverse_comm(GridComm::KSPACE,this,1,sizeof(FFT_SCALAR),REVERSE_RHO,
+                   gc_buf1,gc_buf2,MPI_FFT_SCALAR);
   brick2fft();
 
   // compute potential gradient on my FFT grid and
@@ -246,21 +246,21 @@ void PPPMIntel::compute_first(int eflag, int vflag)
   // to fill ghost cells surrounding their 3d bricks
 
   if (differentiation_flag == 1)
-    gc->forward_comm_kspace(this,1,sizeof(FFT_SCALAR),FORWARD_AD,
-                            gc_buf1,gc_buf2,MPI_FFT_SCALAR);
+    gc->forward_comm(GridComm::KSPACE,this,1,sizeof(FFT_SCALAR),FORWARD_AD,
+                     gc_buf1,gc_buf2,MPI_FFT_SCALAR);
   else
-    gc->forward_comm_kspace(this,3,sizeof(FFT_SCALAR),FORWARD_IK,
-                            gc_buf1,gc_buf2,MPI_FFT_SCALAR);
+    gc->forward_comm(GridComm::KSPACE,this,3,sizeof(FFT_SCALAR),FORWARD_IK,
+                     gc_buf1,gc_buf2,MPI_FFT_SCALAR);
 
   // extra per-atom energy/virial communication
 
   if (evflag_atom) {
     if (differentiation_flag == 1 && vflag_atom)
-      gc->forward_comm_kspace(this,6,sizeof(FFT_SCALAR),FORWARD_AD_PERATOM,
-                              gc_buf1,gc_buf2,MPI_FFT_SCALAR);
+      gc->forward_comm(GridComm::KSPACE,this,6,sizeof(FFT_SCALAR),
+                       FORWARD_AD_PERATOM,gc_buf1,gc_buf2,MPI_FFT_SCALAR);
     else if (differentiation_flag == 0)
-      gc->forward_comm_kspace(this,7,sizeof(FFT_SCALAR),FORWARD_IK_PERATOM,
-                              gc_buf1,gc_buf2,MPI_FFT_SCALAR);
+      gc->forward_comm(GridComm::KSPACE,this,7,sizeof(FFT_SCALAR),
+                       FORWARD_IK_PERATOM,gc_buf1,gc_buf2,MPI_FFT_SCALAR);
   }
 }
 
@@ -394,8 +394,12 @@ void PPPMIntel::particle_map(IntelBuffers<flt_t,acc_t> *buffers)
     IP_PRE_omp_range_id_align(iifrom, iito, tid, nlocal, nthr, sizeof(ATOM_T));
 
     #if defined(LMP_SIMD_COMPILER)
-    #pragma vector aligned
+#if defined(USE_OMP_SIMD)
+    #pragma omp simd reduction(+:flag)
+#else
     #pragma simd reduction(+:flag)
+#endif
+    #pragma vector aligned
     #endif
     for (int i = iifrom; i < iito; i++) {
 
@@ -500,7 +504,11 @@ void PPPMIntel::make_rho(IntelBuffers<flt_t,acc_t> *buffers)
         dz = dz*half_rho_scale + half_rho_scale_plus;
         int idz = dz;
         #if defined(LMP_SIMD_COMPILER)
+#if defined(USE_OMP_SIMD)
+        #pragma omp simd
+#else
         #pragma simd
+#endif
         #endif
         for (int k = 0; k < INTEL_P3M_ALIGNED_MAXORDER; k++) {
           rho[0][k] = rho_lookup[idx][k];
@@ -509,7 +517,11 @@ void PPPMIntel::make_rho(IntelBuffers<flt_t,acc_t> *buffers)
         }
       } else {
         #if defined(LMP_SIMD_COMPILER)
+#if defined(USE_OMP_SIMD)
+        #pragma omp simd
+#else
         #pragma simd
+#endif
         #endif
         for (int k = nlower; k <= nupper; k++) {
           FFT_SCALAR r1,r2,r3;
@@ -541,7 +553,11 @@ void PPPMIntel::make_rho(IntelBuffers<flt_t,acc_t> *buffers)
           int mzy = m*nix + mz;
           FFT_SCALAR x0 = y0*rho[1][m];
           #if defined(LMP_SIMD_COMPILER)
+#if defined(USE_OMP_SIMD)
+          #pragma omp simd
+#else
           #pragma simd
+#endif
           #endif
           for (int l = 0; l < INTEL_P3M_ALIGNED_MAXORDER; l++) {
             int mzyx = l + mzy;
@@ -563,7 +579,11 @@ void PPPMIntel::make_rho(IntelBuffers<flt_t,acc_t> *buffers)
       IP_PRE_omp_range_id(ifrom, ito, tid, ngrid, nthr);
 
       #if defined(LMP_SIMD_COMPILER)
+#if defined(USE_OMP_SIMD)
+      #pragma omp simd
+#else
       #pragma simd
+#endif
       #endif
       for (int i = ifrom; i < ito; i++) {
         for (int j = 1; j < nthr; j++) {
@@ -645,7 +665,11 @@ void PPPMIntel::fieldforce_ik(IntelBuffers<flt_t,acc_t> *buffers)
         dz = dz*half_rho_scale + half_rho_scale_plus;
         int idz = dz;
         #if defined(LMP_SIMD_COMPILER)
+#if defined(USE_OMP_SIMD)
+        #pragma omp simd
+#else
         #pragma simd
+#endif
         #endif
         for (int k = 0; k < INTEL_P3M_ALIGNED_MAXORDER; k++) {
           rho0[k] = rho_lookup[idx][k];
@@ -654,7 +678,11 @@ void PPPMIntel::fieldforce_ik(IntelBuffers<flt_t,acc_t> *buffers)
         }
       } else {
         #if defined(LMP_SIMD_COMPILER)
+#if defined(USE_OMP_SIMD)
+        #pragma omp simd
+#else
         #pragma simd
+#endif
         #endif
         for (int k = nlower; k <= nupper; k++) {
           FFT_SCALAR r1 = rho_coeff[order-1][k];
@@ -690,7 +718,11 @@ void PPPMIntel::fieldforce_ik(IntelBuffers<flt_t,acc_t> *buffers)
           int my = m+nysum;
           FFT_SCALAR y0 = z0*rho1[m];
           #if defined(LMP_SIMD_COMPILER)
+#if defined(USE_OMP_SIMD)
+          #pragma omp simd
+#else
           #pragma simd
+#endif
           #endif
           for (int l = 0; l < INTEL_P3M_ALIGNED_MAXORDER; l++) {
             int mx = l+nxsum;
@@ -813,7 +845,11 @@ void PPPMIntel::fieldforce_ad(IntelBuffers<flt_t,acc_t> *buffers)
         dz = dz*half_rho_scale + half_rho_scale_plus;
         int idz = dz;
         #if defined(LMP_SIMD_COMPILER)
+#if defined(USE_OMP_SIMD)
+        #pragma omp simd
+#else
         #pragma simd
+#endif
         #endif
         for (int k = 0; k < INTEL_P3M_ALIGNED_MAXORDER; k++) {
           rho[0][k] = rho_lookup[idx][k];
@@ -825,7 +861,11 @@ void PPPMIntel::fieldforce_ad(IntelBuffers<flt_t,acc_t> *buffers)
         }
       } else {
         #if defined(LMP_SIMD_COMPILER)
+#if defined(USE_OMP_SIMD)
+        #pragma omp simd
+#else
         #pragma simd
+#endif
         #endif
         for (int k = nlower; k <= nupper; k++) {
           FFT_SCALAR r1,r2,r3,dr1,dr2,dr3;
@@ -871,7 +911,11 @@ void PPPMIntel::fieldforce_ad(IntelBuffers<flt_t,acc_t> *buffers)
           FFT_SCALAR eky_p = drho[1][m] * rho[2][n];
           FFT_SCALAR ekz_p = rho[1][m] * drho[2][n];
           #if defined(LMP_SIMD_COMPILER)
+#if defined(USE_OMP_SIMD)
+          #pragma omp simd
+#else
           #pragma simd
+#endif
           #endif
           for (int l = 0; l < INTEL_P3M_ALIGNED_MAXORDER; l++) {
             int mx = l + nxsum;
@@ -893,7 +937,11 @@ void PPPMIntel::fieldforce_ad(IntelBuffers<flt_t,acc_t> *buffers)
     }
 
     #if defined(LMP_SIMD_COMPILER)
+#if defined(USE_OMP_SIMD)
+    #pragma omp simd
+#else
     #pragma simd
+#endif
     #endif
     for (int i = ifrom; i < ito; i++) {
       particle_ekx[i] *= hx_inv;
@@ -942,7 +990,11 @@ void PPPMIntel::precompute_rho()
   for (int i = 0; i < rho_points; i++) {
     FFT_SCALAR dx = -1. + 1./half_rho_scale * (FFT_SCALAR)i;
     #if defined(LMP_SIMD_COMPILER)
+#if defined(USE_OMP_SIMD)
+    #pragma omp simd
+#else
     #pragma simd
+#endif
     #endif
     for (int k=nlower; k<=nupper;k++) {
       FFT_SCALAR r1 = ZEROF;
@@ -956,7 +1008,11 @@ void PPPMIntel::precompute_rho()
     }
     if (differentiation_flag == 1) {
       #if defined(LMP_SIMD_COMPILER)
+#if defined(USE_OMP_SIMD)
+      #pragma omp simd
+#else
       #pragma simd
+#endif
       #endif
       for (int k=nlower; k<=nupper;k++) {
         FFT_SCALAR r1 = ZEROF;
