@@ -33,7 +33,6 @@ Please contact Timothy Sirk for questions (tim.sirk@us.army.mil).
 #include "comm.h"
 #include "domain.h"
 #include "error.h"
-#include "fix.h"
 #include "fix_srp.h"
 #include "force.h"
 #include "memory.h"
@@ -84,7 +83,7 @@ PairSRP::PairSRP(LAMMPS *lmp) : Pair(lmp), fix_id(nullptr)
   //   will be invoked before other fixes that migrate atoms
   //   this is checked for in FixSRP
 
-  f_srp = (FixSRP *) modify->add_fix(fmt::format("{:02d}_FIX_SRP all SRP",srp_instance));
+  f_srp = dynamic_cast<FixSRP *>(modify->add_fix(fmt::format("{:02d}_FIX_SRP all SRP", srp_instance)));
   ++srp_instance;
 }
 
@@ -126,7 +125,7 @@ PairSRP::~PairSRP()
   }
 
   // check nfix in case all fixes have already been deleted
-  if (modify->nfix) modify->delete_fix(f_srp->id);
+  if (modify->nfix && modify->get_fix_by_id(f_srp->id)!=nullptr) modify->delete_fix(f_srp->id);
 }
 
 /* ----------------------------------------------------------------------
@@ -439,7 +438,7 @@ void PairSRP::coeff(int narg, char **arg)
 void PairSRP::init_style()
 {
   if (!force->newton_pair)
-    error->all(FLERR,"PairSRP: Pair srp requires newton pair on");
+    error->all(FLERR,"Pair srp requires newton pair on");
 
   // verify that fix SRP is still defined and has not been changed.
 
@@ -471,16 +470,13 @@ void PairSRP::init_style()
   // bond particles do not belong to group all
   // but thermo normalization is by nall
   // therefore should turn off normalization
-  int me;
-  MPI_Comm_rank(world,&me);
   char *arg1[2];
   arg1[0] = (char *) "norm";
   arg1[1] = (char *) "no";
   output->thermo->modify_params(2, arg1);
-  if (me == 0)
-    error->message(FLERR,"Thermo normalization turned off by pair srp");
+  if (comm->me == 0) error->message(FLERR,"Thermo normalization turned off by pair srp");
 
-  neighbor->request(this,instance_me);
+  neighbor->add_request(this);
 }
 
 /* ----------------------------------------------------------------------
