@@ -15,7 +15,6 @@ set(ALL_PACKAGES
   MOFFF
   MOLECULE
   OPENMP
-  PYTHON
   RIGID
   USER-MISC
   VORONOI)
@@ -26,3 +25,5 @@ endforeach()
 
 set(BUILD_TOOLS ON CACHE BOOL "" FORCE)
 set(CMAKE_INSTALL_PREFIX "/Users/apadua" CACHE STRING "" FORCE)
+set(LDFLAGS="-L/opt/homebrew/opt/libomp/lib" CACHE STRING "" FORCE)
+set(CPPFLAGS="-I/opt/homebrew/opt/libomp/include" CACHE STRING "" FORCE)
