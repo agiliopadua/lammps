@@ -3,7 +3,6 @@
 # are removed. The resulting binary should be able to run most inputs.
 
 set(ALL_PACKAGES
-  COLVARS
   CORESHELL
   DRUDE
   ELECTRODE
@@ -15,6 +14,7 @@ set(ALL_PACKAGES
   MOFFF
   MOLECULE
   OPENMP
+  PLUMED
   RIGID
   USER-MISC
   VORONOI)
@@ -25,5 +25,7 @@ endforeach()
 
 set(BUILD_TOOLS ON CACHE BOOL "" FORCE)
 set(CMAKE_INSTALL_PREFIX "/Users/apadua" CACHE STRING "" FORCE)
-set(LDFLAGS="-L/opt/homebrew/opt/libomp/lib" CACHE STRING "" FORCE)
-set(CPPFLAGS="-I/opt/homebrew/opt/libomp/include" CACHE STRING "" FORCE)
+set(LDFLAGS "-L/opt/homebrew/opt/libomp/lib" CACHE STRING "" FORCE)
+set(CPPFLAGS "-I/opt/homebrew/opt/libomp/include" CACHE STRING "" FORCE)
+#set(DOWNLOAD_PLUMED "no" CACHE STRING "" FORCE)
+#set(PLUMED_MODE "shared" CACHE STRING "" FORCE)
