@@ -8,3 +8,4 @@ obj_mingw*
 Makefile.lammps
 .depend
 Makefile.auto
+/latte
