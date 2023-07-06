@@ -567,7 +567,7 @@ void Input::substitute(char *&str, char *&str2, int &max, int &max2, int flag)
   //   else $x becomes x followed by null char
   // beyond = points to text following variable
 
-  int i,n,paren_count,nchars;;
+  int i,n,paren_count,nchars;
   char immediate[256];
   char *var,*value,*beyond;
   int quoteflag = 0;
@@ -607,7 +607,7 @@ void Input::substitute(char *&str, char *&str2, int &max, int &max2, int flag)
         paren_count = 0;
         i = 0;
 
-        while (var[i] != '\0' && !(var[i] == ')' && paren_count == 0)) {
+        while (var[i] != '\0' && (var[i] != ')' || paren_count != 0)) {
           switch (var[i]) {
           case '(': paren_count++; break;
           case ')': paren_count--; break;

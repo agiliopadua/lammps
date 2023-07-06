@@ -187,11 +187,13 @@ void BondBPM::settings(int narg, char **arg)
         iarg++;
       }
     } else if (strcmp(arg[iarg], "overlay/pair") == 0) {
-      overlay_flag = 1;
-      iarg++;
-    } else if (strcmp(arg[iarg], "break/no") == 0) {
-      break_flag = 0;
-      iarg++;
+      if (iarg + 1 > narg) error->all(FLERR, "Illegal bond bpm command, missing option for overlay/pair");
+      overlay_flag = utils::logical(FLERR, arg[iarg + 1], false, lmp);
+      iarg += 2;
+    } else if (strcmp(arg[iarg], "break") == 0) {
+      if (iarg + 1 > narg) error->all(FLERR, "Illegal bond bpm command, missing option for break");
+      break_flag = utils::logical(FLERR, arg[iarg + 1], false, lmp);
+      iarg += 2;
     } else {
       leftover_iarg.push_back(iarg);
       iarg++;
@@ -332,7 +334,7 @@ void BondBPM::read_restart(FILE *fp)
 
 void BondBPM::process_broken(int i, int j)
 {
-  if (break_flag)
+  if (!break_flag)
     error->one(FLERR, "BPM bond broke with break/no option");
   if (fix_store_local) {
     for (int n = 0; n < nvalues; n++) (this->*pack_choice[n])(n, i, j);

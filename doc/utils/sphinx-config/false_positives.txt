@@ -55,6 +55,7 @@ Ai
 Aidan
 aij
 aimd
+aip
 airebo
 Aj
 ajaramil
@@ -271,6 +272,7 @@ Bialke
 biaxial
 bicrystal
 Biersack
+biga
 bigbig
 bigint
 Bij
@@ -318,6 +320,7 @@ Bogaerts
 Bogusz
 Bohrs
 boltz
+Bomont
 BondAngle
 BondBond
 bondchk
@@ -353,9 +356,11 @@ bpls
 bpm
 BPM
 br
+Braems
 Branduardi
 Branicio
 brennan
+Bretonnet
 Briels
 Brien
 Brilliantov
@@ -524,6 +529,7 @@ collisional
 Columic
 colvars
 Colvars
+COH
 COLVARS
 comID
 Commun
@@ -546,6 +552,7 @@ conformational
 Connor
 conp
 conq
+const
 ConstMatrix
 Contrib
 cooperativity
@@ -586,6 +593,7 @@ createAtoms
 CreateIDs
 crespi
 Crespi
+Creuze
 Critchley
 crossterm
 Crowson
@@ -631,6 +639,7 @@ cutlo
 cutmax
 cutoffA
 cutoffC
+cutsq
 cuu
 cv
 Cv
@@ -1084,6 +1093,7 @@ Fellinger
 femtosecond
 femtoseconds
 fene
+Feng
 Fennell
 fep
 FEP
@@ -1342,6 +1352,7 @@ Haak
 Hafskjold
 halfstepback
 halgren
+Hallil
 Halperin
 Halver
 Hamaker
@@ -1548,6 +1559,7 @@ intramolecular
 ints
 inumeric
 inv
+invariance
 invariants
 inversed
 invertible
@@ -1555,6 +1567,7 @@ invertibility
 ionicities
 ionizable
 ionocovalent
+iOS
 iostreams
 iparam
 ipi
@@ -1613,6 +1626,7 @@ Izumi
 Izvekov
 izz
 Izz
+Jacobian
 Jacobsen
 Jadhao
 Jadhav
@@ -1979,6 +1993,7 @@ machdyn
 MACHDYN
 Mackay
 Mackrodt
+MacLaurin
 macOS
 Macromolecules
 macroparticle
@@ -2018,6 +2033,7 @@ Marchetti
 Marchi
 Mariella
 Marinica
+Markland
 Marrink
 Marroquin
 Marsaglia
@@ -2213,6 +2229,7 @@ monopole
 monovalent
 Montalenti
 Montero
+Monti
 Mora
 Morefoo
 Morfill
@@ -2574,7 +2591,7 @@ nvidia
 nvk
 nvt
 Nwait
-nwchem
+NWChem
 nx
 Nx
 nxlo
@@ -2908,6 +2925,7 @@ PyLammps
 pymbar
 pymodule
 pymol
+PySCF
 pythonic
 pytorch
 pyy
@@ -2966,11 +2984,13 @@ qx
 qy
 qz
 Rackers
+radi
 radialscreened
 radialscreenedspin
 radialspin
 radian
 radians
+radj
 Rafferty
 rahman
 Rahman
@@ -3252,6 +3272,7 @@ Sep
 seqdep
 Serpico
 setfl
+setflag
 setforce
 Sethna
 setmask
@@ -3487,6 +3508,7 @@ Sx
 sy
 Sy
 symplectic
+symmetrize
 Synechococcus
 sys
 sysdim
@@ -3534,6 +3556,7 @@ ters
 tersoff
 Tersoff
 tesselation
+tesselations
 Tetot
 tex
 tfac
@@ -3579,6 +3602,7 @@ THz
 Tigran
 Tij
 Tildesley
+Timan
 timeI
 timespan
 timestamp
@@ -3720,6 +3744,8 @@ Umin
 un
 unary
 uncomment
+uncommented
+uncompress
 uncompute
 underprediction
 undump
@@ -4073,4 +4099,5 @@ zu
 zx
 zy
 Zybin
+Zykova
 zz
