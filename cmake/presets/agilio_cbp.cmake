@@ -24,7 +24,7 @@ foreach(PKG ${ALL_PACKAGES})
 endforeach()
 
 set(BUILD_TOOLS ON CACHE BOOL "" FORCE)
-#set(CMAKE_INSTALL_PREFIX "/projects/DepartementChimie/lammps" CACHE STRING "" FORCE)
-set(CMAKE_INSTALL_PREFIX "/home/apadua" CACHE STRING "" FORCE)
+set(CMAKE_INSTALL_PREFIX "/projects/DepartementChimie/lammps" CACHE STRING "" FORCE)
 set(DOWNLOAD_PLUMED "no" CACHE STRING "" FORCE)
 set(PLUMED_MODE "shared" CACHE STRING "" FORCE)
+# export PKG_CONFIG_PATH=/projects/DepartementChimie/lammps
