@@ -947,6 +947,7 @@ elastance
 Electroneg
 electronegative
 electronegativity
+electroneutral
 electroneutrality
 Eleftheriou
 ElementN
@@ -1770,6 +1771,7 @@ Kolafa
 Kollman
 kolmogorov
 Kolmogorov
+Kolotinskii
 Kondor
 konglt
 Koning
@@ -2038,6 +2040,7 @@ Makefiles
 makelist
 makepkg
 Makse
+Malavasi
 malloc
 Malolepsza
 Manby
@@ -2147,6 +2150,7 @@ membered
 memcheck
 Mendelev
 Menon
+Menziani
 mer
 Meremianin
 Mersenne
@@ -2266,6 +2270,7 @@ morris
 Morriss
 morse
 Morteza
+MoS
 Mosayebi
 Moseler
 Moskalev
@@ -2769,11 +2774,14 @@ Peachey
 peachpuff
 Pearlman
 Pedersen
+pedone
+Pedone
 peID
 PEigenDense
 Peng
 peptide
 peratom
+Perf
 Pergamon
 pergrid
 peri
@@ -3070,6 +3078,7 @@ reaxff
 ReaxFF
 REAXFF
 rebo
+rebomos
 recurse
 recursing
 Ree
@@ -3597,6 +3606,7 @@ tesselation
 tesselations
 Tetot
 tex
+textrm
 tfac
 tfmc
 tfMC
@@ -3884,7 +3894,9 @@ Verlet
 versa
 Verstraelen
 ves
+vf
 vflag
+vflow
 vfrac
 vhi
 vibrational
