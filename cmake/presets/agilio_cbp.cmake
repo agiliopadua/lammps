@@ -27,4 +27,4 @@ set(BUILD_TOOLS ON CACHE BOOL "" FORCE)
 set(CMAKE_INSTALL_PREFIX "/projects/DepartementChimie/lammps" CACHE STRING "" FORCE)
 set(DOWNLOAD_PLUMED "no" CACHE STRING "" FORCE)
 set(PLUMED_MODE "shared" CACHE STRING "" FORCE)
-# export PKG_CONFIG_PATH=/projects/DepartementChimie/lammps
+set(PKG_CONFIG_PATH "/projects/DepartementChimie/plumed/lib/pkgconfig" CACHE STRING "" FORCE)
