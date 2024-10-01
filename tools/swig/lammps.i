@@ -106,6 +106,7 @@ extern void   lammps_mpi_finalize();
 extern void   lammps_kokkos_finalize();
 extern void   lammps_python_finalize();
 extern void   lammps_error(void *handle, int error_type, const char *error_text);
+extern char  *lammps_expand(void *handle, const char *line);
 
 extern void   lammps_file(void *handle, const char *file);
 extern char  *lammps_command(void *handle, const char *cmd);
@@ -130,6 +131,7 @@ extern void  *lammps_extract_pair(void *handle, const char *name);
 extern int    lammps_map_atom(void *handle, const void *id);
 
 extern int    lammps_extract_atom_datatype(void *handle, const char *name);
+extern int    lammps_extract_atom_size(void *handle, const char *name, int type);
 extern void  *lammps_extract_atom(void *handle, const char *name);
 
 extern void  *lammps_extract_compute(void *handle, const char *id, int, int);
@@ -295,6 +297,7 @@ extern void   lammps_mpi_finalize();
 extern void   lammps_kokkos_finalize();
 extern void   lammps_python_finalize();
 extern void   lammps_error(void *handle, int error_type, const char *error_text);
+extern char  *lammps_expand(void *handle, const char *line);
 
 extern void   lammps_file(void *handle, const char *file);
 extern char  *lammps_command(void *handle, const char *cmd);
@@ -319,6 +322,7 @@ extern void  *lammps_extract_pair(void *handle, const char *name);
 extern int    lammps_map_atom(void *handle, const void *id);
 
 extern int    lammps_extract_atom_datatype(void *handle, const char *name);
+extern int    lammps_extract_atom_size(void *handle, const char *name, int type);
 extern void  *lammps_extract_atom(void *handle, const char *name);
 
 extern void  *lammps_extract_compute(void *handle, const char *id, int, int);

@@ -501,6 +501,50 @@ void lammps_error(void *handle, int error_type, const char *error_text)
   }
 }
 
+/* ---------------------------------------------------------------------- */
+
+/** expand a single LAMMPS input line from a string.
+ *
+\verbatim embed:rst
+
+This function tells LAMMPS to expand the string in *cmd* like it would process
+an input line fed to :cpp:func:`lammps_command` **without** executing it.
+The *entire* string is considered as input and need not have a (final) newline
+character.  Newline characters in the body of the string, however, will be
+treated as part of the command and will **not** start a second command.
+
+The function returns the expanded string in a new string buffer that
+must be freed with :cpp:func:`lammps_free` after use to avoid a memory leak.
+
+\endverbatim
+ *
+ * \param  handle  pointer to a previously created LAMMPS instance
+ * \param  cmd     string with a single LAMMPS input line
+ * \return         string with expanded line */
+
+char *lammps_expand(void *handle, const char *line)
+{
+  auto lmp = (LAMMPS *) handle;
+  char *copy, *work;
+  int n, maxcopy, maxwork;
+
+  if (!line) return nullptr;
+
+  BEGIN_CAPTURE
+  {
+    n = strlen(line) + 1;
+    copy = (char *) malloc(n * sizeof(char));
+    work = (char *) malloc(n * sizeof(char));
+    maxwork = maxcopy = n;
+    memcpy(copy, line, maxcopy);
+    lmp->input->substitute(copy, work, maxcopy, maxwork, 0);
+    free(work);
+  }
+  END_CAPTURE
+
+  return copy;
+}
+
 // ----------------------------------------------------------------------
 // Library functions to process commands
 // ----------------------------------------------------------------------
@@ -2087,10 +2131,13 @@ int lammps_map_atom(void *handle, const void *id)
 
 .. versionadded:: 18Sep2020
 
-This function returns an integer that encodes the data type of the per-atom
-property with the specified name. See :cpp:enum:`_LMP_DATATYPE_CONST` for valid
-values. Callers of :cpp:func:`lammps_extract_atom` can use this information
-to then decide how to cast the ``void *`` pointer and access the data.
+This function returns an integer that encodes the data type of the
+per-atom property with the specified name. See
+:cpp:enum:`_LMP_DATATYPE_CONST` for valid values. Callers of
+:cpp:func:`lammps_extract_atom` can use this information to decide how
+to cast the ``void *`` pointer and access the data.  In addition,
+:cpp:func:`lammps_extract_atom_size` can be used to get information
+about the vector or array dimensions.
 
 \endverbatim
  *
@@ -2108,18 +2155,53 @@ int lammps_extract_atom_datatype(void *handle, const char *name)
 
 /* ---------------------------------------------------------------------- */
 
+/** Get dimension info of a LAMMPS per-atom property
+ *
+\verbatim embed:rst
+
+.. versionadded:: TBD
+
+This function returns an integer with the size of the per-atom
+property with the specified name.  This allows to accurately determine
+the size of the per-atom data vectors or arrays.  For per-atom arrays,
+the *type* argument is required to return either the number of rows or the
+number of columns.  It is ignored for per-atom vectors.
+
+Callers of :cpp:func:`lammps_extract_atom` can use this information in
+combination with the result from :cpp:func:`lammps_extract_atom_datatype`
+to decide how to cast the ``void *`` pointer and access the data.
+
+\endverbatim
+ *
+ * \param  handle  pointer to a previously created LAMMPS instance
+ * \param  name    string with the name of the extracted property
+ * \param  type    either LMP_SIZE_ROWS or LMP_SIZE_COLS if *name* refers
+                   to a per-atom array otherwise ignored
+ * \return         integer with the size of the vector or array dimension or -1
+ * */
+
+int lammps_extract_atom_size(void *handle, const char *name, int type)
+{
+  auto lmp = (LAMMPS *) handle;
+  return lmp->atom->extract_size(name, type);
+}
+
+/* ---------------------------------------------------------------------- */
+
 /** Get pointer to a LAMMPS per-atom property.
  *
 \verbatim embed:rst
 
-This function returns a pointer to the location of per-atom properties
-(and per-atom-type properties in the case of the 'mass' keyword).
-Per-atom data is distributed across sub-domains and thus MPI ranks.  The
-returned pointer is cast to ``void *`` and needs to be cast to a pointer
-of data type that the entity represents.
+This function returns a pointer to the location of per-atom properties (and
+per-atom-type properties in the case of the 'mass' keyword).  Per-atom data is
+distributed across sub-domains and thus MPI ranks.  The returned pointer is cast
+to ``void *`` and needs to be cast to a pointer of data type that the entity
+represents.  You can use the functions :cpp:func:`lammps_extract_atom_datatype`
+and :cpp:func:`lammps_extract_atom_size` to determine data type, dimensions and
+sizes of the storage pointed to by the returned pointer.
 
-A table with supported keywords is included in the documentation
-of the :cpp:func:`Atom::extract() <LAMMPS_NS::Atom::extract>` function.
+A table with supported keywords is included in the documentation of the
+:cpp:func:`Atom::extract() <LAMMPS_NS::Atom::extract>` function.
 
 .. warning::
 
@@ -7027,5 +7109,5 @@ int lammps_python_api_version() {
 }
 
 // Local Variables:
-// fill-column: 72
+// fill-column: 80
 // End:

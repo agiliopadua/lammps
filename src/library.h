@@ -133,6 +133,8 @@ void lammps_python_finalize();
 
 void lammps_error(void *handle, int error_type, const char *error_text);
 
+char *lammps_expand(void *handle, const char *line);
+
 /* ----------------------------------------------------------------------
  * Library functions to process commands
  * ---------------------------------------------------------------------- */
@@ -172,6 +174,7 @@ int lammps_map_atom(void *handle, const void *id);
  * ---------------------------------------------------------------------- */
 
 int lammps_extract_atom_datatype(void *handle, const char *name);
+int lammps_extract_atom_size(void *handle, const char *name, int type);
 void *lammps_extract_atom(void *handle, const char *name);
 
 /* ----------------------------------------------------------------------
