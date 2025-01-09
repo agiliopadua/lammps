@@ -119,6 +119,14 @@ style supports it.  Note that the :doc:`pair_style <pair_style>` and
 to specify these parameters initially; the fix adapt command simply
 overrides the parameters.
 
+.. note::
+
+   Pair_coeff settings must be made **explicitly** in order for fix
+   adapt to be able to change them.  Settings inferred from mixing
+   are not suitable.  If necessary all mixed settings can be output
+   to a file using the :doc:`write_coeff command <write_coeff>` and
+   then the desired mixed pair_coeff settings copied from that file.
+
 The *pstyle* argument is the name of the pair style.  If
 :doc:`pair_style hybrid or hybrid/overlay <pair_hybrid>` is used,
 *pstyle* should be a sub-style name.  If there are multiple

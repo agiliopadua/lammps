@@ -8,7 +8,7 @@ packages.  Links to those pages on the :doc:`Build overview <Build>`
 page.
 
 The following text assumes some familiarity with CMake and focuses on
-using the command line tool ``cmake`` and what settings are supported
+using the command-line tool ``cmake`` and what settings are supported
 for building LAMMPS.  A more detailed tutorial on how to use CMake
 itself, the text mode or graphical user interface, to change the
 generated output files for different build tools and development
@@ -42,9 +42,9 @@ that want to modify or extend LAMMPS.
   and adapt the LAMMPS default build configuration accordingly.
 - CMake can generate files for different build tools and integrated
   development environments (IDE).
-- CMake supports customization of settings with a command line, text
+- CMake supports customization of settings with a command-line, text
   mode, or graphical user interface.  No manual editing of files,
-  knowledge of file formats or complex command line syntax is required.
+  knowledge of file formats or complex command-line syntax is required.
 - All enabled components are compiled in a single build operation.
 - Automated dependency tracking for all files and configuration options.
 - Support for true out-of-source compilation. Multiple configurations
@@ -68,7 +68,7 @@ that purpose you can use either the command-line utility ``cmake`` (or
 graphical utility ``cmake-gui``, or use them interchangeably.  The
 second step is then the compilation and linking of all objects,
 libraries, and executables using the selected build tool.  Here is a
-minimal example using the command line version of CMake to build LAMMPS
+minimal example using the command-line version of CMake to build LAMMPS
 with no add-on packages enabled and no customization:
 
 .. code-block:: bash
@@ -131,7 +131,7 @@ file called ``CMakeLists.txt`` (for LAMMPS it is located in the
 configuration step.  The cache file contains all current CMake settings.
 
 To modify settings, enable or disable features, you need to set
-*variables* with either the ``-D`` command line flag (``-D
+*variables* with either the ``-D`` command-line flag (``-D
 VARIABLE1_NAME=value``) or change them in the text mode of the graphical
 user interface.  The ``-D`` flag can be used several times in one command.
 
@@ -141,11 +141,11 @@ a different compiler tool chain.  Those are loaded with the ``-C`` flag
 (``-C ../cmake/presets/basic.cmake``).  This step would only be needed
 once, as the settings from the preset files are stored in the
 ``CMakeCache.txt`` file. It is also possible to customize the build
-by adding one or more ``-D`` flags to the CMake command line.
+by adding one or more ``-D`` flags to the CMake command.
 
 Generating files for alternate build tools (e.g. Ninja) and project files
 for IDEs like Eclipse, CodeBlocks, or Kate can be selected using the ``-G``
-command line flag.  A list of available generator settings for your
+command-line flag.  A list of available generator settings for your
 specific CMake version is given when running ``cmake --help``.
 
 .. _cmake_multiconfig:

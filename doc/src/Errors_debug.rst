@@ -83,7 +83,7 @@ Run LAMMPS from within the debugger
 Running LAMMPS under the control of the debugger as shown below only
 works for a single MPI rank (for debugging a program running in parallel
 you usually need a parallel debugger program).  A simple way to launch
-GDB is to prefix the LAMMPS command line with ``gdb --args`` and then
+GDB is to prefix the LAMMPS command-line with ``gdb --args`` and then
 type the command "run" at the GDB prompt.  This will launch the
 debugger, load the LAMMPS executable and its debug info, and then run
 it.  When it reaches the code causing the segmentation fault, it will
@@ -180,7 +180,7 @@ inspect the behavior of a compiled program by essentially emulating a
 CPU and instrumenting the program while running.  This slows down
 execution quite significantly, but can also report issues that are not
 resulting in a crash.  The default valgrind tool is a memory checker and
-you can use it by prefixing the normal command line with ``valgrind``.
+you can use it by prefixing the normal command-line with ``valgrind``.
 Unlike GDB, this will also work for parallel execution, but it is
 recommended to redirect the valgrind output to a file (e.g. with
 ``--log-file=crash-%p.txt``, the %p will be substituted with the

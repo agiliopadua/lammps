@@ -476,7 +476,7 @@ the tabulated coulomb, to test both code paths.  The reference results in the YA
 files then should be compared manually, if they agree well enough within the limits
 of those two approximations.
 
-The ``test_pair_style`` and equivalent programs have special command line options
+The ``test_pair_style`` and equivalent programs have special command-line options
 to update the YAML files. Running a command like
 
 .. code-block:: bash
@@ -609,7 +609,7 @@ and run the test with verbose output. For example,
 
     env TEST_ARGS=-v ctest -R ^MolPairStyle:lj_cut_coul_long -V
 
-``ctest`` with the ``-V`` flag also shows the exact command line
+``ctest`` with the ``-V`` flag also shows the exact command
 of the test. One can then use ``gdb --args`` to further debug and
 catch exceptions with the test command, for example,
 

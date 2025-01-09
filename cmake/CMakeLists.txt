@@ -141,7 +141,7 @@ endif()
 
 # silence nvcc warnings
 if((PKG_KOKKOS) AND (Kokkos_ENABLE_CUDA) AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
-  set(CMAKE_TUNE_DEFAULT "${CMAKE_TUNE_DEFAULT} -Xcudafe --diag_suppress=unrecognized_pragma -Xcudafe --diag_suppress=128")
+  set(CMAKE_TUNE_DEFAULT "${CMAKE_TUNE_DEFAULT}" "-Xcudafe --diag_suppress=unrecognized_pragma,--diag_suppress=128")
 endif()
 
 # we require C++11 without extensions. Kokkos requires at least C++17 (currently)
@@ -588,13 +588,8 @@ endif()
 
 set(CMAKE_TUNE_FLAGS "${CMAKE_TUNE_DEFAULT}" CACHE STRING "Compiler and machine specific optimization flags (compilation only)")
 separate_arguments(CMAKE_TUNE_FLAGS)
-foreach(_FLAG ${CMAKE_TUNE_FLAGS})
-  target_compile_options(lammps PRIVATE ${_FLAG})
-  # skip these flags when linking the main executable
-  if(NOT (("${_FLAG}" STREQUAL "-Xcudafe") OR (("${_FLAG}" STREQUAL "--diag_suppress=unrecognized_pragma"))))
-    target_compile_options(lmp PRIVATE ${_FLAG})
-  endif()
-endforeach()
+target_compile_options(lammps PRIVATE ${CMAKE_TUNE_FLAGS})
+target_compile_options(lmp PRIVATE ${CMAKE_TUNE_FLAGS})
 ########################################################################
 # Basic system tests (standard libraries, headers, functions, types)   #
 ########################################################################
@@ -1083,11 +1078,14 @@ if(BUILD_TOOLS)
   message(STATUS "<<< Building Tools >>>")
 endif()
 if(BUILD_LAMMPS_GUI)
-  message(STATUS "<<< Building LAMMPS GUI >>>")
+  message(STATUS "<<< Building LAMMPS-GUI >>>")
   if(LAMMPS_GUI_USE_PLUGIN)
     message(STATUS "Loading LAMMPS library as plugin at run time")
   else()
     message(STATUS "Linking LAMMPS library at compile time")
+  endif()
+  if(BUILD_WHAM)
+    message(STATUS "<<< Building WHAM >>>")
   endif()
 endif()
 if(ENABLE_TESTING)
