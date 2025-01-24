@@ -651,12 +651,12 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator) :
     // screen and logfile messages for universe and world
 
     if ((universe->me == 0) && (!helpflag)) {
-      const char fmt[] = "LAMMPS ({})\nRunning on {} partitions of processors\n";
+      constexpr char fmt[] = "LAMMPS ({})\nRunning on {} partitions of processors\n";
       if (universe->uscreen)
-        fmt::print(universe->uscreen,fmt,version,universe->nworlds);
+        utils::print(universe->uscreen,fmt,version,universe->nworlds);
 
       if (universe->ulogfile)
-        fmt::print(universe->ulogfile,fmt,version,universe->nworlds);
+        utils::print(universe->ulogfile,fmt,version,universe->nworlds);
     }
 
     if ((me == 0) && (!helpflag))
@@ -872,7 +872,9 @@ void LAMMPS::create()
   else
     atom->create_avec("atomic",0,nullptr,1);
 
-  group = new Group(this);
+  if (kokkos) group = new GroupKokkos(this);
+  else group = new Group(this);
+
   force = new Force(this);    // must be after group, to create temperature
 
   if (kokkos) modify = new ModifyKokkos(this);
@@ -1452,20 +1454,21 @@ void LAMMPS::print_config(FILE *fp)
   const char *pkg;
   int ncword, ncline = 0;
 
-  fmt::print(fp,"OS: {}\n\n",platform::os_info());
+  utils::print(fp,"OS: {}\n\n",platform::os_info());
 
-  fmt::print(fp,"Compiler: {} with {}\nC++ standard: {}\n",
+  utils::print(fp,"Compiler: {} with {}\nC++ standard: {}\n",
              platform::compiler_info(),platform::openmp_standard(),
              platform::cxx_standard());
+  fputs(Info::get_fmt_info().c_str(),fp);
 
   int major,minor;
   std::string infobuf = platform::mpi_info(major,minor);
-  fmt::print(fp,"MPI v{}.{}: {}\n\n",major,minor,infobuf);
+  utils::print(fp,"\nMPI v{}.{}: {}\n\n",major,minor,infobuf);
 
-  fmt::print(fp,"Accelerator configuration:\n\n{}\n",
+  utils::print(fp,"Accelerator configuration:\n\n{}\n",
              Info::get_accelerator_info());
 #if defined(LMP_GPU)
-  fmt::print(fp,"Compatible GPU present: {}\n\n",Info::has_gpu_device() ? "yes" : "no");
+  utils::print(fp,"Compatible GPU present: {}\n\n",Info::has_gpu_device() ? "yes" : "no");
 #endif
 
   fputs("FFT information:\n\n",fp);
@@ -1486,14 +1489,14 @@ void LAMMPS::print_config(FILE *fp)
   fputs("-DLAMMPS_SMALLSMALL\n",fp);
 #endif
 
-  fmt::print(fp,"sizeof(smallint): {}-bit\n"
+  utils::print(fp,"sizeof(smallint): {}-bit\n"
              "sizeof(imageint): {}-bit\n"
              "sizeof(tagint):   {}-bit\n"
              "sizeof(bigint):   {}-bit\n",
              sizeof(smallint)*8, sizeof(imageint)*8,
              sizeof(tagint)*8, sizeof(bigint)*8);
 
-  if (Info::has_gzip_support()) fmt::print(fp,"\n{}\n",platform::compress_info());
+  if (Info::has_gzip_support()) utils::print(fp,"\n{}\n",platform::compress_info());
 
   fputs("\nInstalled packages:\n\n",fp);
   for (int i = 0; nullptr != (pkg = installed_packages[i]); ++i) {

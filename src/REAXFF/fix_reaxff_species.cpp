@@ -204,6 +204,7 @@ FixReaxFFSpecies::FixReaxFFSpecies(LAMMPS *lmp, int narg, char **arg) :
       delete[] filedel;
       filedel = utils::strdup(arg[iarg + 1]);
       if (comm->me == 0) {
+        if (fdel) fclose(fdel);
         fdel = fopen(filedel, "w");
         if (!fdel)
           error->one(FLERR, "Cannot open fix reaxff/species delete file {}: {}", filedel,
@@ -261,7 +262,8 @@ FixReaxFFSpecies::FixReaxFFSpecies(LAMMPS *lmp, int narg, char **arg) :
       posflag = 1;
       posfreq = utils::inumeric(FLERR, arg[iarg + 1], false, lmp);
       if (posfreq < nfreq || (posfreq % nfreq != 0))
-        error->all(FLERR, "Incompatible fix reaxff/species postion frequency {}", posfreq);
+        error->all(FLERR, "Incompatible fix reaxff/species position frequency {}",
+                   posfreq);
 
       filepos = new char[255];
       strcpy(filepos, arg[iarg + 2]);
@@ -792,12 +794,12 @@ void FixReaxFFSpecies::WriteFormulas(int Nmole, int Nspec)
         if (itemp != 1) molname += std::to_string(itemp);
       }
     }
-    fmt::print(fp, " {:>11}", molname);
+    utils::print(fp, " {:>11}", molname);
   }
   fputs("\n", fp);
 
-  fmt::print(fp, "{:>11} {:>11} {:>11}", ntimestep, Nmole, Nspec);
-  for (i = 0; i < Nmoltype; i++) fmt::print(fp, " {:>11}", NMol[i]);
+  utils::print(fp, "{:>11} {:>11} {:>11}", ntimestep, Nmole, Nspec);
+  for (i = 0; i < Nmoltype; i++) utils::print(fp, " {:>11}", NMol[i]);
   fputs("\n", fp);
 }
 
@@ -836,7 +838,7 @@ void FixReaxFFSpecies::WritePos(int Nmole, int Nspec)
   for (int j = 0; j < 3; j++) halfbox[j] = box[j] / 2;
 
   if (comm->me == 0) {
-    fmt::print(pos,
+    utils::print(pos,
                "Timestep {} NMole {}  NSpec {}  xlo {:f}  "
                "xhi {:f}  ylo {:f}  yhi {:f}  zlo {:f}  zhi {:f}\n",
                update->ntimestep, Nmole, Nspec, domain->boxlo[0], domain->boxhi[0],
@@ -1060,7 +1062,7 @@ void FixReaxFFSpecies::DeleteSpecies(int Nmole, int Nspec)
       for (int m = 0; m < Nspec; m++) {
         if (deletecount[m] > 0) {
           if (printflag == 0) {
-            fmt::print(fdel, "Timestep {}", update->ntimestep);
+            utils::print(fdel, "Timestep {}", update->ntimestep);
             printflag = 1;
           }
           fprintf(fdel, " %g ", deletecount[m]);
@@ -1083,7 +1085,7 @@ void FixReaxFFSpecies::DeleteSpecies(int Nmole, int Nspec)
         if (deletecount[i]) writeflag = 1;
 
       if (writeflag) {
-        fmt::print(fdel, "{}", update->ntimestep);
+        utils::print(fdel, "{}", update->ntimestep);
         for (i = 0; i < ndelspec; i++) { fprintf(fdel, "\t%g", deletecount[i]); }
         fprintf(fdel, "\n");
         fflush(fdel);

@@ -438,7 +438,7 @@ void FixIPI::final_integrate()
   char header[MSGLEN+1];
   double vir[9], pot=0.0;
   double forceconv, potconv, posconv, pressconv, posconv3;
-  char retstr[1024];
+  char retstr[1024] = { '\0' };
 
   // conversions from LAMMPS units to atomic units, which are used by i-PI
   potconv=3.1668152e-06/force->boltz;
@@ -488,7 +488,7 @@ void FixIPI::final_integrate()
     vir[1] = comp_p->vector[3]*pressconv*myvol;
     vir[2] = comp_p->vector[4]*pressconv*myvol;
     vir[5] = comp_p->vector[5]*pressconv*myvol;
-    retstr[0]=0;
+    retstr[0] = '\0';
   }
 
   if (master) {
@@ -511,7 +511,8 @@ void FixIPI::final_integrate()
       writebuffer(ipisock,(char*) &nat,4, error);
       writebuffer(ipisock,(char*) buffer, bsize*8, error);
       writebuffer(ipisock,(char*) vir,9*8, error);
-      nat=strlen(retstr);  writebuffer(ipisock,(char*) &nat,4, error);
+      nat=strlen(retstr);
+      writebuffer(ipisock,(char*) &nat,4, error);
       writebuffer(ipisock,(char*) retstr, nat, error);
     }
     else

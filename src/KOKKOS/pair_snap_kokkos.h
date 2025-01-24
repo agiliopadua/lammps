@@ -375,7 +375,6 @@ class PairSNAPKokkos : public PairSNAP {
 
   // Make SNAKokkos a friend
   friend class SNAKokkos<DeviceType, real_type, vector_length>;
-
 };
 
 
