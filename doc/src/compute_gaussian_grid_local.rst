@@ -30,6 +30,8 @@ Examples
 Description
 """""""""""
 
+.. versionadded:: 4Feb2025
+
 Define a computation that calculates a Gaussian representation of the ionic
 structure. This representation is used for the efficient evaluation
 of quantities related to the structure factor in a grid-based workflow,

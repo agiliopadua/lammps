@@ -203,6 +203,7 @@ processed in the expected order before types are removed from dynamic
 dispatch.
 
 .. admonition:: Important Notes
+   :class: note
 
    In order to be able to detect incompatibilities at compile time and
    to avoid unexpected behavior, it is crucial that all member functions
@@ -313,6 +314,11 @@ mechanism of the C library.  Finally, {fmt} has been included into the
 C++20 language standard as ``std::format()``, so changes to adopt it are
 future-proof, for as long as they are not using any extensions that are
 not (yet) included into C++.
+
+The long-term plan is to switch to using ``std::format()`` instead of
+``fmt::format()`` when the minimum C++ standard required for LAMMPS will
+be set to C++20. See the :ref:`basic build instructions <compile>` for
+more details.
 
 Formatted strings are frequently created by calling the
 ``fmt::format()`` function, which will return a string as a

@@ -562,14 +562,10 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator) :
       else if (strcmp(arg[inflag], "none") == 0) infile = stdin;
       else infile = fopen(arg[inflag],"r");
       if (infile == nullptr)
-        error->one(FLERR,"Cannot open input script {}: {}", arg[inflag], utils::getsyserror());
+        error->all(FLERR,"Cannot open input script {}: {}", arg[inflag], utils::getsyserror());
       if (!helpflag)
         utils::logmesg(this,"LAMMPS ({}{})\n", version, update_string);
 
-     // warn against using I/O redirection in parallel runs
-      if ((inflag == 0) && (universe->nprocs > 1))
-        error->warning(FLERR, "Using I/O redirection is unreliable with parallel runs. "
-                       "Better to use the -in switch to read input files.");
       utils::flush_buffers(this);
     }
 

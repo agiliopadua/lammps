@@ -43,6 +43,15 @@ namespace utils {
 
   /*! Compare two string while ignoring whitespace
    *
+\verbatim embed:rst
+
+.. versionadded:: 4Feb2025
+
+This function compares two strings while skipping over any kind of whitespace
+(blank, tab, newline, carriage return, etc.).
+
+\endverbatim
+   *
    *  \param  text1   the first text to be compared
    *  \param  text2   the second text to be compared
    *  \return true if the non-whitespace part of the two strings matches, false if not */
@@ -50,6 +59,14 @@ namespace utils {
   bool strsame(const std::string &text1, const std::string &text2);
 
   /*! Compress whitespace in a string
+   *
+\verbatim embed:rst
+
+.. versionadded:: 4Feb2025
+
+This function compresses whitespace in a string to just a single blank.
+
+\endverbatim
    *
    *  \param  text  the text to be compressed
    *  \return string with whitespace compressed to single blanks */
@@ -77,11 +94,22 @@ namespace utils {
 
   /*! Create string with last command and optionally pointing to arg with error
    *
-   * This function is a helper function for error messages.  It creates
+\verbatim embed:rst
+
+.. versionadded:: 4Feb2025
+
+This function is a helper function for error messages.  It creates extra output
+in error messages.  It will produce either two or three lines: the original last
+input line *before* variable substitutions, the corresponding pre-processed command
+(only when different) and one or more '^' characters pointing to the faulty argument
+as indicated by the *failed* argument.  Any whitespace in the lines with the command
+output are compressed to a single blank by calling :cpp:func:`strcompress()`
+
+\endverbatim
    *
    *  \param input   pointer to the Input class instance (for access to last command args)
-   *  \param faile   index of the faulty argument (-1 to point to the command itself)
-   *  \return        string with two lines: the pre-processed command and a '^' pointing to the faulty argument */
+   *  \param failed  index of the faulty argument (-1 to point to the command itself)
+   *  \return        string with two or three lines to follow error messages */
   std::string point_to_error(Input *input, int failed);
 
   /*! Internal function handling the argument list for logmesg(). */
@@ -111,21 +139,17 @@ namespace utils {
 
   void logmesg(LAMMPS *lmp, const std::string &mesg);
 
-  /*! Return text redirecting the user to a specific paragraph in the manual
-   *
-   * The LAMMPS manual contains detailed explanations for errors and
-   * warnings where a simple error message may not be sufficient.  These can
-   * be reached through URLs with a numeric code.  This function creates the
-   * corresponding text to be included into the error message that redirects
-   * the user to that URL.
-   *
-   *  \param errorcode   number pointing to a paragraph in the manual */
-
   /*! Internal function handling the argument list for print(). */
 
   void fmtargs_print(FILE *fp, fmt::string_view format, fmt::format_args args);
 
   /*! Write formatted message to file
+   *
+\verbatim embed:rst
+
+.. versionadded:: 4Feb2025
+
+\endverbatim
    *
    * This function implements a version of fprintf() that uses {fmt} formatting
    *
