@@ -20,7 +20,10 @@
 #include "domain.h"
 #include "error.h"
 #include "fix.h"
+#ifndef FMT_STATIC_THOUSANDS_SEPARATOR
 #include "fmt/chrono.h"
+#endif
+#include "info.h"
 #include "input.h"
 #include "label_map.h"
 #include "memory.h"
@@ -32,6 +35,7 @@
 
 #include <cctype>
 #include <cerrno>
+#include <cmath>
 #include <cstring>
 #include <ctime>
 #include <stdexcept>
@@ -243,7 +247,7 @@ std::string utils::point_to_error(Input *input, int failed)
     }
     return cmdline;
   } else
-    return std::string("");
+    return {""};
 }
 
 /* specialization for the case of just a single string argument */
@@ -270,18 +274,24 @@ void utils::print(FILE *fp, const std::string &mesg)
   fputs(mesg.c_str(), fp);
 }
 
+void utils::print(const std::string &mesg)
+{
+  fputs(mesg.c_str(), stdout);
+}
+
 void utils::fmtargs_print(FILE *fp, fmt::string_view format, fmt::format_args args)
 {
-  try {
-    print(fp, fmt::vformat(format, args));
-  } catch (fmt::format_error &) {
-    ; // do nothing
-  }
+  print(fp, fmt::vformat(format, args));
 }
 
 std::string utils::errorurl(int errorcode)
 {
-  return fmt::format("\nFor more information see https://docs.lammps.org/err{:04d}", errorcode);
+  if (errorcode == 0)
+    return "\nFor more information see https://docs.lammps.org/Errors_details.html";
+  else if (errorcode > 0)
+    return fmt::format("\nFor more information see https://docs.lammps.org/err{:04d}", errorcode);
+  else
+    return "";    // negative numbers are reserved for future use pointing to a different URL
 }
 
 void utils::flush_buffers(LAMMPS *lmp)
@@ -439,10 +449,10 @@ std::string utils::check_packages_for_style(const std::string &style, const std:
 
   if (pkg) {
     errmsg += fmt::format(" is part of the {} package", pkg);
-    if (LAMMPS::is_installed_pkg(pkg))
+    if (Info::has_package(pkg))
       errmsg += ", but seems to be missing because of a dependency";
     else
-      errmsg += " which is not enabled in this LAMMPS binary.";
+      errmsg += " which is not enabled in this LAMMPS binary." + utils::errorurl(10);
   }
   return errmsg;
 }
@@ -527,7 +537,7 @@ double utils::numeric(const char *file, int line, const std::string &str, bool d
       lmp->error->all(file, line, msg);
   }
 
-  double rv = 0;
+  double rv = 0.0;
   auto msg = fmt::format("Floating point number {} in input script or data file is invalid", buf);
   try {
     std::size_t endpos;
@@ -544,6 +554,12 @@ double utils::numeric(const char *file, int line, const std::string &str, bool d
     else
       lmp->error->all(file, line, msg);
   } catch (std::out_of_range const &) {
+    // could be a denormal number. try again with std::strtod().
+    char *end;
+    rv = std::strtod(buf.c_str(), &end);
+    // return value if denormal
+    if ((rv > -HUGE_VAL) && (rv < HUGE_VAL)) return rv;
+
     msg = fmt::format("Floating point number {} in input script or data file is out of range", buf);
     if (do_abort)
       lmp->error->one(file, line, msg);
@@ -807,13 +823,13 @@ void utils::bounds(const char *file, int line, const std::string &str,
   if (error) {
     if ((nlo <= 0) || (nhi <= 0))
       error->all(file, line, failed, "Invalid range string: {}", str);
-
+    constexpr char fmt[] = "Numeric index {} is out of bounds ({}-{}){}";
     if (nlo < nmin)
-      error->all(file, line, failed, "Numeric index {} is out of bounds ({}-{})", nlo, nmin, nmax);
+      error->all(file, line, failed, fmt, nlo, nmin, nmax, errorurl(19));
     else if (nhi > nmax)
-      error->all(file, line, failed, "Numeric index {} is out of bounds ({}-{})", nhi, nmin, nmax);
+      error->all(file, line, failed, fmt, nhi, nmin, nmax, errorurl(19));
     else if (nlo > nhi)
-      error->all(file, line, failed, "Numeric index {} is out of bounds ({}-{})", nlo, nmin, nhi);
+      error->all(file, line, failed, fmt, nlo, nmin, nhi, errorurl(19));
   }
 }
 
@@ -900,7 +916,7 @@ int utils::expand_args(const char *file, int line, int narg, char **arg, int mod
     // match grids
 
     if (strmatch(word, "^[cf]_\\w+:\\w+:\\w+\\[\\d*\\*\\d*\\]")) {
-      auto gridid = utils::parse_grid_id(FLERR, word, lmp->error);
+      auto gridid = utils::parse_grid_id(file, line, word, lmp->error);
 
       size_t first = gridid[2].find('[');
       size_t second = gridid[2].find(']', first + 1);
@@ -912,7 +928,7 @@ int utils::expand_args(const char *file, int line, int narg, char **arg, int mod
 
       if (gridid[0][0] == 'c') {
 
-        auto compute = lmp->modify->get_compute_by_id(gridid[0].substr(2));
+        auto *compute = lmp->modify->get_compute_by_id(gridid[0].substr(2));
         if (compute && compute->pergrid_flag) {
 
           int dim = 0;
@@ -931,7 +947,7 @@ int utils::expand_args(const char *file, int line, int narg, char **arg, int mod
 
       } else if (gridid[0][0] == 'f') {
 
-        auto fix = lmp->modify->get_fix_by_id(gridid[0].substr(2));
+        auto *fix = lmp->modify->get_fix_by_id(gridid[0].substr(2));
         if (fix && fix->pergrid_flag) {
 
           int dim = 0;
@@ -988,7 +1004,7 @@ int utils::expand_args(const char *file, int line, int narg, char **arg, int mod
       // compute
 
       if (word[0] == 'c') {
-        auto compute = lmp->modify->get_compute_by_id(id);
+        auto *compute = lmp->modify->get_compute_by_id(id);
 
         // check for global vector/array, peratom array, local array
 
@@ -1011,7 +1027,7 @@ int utils::expand_args(const char *file, int line, int narg, char **arg, int mod
         // fix
 
       } else if (word[0] == 'f') {
-        auto fix = lmp->modify->get_fix_by_id(id);
+        auto *fix = lmp->modify->get_fix_by_id(id);
 
         // check for global vector/array, peratom array, local array
 
@@ -1044,6 +1060,9 @@ int utils::expand_args(const char *file, int line, int narg, char **arg, int mod
             if (nhi < MAXSMALLINT) {
               nmax = nhi;
               expandflag = 1;
+            } else {
+              lmp->error->all(file, line, ioffset + iarg,
+                              "Upper bound required to expand vector style variable {}", id);
             }
           }
         }
@@ -1201,7 +1220,7 @@ int utils::check_grid_reference(char *errstr, char *ref, int nevery, char *&id, 
 {
   ArgInfo argi(ref, ArgInfo::COMPUTE | ArgInfo::FIX);
   index = argi.get_index1();
-  auto name = argi.get_name();
+  const auto *name = argi.get_name();
 
   switch (argi.get_type()) {
 
@@ -1220,7 +1239,7 @@ int utils::check_grid_reference(char *errstr, char *ref, int nevery, char *&id, 
       const auto &gname = words[1];
       const auto &dname = words[2];
 
-      auto icompute = lmp->modify->get_compute_by_id(idcompute);
+      auto *icompute = lmp->modify->get_compute_by_id(idcompute);
       if (!icompute) lmp->error->all(FLERR, "{} compute ID {} not found", errstr, idcompute);
       if (icompute->pergrid_flag == 0)
         lmp->error->all(FLERR, "{} compute {} does not compute per-grid info", errstr, idcompute);
@@ -1244,8 +1263,8 @@ int utils::check_grid_reference(char *errstr, char *ref, int nevery, char *&id, 
         lmp->error->all(FLERR, "{} compute {} data {} is not per-grid array", errstr, idcompute,
                         dname);
       if (argi.get_dim() && argi.get_index1() > ncol)
-        lmp->error->all(FLERR, "{} compute {} array {} is accessed out-of-range", errstr, idcompute,
-                        dname);
+        lmp->error->all(FLERR, "{} compute {} array {} is accessed out-of-range{}", errstr,
+                        idcompute, dname, errorurl(20));
 
       id = utils::strdup(idcompute);
       return ArgInfo::COMPUTE;
@@ -1262,12 +1281,13 @@ int utils::check_grid_reference(char *errstr, char *ref, int nevery, char *&id, 
       const auto &gname = words[1];
       const auto &dname = words[2];
 
-      auto ifix = lmp->modify->get_fix_by_id(idfix);
+      auto *ifix = lmp->modify->get_fix_by_id(idfix);
       if (!ifix) lmp->error->all(FLERR, "{} fix ID {} not found", errstr, idfix);
       if (ifix->pergrid_flag == 0)
         lmp->error->all(FLERR, "{} fix {} does not compute per-grid info", errstr, idfix);
       if (nevery % ifix->pergrid_freq)
-        lmp->error->all(FLERR, "{} fix {} not computed at compatible time", errstr, idfix);
+        lmp->error->all(FLERR, "{} fix {} not computed at compatible time{}", errstr, idfix,
+                        errorurl(7));
 
       int dim;
       igrid = ifix->get_grid_by_name(gname, dim);
@@ -1284,7 +1304,8 @@ int utils::check_grid_reference(char *errstr, char *ref, int nevery, char *&id, 
       if (argi.get_dim() > 0 && ncol == 0)
         lmp->error->all(FLERR, "{} fix {} data {} is not per-grid array", errstr, idfix, dname);
       if (argi.get_dim() > 0 && argi.get_index1() > ncol)
-        lmp->error->all(FLERR, "{} fix {} array {} is accessed out-of-range", errstr, idfix, dname);
+        lmp->error->all(FLERR, "{} fix {} array {} is accessed out-of-range{}", errstr, idfix,
+                        dname, errorurl(20));
 
       id = utils::strdup(idfix);
       return ArgInfo::FIX;
@@ -1320,7 +1341,7 @@ std::vector<std::string> utils::parse_grid_id(const char *file, int line, const 
 
 char *utils::strdup(const std::string &text)
 {
-  auto tmp = new char[text.size() + 1];
+  auto *tmp = new char[text.size() + 1];
   strcpy(tmp, text.c_str());    // NOLINT
   return tmp;
 }
@@ -1643,7 +1664,8 @@ std::vector<std::string> utils::split_words(const std::string &text)
         ++len;
       }
       if ((c == ' ') || (c == '\t') || (c == '\r') || (c == '\n') || (c == '\f') || (c == '\0')) {
-        list.push_back(text.substr(beg, len));
+        // avoid out-of-range access
+        if (beg < text.size()) list.push_back(text.substr(beg, len));
         beg += len + add;
         break;
       }
@@ -1832,7 +1854,7 @@ double utils::get_conversion_factor(const int property, const int conversion)
 
 FILE *utils::open_potential(const std::string &name, LAMMPS *lmp, int *auto_convert)
 {
-  auto error = lmp->error;
+  auto *error = lmp->error;
   auto me = lmp->comm->me;
 
   std::string filepath = get_potential_file_path(name);
@@ -1951,8 +1973,15 @@ int utils::date2num(const std::string &date)
 std::string utils::current_date()
 {
   time_t tv = time(nullptr);
+#if defined(FMT_STATIC_THOUSANDS_SEPARATOR)
+  char outstr[200];
+  struct tm *today = localtime(&tv);
+  strftime(outstr, 200, "%Y-%m-%d", today);
+  return std::string(outstr);
+#else
   std::tm today = fmt::localtime(tv);
   return fmt::format("{:%Y-%m-%d}", today);
+#endif
 }
 
 /* ----------------------------------------------------------------------
@@ -2095,8 +2124,8 @@ static void do_merge(int *idx, int *buf, int llo, int lhi, int rlo, int rhi, voi
 extern "C" {
 
 /* Typedef'd pointer to get abstract datatype. */
-typedef struct regex_t *re_t;
-typedef struct regex_context_t *re_ctx_t;
+typedef struct regex_t *re_t;                // NOLINT
+typedef struct regex_context_t *re_ctx_t;    // NOLINT
 
 /* Compile regex string pattern to a regex_t-array. */
 static re_t re_compile(re_ctx_t context, const char *pattern);
@@ -2132,6 +2161,7 @@ enum {
   RX_NOT_WHITESPACE /*, BRANCH */
 };
 
+// NOLINTBEGIN
 typedef struct regex_t {
   unsigned char type; /* CHAR, STAR, etc.                      */
   union {
@@ -2146,6 +2176,7 @@ typedef struct regex_context_t {
   regex_t re_compiled[MAX_REGEXP_OBJECTS];
   unsigned char ccl_buf[MAX_CHAR_CLASS_LEN];
 } regex_context_t;
+// NOLINTEND
 
 int re_match(const char *text, const char *pattern)
 {
@@ -2478,7 +2509,7 @@ static int matchone(regex_t p, char c)
     case RX_NOT_WHITESPACE:
       return !matchwhitespace(c);
     default:
-      return (p.u.ch == c);
+      return (p.u.ch == (unsigned char) c);
   }
 }
 

@@ -162,14 +162,14 @@ void PairHbondDreidingLJ::compute(int eflag, int vflag)
           delr1[0] = x[i][0] - x[k][0];
           delr1[1] = x[i][1] - x[k][1];
           delr1[2] = x[i][2] - x[k][2];
-          domain->minimum_image(delr1);
+          domain->minimum_image(FLERR, delr1);
           rsq1 = delr1[0]*delr1[0] + delr1[1]*delr1[1] + delr1[2]*delr1[2];
           r1 = sqrt(rsq1);
 
           delr2[0] = x[j][0] - x[k][0];
           delr2[1] = x[j][1] - x[k][1];
           delr2[2] = x[j][2] - x[k][2];
-          domain->minimum_image(delr2);
+          domain->minimum_image(FLERR, delr2);
           rsq2 = delr2[0]*delr2[0] + delr2[1]*delr2[1] + delr2[2]*delr2[2];
           r2 = sqrt(rsq2);
 
@@ -334,7 +334,7 @@ void PairHbondDreidingLJ::coeff(int narg, char **arg)
 
   // check settings
   if (narg < 6 || narg > maxarg)
-    error->all(FLERR,"Incorrect args for pair coefficients");
+    error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
 
   if (!allocated) allocate();
 
@@ -346,7 +346,7 @@ void PairHbondDreidingLJ::coeff(int narg, char **arg)
   int donor_flag;
   if (strcmp(arg[3],"i") == 0) donor_flag = 0;
   else if (strcmp(arg[3],"j") == 0) donor_flag = 1;
-  else error->all(FLERR,"Incorrect args for pair coefficients");
+  else error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
 
   double epsilon_one = utils::numeric(FLERR, arg[4], false, lmp);
   double sigma_one = utils::numeric(FLERR, arg[5], false, lmp);
@@ -400,7 +400,7 @@ void PairHbondDreidingLJ::coeff(int narg, char **arg)
       }
   nparams++;
 
-  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients");
+  if (count == 0) error->all(FLERR,"Incorrect args for pair coefficients" + utils::errorurl(21));
 }
 
 /* ----------------------------------------------------------------------
@@ -540,14 +540,14 @@ double PairHbondDreidingLJ::single(int i, int j, int itype, int jtype,
     delr1[0] = x[i][0] - x[k][0];
     delr1[1] = x[i][1] - x[k][1];
     delr1[2] = x[i][2] - x[k][2];
-    domain->minimum_image(delr1);
+    domain->minimum_image(FLERR, delr1);
     rsq1 = delr1[0]*delr1[0] + delr1[1]*delr1[1] + delr1[2]*delr1[2];
     r1 = sqrt(rsq1);
 
     delr2[0] = x[j][0] - x[k][0];
     delr2[1] = x[j][1] - x[k][1];
     delr2[2] = x[j][2] - x[k][2];
-    domain->minimum_image(delr2);
+    domain->minimum_image(FLERR, delr2);
     rsq2 = delr2[0]*delr2[0] + delr2[1]*delr2[1] + delr2[2]*delr2[2];
     r2 = sqrt(rsq2);
 

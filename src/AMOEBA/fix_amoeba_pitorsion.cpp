@@ -62,6 +62,7 @@ FixAmoebaPiTorsion::FixAmoebaPiTorsion(LAMMPS *lmp, int narg, char **arg) :
   wd_section = 1;
   respa_level_support = 1;
   ilevel_respa = 0;
+  stores_ids = 1;
 
   MPI_Comm_rank(world,&me);
   MPI_Comm_size(world,&nprocs);
@@ -80,7 +81,7 @@ FixAmoebaPiTorsion::FixAmoebaPiTorsion(LAMMPS *lmp, int narg, char **arg) :
   // register with Atom class
 
   nmax_previous = 0;
-  grow_arrays(atom->nmax);
+  FixAmoebaPiTorsion::grow_arrays(atom->nmax);
   atom->add_callback(Atom::GROW);
   atom->add_callback(Atom::RESTART);
 

@@ -96,7 +96,9 @@ OPT.
    * :doc:`eam/cd <pair_eam>`
    * :doc:`eam/cd/old <pair_eam>`
    * :doc:`eam/fs (gikot) <pair_eam>`
+   * :doc:`eam/fs/apip <pair_eam_apip>`
    * :doc:`eam/he <pair_eam>`
+   * :doc:`eam/apip <pair_eam_apip>`
    * :doc:`edip (o) <pair_edip>`
    * :doc:`edip/multi <pair_edip>`
    * :doc:`edpd (g) <pair_mesodpd>`
@@ -124,6 +126,9 @@ OPT.
    * :doc:`ilp/tmd (t) <pair_ilp_tmd>`
    * :doc:`kolmogorov/crespi/full <pair_kolmogorov_crespi_full>`
    * :doc:`kolmogorov/crespi/z <pair_kolmogorov_crespi_z>`
+   * :doc:`lambda/input/apip <pair_lambda_input_apip>`
+   * :doc:`lambda/input/csp/apip <pair_lambda_input_apip>`
+   * :doc:`lambda/zone/apip <pair_lambda_zone_apip>`
    * :doc:`lcbop <pair_lcbop>`
    * :doc:`lebedeva/z <pair_lebedeva_z>`
    * :doc:`lennard/mdf <pair_mdf>`
@@ -179,6 +184,7 @@ OPT.
    * :doc:`lj/long/dipole/long <pair_dipole>`
    * :doc:`lj/long/tip4p/long (o) <pair_lj_long>`
    * :doc:`lj/mdf <pair_mdf>`
+   * :doc:`lj/pirani (o) <pair_lj_pirani>`
    * :doc:`lj/relres (o) <pair_lj_relres>`
    * :doc:`lj/spica (gko) <pair_spica>`
    * :doc:`lj/spica/coul/long (gko) <pair_spica>`
@@ -236,6 +242,9 @@ OPT.
    * :doc:`oxrna2/coaxstk <pair_oxrna2>`
    * :doc:`pace (k) <pair_pace>`
    * :doc:`pace/extrapolation (k) <pair_pace>`
+   * :doc:`pace/apip <pair_pace_apip>`
+   * :doc:`pace/fast/apip <pair_pace_apip>`
+   * :doc:`pace/precise/apip <pair_pace_apip>`
    * :doc:`pedone (o) <pair_pedone>`
    * :doc:`pod (k) <pair_pod>`
    * :doc:`peri/eps <pair_peri>`

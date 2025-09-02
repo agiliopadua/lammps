@@ -20,6 +20,7 @@
 #include "force.h"
 
 #include <cstring>
+#include <utility>
 
 using namespace LAMMPS_NS;
 
@@ -254,7 +255,7 @@ int LabelMap::find_or_create(const std::string &mylabel, std::vector<std::string
 
   // if label cannot be found or created, need more space reserved
 
-  error->all(FLERR, "Topology type exceeds system topology type");
+  error->all(FLERR, "Topology type exceeds system topology type" + utils::errorurl(25));
 
   // never reaches here, just to prevent compiler warning
 

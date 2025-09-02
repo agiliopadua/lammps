@@ -104,13 +104,13 @@ with a future release) from the `lammps-static` folder.
 rm -rf release-packages
 mkdir release-packages
 cd release-packages
-wget https://download.lammps.org/static/fedora41_musl.sif
-apptainer shell fedora41_musl.sif
+wget https://download.lammps.org/static/fedora41_musl_mingw.sif
+apptainer shell fedora41_musl_mingw.sif
 git clone -b release --depth 10 https://github.com/lammps/lammps.git lammps-release
 cmake -S lammps-release/cmake -B build-release -G Ninja -D CMAKE_INSTALL_PREFIX=$PWD/lammps-static -D CMAKE_TOOLCHAIN_FILE=/usr/musl/share/cmake/linux-musl.cmake -C lammps-release/cmake/presets/most.cmake -C lammps-release/cmake/presets/kokkos-openmp.cmake -D DOWNLOAD_POTENTIALS=OFF -D BUILD_MPI=OFF -D BUILD_TESTING=OFF -D CMAKE_BUILD_TYPE=Release -D PKG_ATC=ON -D PKG_AWPMD=ON -D PKG_MANIFOLD=ON -D PKG_MESONT=ON -D PKG_MGPT=ON -D PKG_ML-PACE=ON -D PKG_ML-RANN=ON -D PKG_MOLFILE=ON -D PKG_PTM=ON -D PKG_QTB=ON -D PKG_SMTBQ=ON
 cmake --build build-release --target all
 cmake --build build-release --target install
-/usr/musl/bin/x86_64-linux-musl-strip lammps-static/bin/*
+/usr/musl/bin/x86_64-linux-musl-strip -g lammps-static/bin/*
 tar -czvvf ../lammps-linux-x86_64-4Feb2025.tar.gz lammps-static
 exit # fedora 41 container
 cd ..
@@ -204,7 +204,7 @@ cd ..
 rm -r release-packages
 ```
 
-#### Build Multi-arch App-bundle for macOS
+#### Build Multi-arch App-bundle with GUI for macOS
 
 Building app-bundles for macOS is not as easily automated and portable
 as some of the other steps.  It requires a machine actually running
@@ -216,7 +216,7 @@ and using the CMake settings:
 
 ``` sh
 -D CMAKE_OSX_ARCHITECTURES=arm64;x86_64
--D CMAKE_OSX_DEPLOYMENT_TARGER=11.0
+-D CMAKE_OSX_DEPLOYMENT_TARGET=11.0
 ```
 
 This will add the compiler flags `-arch arm64 -arch x86_64
@@ -251,7 +251,7 @@ attached to the GitHub release page.
 
 We are currently building the application images on macOS 12 (aka Monterey).
 
-#### Build Linux x86_64 binary tarball on Ubuntu 20.04LTS
+#### Build Linux x86_64 binary tarball with GUI on Ubuntu 20.04LTS
 
 While the flatpak Linux version uses portable runtime libraries provided
 by the flatpak environment, we also build regular Linux executables that
@@ -324,6 +324,47 @@ At this point it should be possible to do a fast-forward merge of
 
 ### Push branches and tags
 
-
-
 ## LAMMPS Stable Update Release
+
+After making a stable release, bugfixes from the 'develop' branch
+are selectively backported to the 'maintenance' branch.  This is
+done with "git cherry-pick \<commit hash\>' wherever possible.
+The LAMMPS\_UPDATE define in "src/version.h" is set to "Maintenance".
+
+### Prerequesites
+
+When a sufficient number of bugfixes has accumulated or an urgent
+or important bugfix needs to be distributed a new stable update
+release is made.  To make this publicly visible a pull request
+is submitted that will merge 'maintenance' into 'stable'.  Before
+merging, set LAMMPS\_UPDATE in "src/version.h" to "Update #" with
+"#" indicating the update count (1, 2, and so on).
+Also draft suitable release notes under https://github.com/lammps/lammps/releases
+
+### Fast-forward merge of 'maintenance' into 'stable', apply tag, and publish
+
+Do a fast-forward merge of 'maintenance' to 'stable' and then
+apply the stable\_DMmmYYYY\_update# tag and push branch and tag
+to GitHub. The corresponding pull request will be automatically
+closed.   Example:
+
+```
+git checkout maintenance
+git pull
+git checkout stable
+git pull
+git merge --ff-only maintenance
+git tag -s -m 'Update 2 for Stable LAMMPS version 29 August 2024' stable_29Aug2024_update2
+git push git@github.com:lammps/lammps.git --tags maintenance stable
+```
+
+Associate draft release notes with new tag and publish as "latest release".
+
+On https://ci.lammps.org/ go to "dev", "stable" and manually execute
+the "update\_release" task. This will update https://docs.lammps.org/stable
+and prepare a stable tarball.
+
+### Build and upload binary packages and source tarball to GitHub
+
+The build procedure is the same as for the feature releases, only
+that packages are built from the 'stable' branch.

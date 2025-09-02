@@ -51,7 +51,7 @@ WriteData::WriteData(LAMMPS *lmp) : Command(lmp) {}
 void WriteData::command(int narg, char **arg)
 {
   if (domain->box_exist == 0)
-    error->all(FLERR,"Write_data command before simulation box is defined");
+    error->all(FLERR,"Write_data command before simulation box is defined" + utils::errorurl(33));
 
   if (narg < 1) utils::missing_cmd_args(FLERR, "write_data", error);
 
@@ -254,7 +254,7 @@ void WriteData::write(const std::string &file)
   // extra sections managed by fixes
 
   if (fixflag)
-    for (auto &ifix : modify->get_fix_list())
+    for (const auto &ifix : modify->get_fix_list())
       if (ifix->wd_section)
         for (int m = 0; m < ifix->wd_section; m++) fix(ifix,m);
 
@@ -313,7 +313,7 @@ void WriteData::header()
   // fix info
 
   if (fixflag)
-    for (auto &ifix : modify->get_fix_list())
+    for (const auto &ifix : modify->get_fix_list())
       if (ifix->wd_header)
         for (int m = 0; m < ifix->wd_header; m++)
           ifix->write_data_header(fp,m);

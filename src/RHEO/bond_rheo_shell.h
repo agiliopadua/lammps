@@ -45,7 +45,7 @@ class BondRHEOShell : public BondBPM {
   double *k, *ecrit, *gamma;
   double tform, rmax, rsurf;
 
-  int *dbond, *nbond;
+  int *dbond;
   int index_nb, nmax_store;
   char *id_fix;
 
@@ -54,7 +54,6 @@ class BondRHEOShell : public BondBPM {
   void process_ineligibility(int, int);
   void allocate();
   void store_data();
-  double store_bond(int, int, int);
 };
 
 }    // namespace LAMMPS_NS

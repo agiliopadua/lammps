@@ -151,7 +151,7 @@ output are compressed to a single blank by calling :cpp:func:`strcompress()`
 
 \endverbatim
    *
-   * This function implements a version of fprintf() that uses {fmt} formatting
+   * This function implements a version of (f)printf() that uses {fmt} formatting
    *
    *  \param fp     stdio FILE pointer
    *  \param format format string of message to be printed
@@ -164,20 +164,43 @@ output are compressed to a single blank by calling :cpp:func:`strcompress()`
 
   /*! \overload
    *
+   * Print to stdout without specifying the FILE pointer.
+   *
+   *  \param format   format string of message to be printed
+   *  \param args     arguments to format string
+   */
+  template <typename... Args> void print(const std::string &format, Args &&...args)
+  {
+    fmtargs_print(stdout, format, fmt::make_format_args(args...));
+  }
+
+  /*! \overload
+   *
+   *  Print string message without format
+   *
    *  \param fp     stdio FILE pointer
    *  \param mesg   string with message to be printed */
 
   void print(FILE *fp, const std::string &mesg);
 
+  /*! \overload
+   *
+   *  Print string message without format to stdout
+   *
+   *  \param mesg   string with message to be printed */
+
+  void print(const std::string &mesg);
+
   /*! Return text redirecting the user to a specific paragraph in the manual
    *
    * The LAMMPS manual contains detailed explanations for errors and
    * warnings where a simple error message may not be sufficient.  These can
-   * be reached through URLs with a numeric code.  This function creates the
+   * be reached through URLs with a numeric code > 0.  This function creates the
    * corresponding text to be included into the error message that redirects
-   * the user to that URL.
+   * the user to that URL.  Using an error code of 0 returns a message
+   * pointing to a URL discussing error messages in general.
    *
-   *  \param errorcode   number pointing to a paragraph in the manual */
+   *  \param errorcode   non-negative number pointing to a paragraph in the manual */
 
   std::string errorurl(int errorcode);
 

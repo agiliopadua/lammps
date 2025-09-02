@@ -203,25 +203,20 @@ double ComputePressureBocs::get_cg_p_corr(int N_basis, double *phi_coeff,
    Find the relevant index position if using a spline basis set
 ------------------------------------------------------------------------- */
 
-double ComputePressureBocs::find_index(double * grid, double value)
+int ComputePressureBocs::find_index(double * grid, double value)
 {
   int i;
   double spacing = fabs(grid[1]-grid[0]);
   int gridsize = spline_length;
   for (i = 0; i < (gridsize-1); ++i)
   {
-    if (value >= grid[i] && value <= grid[i+1]) { return i; }
+    if (value >= grid[i] && value <= grid[i+1]) return i;
   }
 
-  if (value >= grid[i] && value <= (grid[i] + spacing)) { return i; }
+  if (value >= grid[i] && value <= (grid[i] + spacing)) return i;
 
   error->all(FLERR, Error::NOLASTLINE,
-             "find_index could not find value in grid for value: {}", value);
-  for (int i = 0; i < gridsize; ++i) {
-    fprintf(stderr, "grid %d: %f\n", i, grid[i]);
-  }
-
-  exit(1);
+             "find_index could not find index in grid for value: {}", value);
 }
 
 /* ----------------------------------------------------------------------
@@ -294,7 +289,7 @@ double ComputePressureBocs::compute_scalar()
 {
   invoked_scalar = update->ntimestep;
   if (update->vflag_global != invoked_scalar)
-    error->all(FLERR, Error::NOLASTLINE, "Virial was not tallied on needed timestep");
+    error->all(FLERR, Error::NOLASTLINE, "Virial was not tallied on needed timestep{}", utils::errorurl(22));
 
   // invoke temperature if it hasn't been already
 
@@ -354,7 +349,7 @@ void ComputePressureBocs::compute_vector()
 {
   invoked_vector = update->ntimestep;
   if (update->vflag_global != invoked_vector)
-    error->all(FLERR, Error::NOLASTLINE, "Virial was not tallied on needed timestep");
+    error->all(FLERR, Error::NOLASTLINE, "Virial was not tallied on needed timestep{}", utils::errorurl(22));
 
   if (force->kspace && kspace_virial && force->kspace->scalar_pressure_flag)
     error->all(FLERR, Error::NOLASTLINE, "Must use 'kspace_modify pressure/scalar no' for "

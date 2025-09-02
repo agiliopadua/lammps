@@ -29,8 +29,8 @@
 #include "potential_file_reader.h"
 
 #include <algorithm>
+#include <exception>
 #include <cstring>
-#include <memory>
 
 using namespace LAMMPS_NS;
 
@@ -234,9 +234,9 @@ void PairMEAM::coeff(int narg, char **arg)
   }
   if (paridx < 0) {
     if (msmeamflag)
-      error->all(FLERR, Error::NOPOINTER, "No MS-MEAM parameter file in pair coefficients");
+      error->all(FLERR, Error::NOPOINTER, "No MS-MEAM parameter file in pair coefficients" + utils::errorurl(21));
     else
-      error->all(FLERR, Error::NOPOINTER, "No MEAM parameter file in pair coefficients");
+      error->all(FLERR, Error::NOPOINTER, "No MEAM parameter file in pair coefficients" + utils::errorurl(21));
   }
   if ((narg - paridx - 1) != atom->ntypes)
     error->all(FLERR, Error::NOPOINTER, "Expected {} but found {} args for pair style {} "
@@ -252,7 +252,7 @@ void PairMEAM::coeff(int narg, char **arg)
   }
 
   nlibelements = paridx - 3;
-  if (nlibelements < 1) error->all(FLERR, "Incorrect args for pair coefficients");
+  if (nlibelements < 1) error->all(FLERR, "Incorrect args for pair coefficients" + utils::errorurl(21));
   if (nlibelements > MAXELT)
     error->all(FLERR,
                "Too many elements extracted from MEAM library (current limit: {}). "
@@ -370,7 +370,7 @@ void PairMEAM::read_global_meam_file(const std::string &globalfile)
 
   // allocate parameter arrays
 
-  std::vector<lattice_t> lat(nlibelements);
+  std::vector<MEAM::lattice_t> lat(nlibelements);
   std::vector<int> ielement(nlibelements);
   std::vector<int> ibar(nlibelements);
   std::vector<double> z(nlibelements);
@@ -601,7 +601,7 @@ void PairMEAM::read_user_meam_file(const std::string &userfile, int uidx)
     // map lattce_meam value to an integer
     if (which == 4) {
       std::string lattice_type = values.next_string();
-      lattice_t latt;
+      MEAM::lattice_t latt;
       if (!MEAM::str_to_lat(lattice_type, false, latt))
         error->all(FLERR, uidx, "Unrecognized lattice type {} in MEAM parameter file {}:{}",
                    lattice_type, userfile, lineno);

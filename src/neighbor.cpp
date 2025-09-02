@@ -188,8 +188,8 @@ pairclass(nullptr), pairnames(nullptr), pairmasks(nullptr)
 
   // topology lists
 
+  nbondlist = nanglelist = ndihedrallist = nimproperlist = 0;
   bondwhich = anglewhich = dihedralwhich = improperwhich = NONE;
-
   neigh_bond = nullptr;
   neigh_angle = nullptr;
   neigh_dihedral = nullptr;
@@ -454,7 +454,7 @@ void Neighbor::init()
           ri = collection2cut[i]*0.5;
           for (j = 0; j < ncollections; j++){
             rj = collection2cut[j]*0.5;
-            tmp = force->pair->radii2cut(ri, rj) + skin;
+            tmp = ri + rj + skin;
             cutcollectionsq[i][j] = tmp*tmp;
           }
         }
@@ -928,13 +928,13 @@ int Neighbor::init_pair()
     }
 
     if (requests[i]->pair && i < nrequest_original) {
-      auto pair = (Pair *) requests[i]->requestor;
+      auto *pair = (Pair *) requests[i]->requestor;
       pair->init_list(requests[i]->id,lists[i]);
     } else if (requests[i]->fix && i < nrequest_original) {
       Fix *fix = (Fix *) requests[i]->requestor;
       fix->init_list(requests[i]->id,lists[i]);
     } else if (requests[i]->compute && i < nrequest_original) {
-      auto compute = (Compute *) requests[i]->requestor;
+      auto *compute = (Compute *) requests[i]->requestor;
       compute->init_list(requests[i]->id,lists[i]);
     }
   }
@@ -1144,7 +1144,7 @@ int Neighbor::init_pair()
   }
   if (count == 100)
     error->all(FLERR,  Error::NOLASTLINE, "Failed to reorder neighbor lists to satisfy "
-               "constraints - Contact the LAMMPS developers for assistance");
+               "constraints - Please contact the LAMMPS developers." + utils::errorurl(35));
 
   // debug output
 
@@ -1243,7 +1243,8 @@ void Neighbor::morph_unique()
 
 void Neighbor::morph_skip()
 {
-  int i,j,jj,inewton,jnewton,icut,jcut;
+  int i,j,jj,inewton,jnewton;
+  double icut,jcut;
   NeighRequest *irq,*jrq,*nrq;
 
   // loop over irq from largest to smallest cutoff
@@ -2268,7 +2269,7 @@ int Neighbor::request(void *requestor, int instance)
 NeighRequest *Neighbor::add_request(Pair *requestor, int flags)
 {
   int irequest = request(requestor, requestor->instance_me);
-  auto req = requests[irequest];
+  auto *req = requests[irequest];
   req->apply_flags(flags);
   // apply intel flag. omp flag is set globally via set_omp_neighbor()
   if (requestor->suffix_flag & Suffix::INTEL) {
@@ -2281,7 +2282,7 @@ NeighRequest *Neighbor::add_request(Pair *requestor, int flags)
 NeighRequest *Neighbor::add_request(Fix *requestor, int flags)
 {
   int irequest = request(requestor, requestor->instance_me);
-  auto req = requests[irequest];
+  auto *req = requests[irequest];
   req->pair = 0;
   req->fix = 1;
   req->apply_flags(flags);
@@ -2291,7 +2292,7 @@ NeighRequest *Neighbor::add_request(Fix *requestor, int flags)
 NeighRequest *Neighbor::add_request(Compute *requestor, int flags)
 {
   int irequest = request(requestor, requestor->instance_me);
-  auto req = requests[irequest];
+  auto *req = requests[irequest];
   req->pair = 0;
   req->compute = 1;
   req->apply_flags(flags);
@@ -2301,7 +2302,7 @@ NeighRequest *Neighbor::add_request(Compute *requestor, int flags)
 NeighRequest *Neighbor::add_request(Command *requestor, const char *style, int flags)
 {
   int irequest = request(requestor, 0);
-  auto req = requests[irequest];
+  auto *req = requests[irequest];
   req->pair = 0;
   req->command = 1;
   req->occasional = 1;
@@ -2646,7 +2647,8 @@ void Neighbor::set(int narg, char **arg)
     style = Neighbor::MULTI_OLD;
     if (me == 0)
       error->warning(FLERR, "Neighbor list style 'multi/old' is deprecated and will be removed "
-                     "soon.\nContact the LAMMPS developers if that creates problems for you.");
+                     "soon.\nPlease contact the LAMMPS developers if you cannot use style 'multi'."
+                     + utils::errorurl(35));
   } else error->all(FLERR, 1, "Unknown neighbor {} argument: {}", arg[0], arg[1]);
 
   if (style == Neighbor::MULTI_OLD && lmp->citeme) lmp->citeme->add(cite_neigh_multi_old);
@@ -2865,7 +2867,7 @@ void Neighbor::modify_params(int narg, char **arg)
           utils::bounds(FLERR,word,1,ntypes,nlo,nhi,error);
           for (k = nlo; k <= nhi; k++) {
             if (type2collection[k] != -1)
-              error->all(FLERR,"Type specified more than once in collection/type commnd");
+              error->all(FLERR,"Type specified more than once in collection/type command");
             type2collection[k] = i;
           }
         }
@@ -2875,7 +2877,7 @@ void Neighbor::modify_params(int narg, char **arg)
 
       for (i = 1; i <= ntypes; i++){
         if (type2collection[i] == -1) {
-          error->all(FLERR,"Type missing in collection/type commnd");
+          error->all(FLERR,"Type missing in collection/type command");
         }
       }
 
@@ -2891,7 +2893,7 @@ void Neighbor::modify_params(int narg, char **arg)
 void Neighbor::modify_params(const std::string &modcmd)
 {
   auto args = utils::split_words(modcmd);
-  auto newarg = new char*[args.size()];
+  auto *newarg = new char*[args.size()];
   int i=0;
   for (const auto &arg : args) {
     newarg[i++] = (char *)arg.c_str();
@@ -2972,9 +2974,10 @@ void Neighbor::build_collection(int istart)
 
   if (finite_cut_flag) {
     double cut;
+    double *radius = atom->radius;
     int icollection;
     for (int i = istart; i < nmax; i++){
-      cut = force->pair->atom2cut(i);
+      cut = 2 * radius[i];
       collection[i] = -1;
 
       for (icollection = 0; icollection < ncollections; icollection++){
@@ -2993,6 +2996,30 @@ void Neighbor::build_collection(int istart)
       collection[i] = type2collection[type[i]];
     }
   }
+}
+
+/* ----------------------------------------------------------------------
+   look up existing non-skip half or full neighbor list (used for dump image autobond)
+------------------------------------------------------------------------- */
+
+NeighList *Neighbor::get_best_pair_list()
+{
+  // find a non-skip neighbor list containing either half or full pairwise interactions
+
+  int i;
+  for (i = 0; i < old_nrequest; ++i)
+    if (old_requests[i]->half && !old_requests[i]->skip) break;
+
+  // no half list found, try for full list
+  if (i >= old_nrequest) {
+    for (i = 0; i < old_nrequest; ++i)
+      if (old_requests[i]->full && !old_requests[i]->skip) break;
+  }
+
+  // no suitable list found
+  if ((i >= old_nrequest) || lists[i]->kokkos) return nullptr;
+
+  return lists[i];
 }
 
 /* ----------------------------------------------------------------------

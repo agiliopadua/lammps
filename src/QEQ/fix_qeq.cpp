@@ -27,9 +27,7 @@
 #include "memory.h"
 #include "modify.h"
 #include "neigh_list.h"
-#include "pair.h"
 #include "respa.h"
-#include "suffix.h"
 #include "text_file_reader.h"
 #include "update.h"
 
@@ -129,7 +127,7 @@ FixQEq::FixQEq(LAMMPS *lmp, int narg, char **arg) :
   // register with Atom class
 
   s_hist = t_hist = nullptr;
-  grow_arrays(atom->nmax);
+  FixQEq::grow_arrays(atom->nmax);
   atom->add_callback(Atom::GROW);
 
   for (int i = 0; i < atom->nmax; i++)
@@ -272,7 +270,7 @@ void FixQEq::allocate_matrix()
     i = ilist[ii];
     m += numneigh[i];
   }
-  bigint m_cap_big = (bigint)MAX(m * safezone, mincap * MIN_NBRS);
+  auto m_cap_big = (bigint)MAX(m * safezone, mincap * MIN_NBRS);
   if (m_cap_big > MAXSMALLINT)
     error->one(FLERR,"Too many neighbors in fix {}",style);
   m_cap = m_cap_big;
@@ -336,7 +334,8 @@ void FixQEq::init()
   MPI_Allreduce(&qsum_local,&qsum,1,MPI_DOUBLE,MPI_SUM,world);
 
   if ((comm->me == 0) && (fabs(qsum) > QSUMSMALL))
-    error->warning(FLERR,"Fix {} group is not charge neutral, net charge = {:.8}", style, qsum);
+    error->warning(FLERR,"Fix {} group is not charge neutral, net charge = {:.8}{}",
+                   style, qsum, utils::errorurl(29));
 }
 
 /* ---------------------------------------------------------------------- */
