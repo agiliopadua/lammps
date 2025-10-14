@@ -53,7 +53,7 @@ class BondRHEOShell : public BondBPM {
 
   void process_ineligibility(int, int);
   void allocate();
-  void store_data();
+  void store_data() override;
 };
 
 }    // namespace LAMMPS_NS

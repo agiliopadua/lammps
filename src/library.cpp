@@ -1416,7 +1416,7 @@ internally by the :doc:`Fortran interface <Fortran>` and are not likely to be us
    * - comm_layout
      - communication layout (0 = LAYOUT_UNIFORM, 1 = LAYOUT_NONUNIFORM, 2 = LAYOUT_TILED)
    * - comm_mode
-     - communication mode (0 = SINGLE, 1 = MULTI, 2 = MULTIOLD)
+     - communication mode (0 = SINGLE, 1 = MULTI)
    * - ghost_velocity
      - whether velocities are communicated for ghost atoms (0 = no, 1 = yes)
 
@@ -6671,6 +6671,31 @@ int lammps_config_has_mpi_support()
   return 0;
 #else
   return sizeof(MPI_Comm);
+#endif
+}
+
+/* ---------------------------------------------------------------------- */
+
+/** This function is used to query whether LAMMPS was compiled with
+ *  OpenMP enabled.
+ *
+\verbatim embed:rst
+
+.. versionadded:: 10Sep2025
+
+*See also*
+   :cpp:func:`lammps_config_has_mpi_support`
+
+\endverbatim
+ *
+ * \return 1 when compiled with OpenMP enabled, otherwise 0 */
+
+int lammps_config_has_omp_support()
+{
+#ifdef _OPENMP
+  return 1;
+#else
+  return 0;
 #endif
 }
 

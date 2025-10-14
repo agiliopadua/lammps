@@ -303,7 +303,7 @@ TEST_F(VariableTest, AtomicSystem)
                  variable->compute_equal("v_self"););
     TEST_FAILURE(".*ERROR: Variable sum2: Inconsistent lengths in vector-style variable.*",
                  variable->compute_equal("max(v_sum2)"););
-    TEST_FAILURE(".*ERROR: Mismatched fix in variable formula.*",
+    TEST_FAILURE(".*ERROR: Fix 'press' in variable formula does not compute.*",
                  variable->compute_equal("f_press"););
     TEST_FAILURE(".*ERROR .*Variable formula compute vector is accessed out-of-range.*",
                  variable->compute_equal("c_press[10]"););

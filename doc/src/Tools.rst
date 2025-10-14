@@ -533,14 +533,14 @@ The file was provided by Alessandro Luigi Sellerio
 LAMMPS-GUI
 ----------
 
-.. versionchanged:: TBD
+.. versionchanged:: 10Sep2025
 
 LAMMPS-GUI is a graphical text editor customized for editing LAMMPS
 input files that is linked to the :ref:`LAMMPS C-library
 <lammps_c_api>`.  It used to be included with LAMMPS in the
 ``tools/lammps-gui`` folder, but it is now hosted in its own git
-repository at https://github.com/akohlmey/lammps-gui/
-and the online documentation is at https://lammps-gui.lammps.org/
+repository at https://github.com/akohlmey/lammps-gui/ and the online
+documentation is at https://lammps-gui.lammps.org/
 
 It is still possible to compile :ref:`LAMMPS-GUI together with LAMMPS <tools>`.
 

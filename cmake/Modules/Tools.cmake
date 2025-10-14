@@ -43,15 +43,14 @@ endif()
 
 if(BUILD_LAMMPS_GUI)
   include(ExternalProject)
-  option(LAMMPS_GUI_USE_PLUGIN "Load LAMMPS library dynamically at runtime" OFF)
-  option(LAMMPS_GUI_BUILD_DOCS "Build LAMMPS-GUI HTML documentation" OFF)
+  # When building LAMMPS-GUI with LAMMPS we don't support plugin mode and don't include docs.
   ExternalProject_Add(lammps-gui_build
     GIT_REPOSITORY https://github.com/akohlmey/lammps-gui.git
-    GIT_TAG develop
+    GIT_TAG main
     GIT_SHALLOW TRUE
     GIT_PROGRESS TRUE
-    CMAKE_ARGS -D BUILD_DOC=${LAMMPS_GUI_BUILD_DOCS}
-               -D LAMMPS_GUI_USE_PLUGIN=${LAMMPS_GUI_USE_PLUGIN}
+    CMAKE_ARGS -D BUILD_DOC=OFF
+               -D LAMMPS_GUI_USE_PLUGIN=OFF
                -D LAMMPS_SOURCE_DIR=${LAMMPS_SOURCE_DIR}
                -D LAMMPS_LIBRARY=$<TARGET_FILE:lammps>
                -D CMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -69,56 +68,55 @@ if(BUILD_LAMMPS_GUI)
   )
 
   # packaging support for LAMMPS-GUI when compiled with LAMMPS
-  if (NOT LAMMPS_GUI_USE_PLUGIN)
-    option(BUILD_WHAM "Download and compile WHAM executable from Grossfield Lab" YES)
-    if(BUILD_WHAM)
-      set(WHAM_URL "http://membrane.urmc.rochester.edu/sites/default/files/wham/wham-release-2.1.0.tgz" CACHE STRING "URL for WHAM tarball")
-      set(WHAM_MD5 "4ed6e24254925ec124f44bb381c3b87f" CACHE STRING "MD5 checksum of WHAM tarball")
-      mark_as_advanced(WHAM_URL)
-      mark_as_advanced(WHAM_MD5)
+  option(BUILD_WHAM "Download and compile WHAM executable from Grossfield Lab" YES)
+  if(BUILD_WHAM)
+    set(WHAM_URL "http://membrane.urmc.rochester.edu/sites/default/files/wham/wham-release-2.1.0.tgz" CACHE STRING "URL for WHAM tarball")
+    set(WHAM_MD5 "4ed6e24254925ec124f44bb381c3b87f" CACHE STRING "MD5 checksum of WHAM tarball")
+    mark_as_advanced(WHAM_URL)
+    mark_as_advanced(WHAM_MD5)
 
-      get_filename_component(archive ${WHAM_URL} NAME)
-      file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/_deps/src)
-      if(EXISTS ${CMAKE_BINARY_DIR}/_deps/${archive})
-        file(MD5 ${CMAKE_BINARY_DIR}/_deps/${archive} DL_MD5)
-      endif()
-      if(NOT "${DL_MD5}" STREQUAL "${WHAM_MD5}")
-        message(STATUS "Downloading ${WHAM_URL}")
-        file(DOWNLOAD ${WHAM_URL} ${CMAKE_BINARY_DIR}/_deps/${archive} STATUS DL_STATUS SHOW_PROGRESS)
-        file(MD5 ${CMAKE_BINARY_DIR}/_deps/${archive} DL_MD5)
-        if((NOT DL_STATUS EQUAL 0) OR (NOT "${DL_MD5}" STREQUAL "${WHAM_MD5}"))
-          message(ERROR "Download of WHAM sources from ${WHAM_URL} failed")
-        endif()
-      else()
-        message(STATUS "Using already downloaded archive ${CMAKE_BINARY_DIR}/_deps/${archive}")
-      endif()
-      message(STATUS "Unpacking and configuring ${archive}")
-
-      execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_BINARY_DIR}/_deps/${archive}
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/_deps/src)
-      find_package(Patch)
-      if(PATCH_FOUND)
-        message(STATUS "Apply patch to customize WHAM using ${Patch_EXECUTABLE}")
-        execute_process(
-          COMMAND ${Patch_EXECUTABLE} -p1 -i ${CMAKE_SOURCE_DIR}/cmake/packaging/update-wham-2.1.0.patch
-          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/_deps/src/wham/
-        )
-      endif()
-      file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/_deps/wham-src)
-      file(RENAME "${CMAKE_BINARY_DIR}/_deps/src/wham" ${CMAKE_BINARY_DIR}/_deps/wham-src)
-      file(COPY packaging/CMakeLists.wham DESTINATION ${CMAKE_BINARY_DIR}/_deps/wham-src/)
-      file(RENAME "${CMAKE_BINARY_DIR}/_deps/wham-src/CMakeLists.wham"
-        "${CMAKE_BINARY_DIR}/_deps/wham-src/CMakeLists.txt")
-      add_subdirectory("${CMAKE_BINARY_DIR}/_deps/wham-src" "${CMAKE_BINARY_DIR}/_deps/wham-build")
-      set(WHAM_EXE wham wham-2d)
+    get_filename_component(archive ${WHAM_URL} NAME)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/_deps/src)
+    if(EXISTS ${CMAKE_BINARY_DIR}/_deps/${archive})
+      file(MD5 ${CMAKE_BINARY_DIR}/_deps/${archive} DL_MD5)
     endif()
+    if(NOT "${DL_MD5}" STREQUAL "${WHAM_MD5}")
+      message(STATUS "Downloading ${WHAM_URL}")
+      file(DOWNLOAD ${WHAM_URL} ${CMAKE_BINARY_DIR}/_deps/${archive} STATUS DL_STATUS SHOW_PROGRESS)
+      file(MD5 ${CMAKE_BINARY_DIR}/_deps/${archive} DL_MD5)
+      if((NOT DL_STATUS EQUAL 0) OR (NOT "${DL_MD5}" STREQUAL "${WHAM_MD5}"))
+        message(ERROR "Download of WHAM sources from ${WHAM_URL} failed")
+      endif()
+    else()
+      message(STATUS "Using already downloaded archive ${CMAKE_BINARY_DIR}/_deps/${archive}")
+    endif()
+    message(STATUS "Unpacking and configuring ${archive}")
 
-    # build LAMMPS-GUI and LAMMPS as flatpak, if tools are installed
-    find_program(FLATPAK_COMMAND flatpak DOC "Path to flatpak command")
-    find_program(FLATPAK_BUILDER flatpak-builder DOC "Path to flatpak-builder command")
-    if(FLATPAK_COMMAND AND FLATPAK_BUILDER)
-      file(STRINGS ${LAMMPS_DIR}/src/version.h line REGEX LAMMPS_VERSION)
-      string(REGEX REPLACE "#define LAMMPS_VERSION \"([0-9]+) ([A-Za-z][A-Za-z][A-Za-z])[A-Za-z]* ([0-9]+)\""
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_BINARY_DIR}/_deps/${archive}
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/_deps/src)
+    find_package(Patch)
+    if(PATCH_FOUND)
+      message(STATUS "Apply patch to customize WHAM using ${Patch_EXECUTABLE}")
+      execute_process(
+        COMMAND ${Patch_EXECUTABLE} -p1 -i ${CMAKE_SOURCE_DIR}/cmake/packaging/update-wham-2.1.0.patch
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/_deps/src/wham/
+      )
+    endif()
+    file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/_deps/wham-src)
+    file(RENAME "${CMAKE_BINARY_DIR}/_deps/src/wham" ${CMAKE_BINARY_DIR}/_deps/wham-src)
+    file(COPY packaging/CMakeLists.wham DESTINATION ${CMAKE_BINARY_DIR}/_deps/wham-src/)
+    file(RENAME "${CMAKE_BINARY_DIR}/_deps/wham-src/CMakeLists.wham"
+      "${CMAKE_BINARY_DIR}/_deps/wham-src/CMakeLists.txt")
+    add_subdirectory("${CMAKE_BINARY_DIR}/_deps/wham-src" "${CMAKE_BINARY_DIR}/_deps/wham-build")
+    set(WHAM_EXE wham wham-2d)
+  endif()
+
+  # build LAMMPS-GUI and LAMMPS as flatpak, if tools are installed
+  find_program(FLATPAK_COMMAND flatpak DOC "Path to flatpak command")
+  find_program(FLATPAK_BUILDER flatpak-builder DOC "Path to flatpak-builder command")
+  if(FLATPAK_COMMAND AND FLATPAK_BUILDER)
+    file(STRINGS ${LAMMPS_DIR}/src/version.h line REGEX LAMMPS_VERSION)
+    string(REGEX REPLACE "#define LAMMPS_VERSION \"([0-9]+) ([A-Za-z][A-Za-z][A-Za-z])[A-Za-z]* ([0-9]+)\""
                         "\\1\\2\\3" LAMMPS_RELEASE "${line}")
     set(FLATPAK_BUNDLE "LAMMPS-Linux-x86_64-GUI-${LAMMPS_RELEASE}.flatpak")
     add_custom_target(flatpak
@@ -126,11 +124,11 @@ if(BUILD_LAMMPS_GUI)
       COMMAND ${FLATPAK_BUILDER} --force-clean --verbose --repo=${CMAKE_CURRENT_BINARY_DIR}/flatpak-repo
                                --install-deps-from=flathub --state-dir=${CMAKE_CURRENT_BINARY_DIR}
                                --user --ccache --default-branch=${LAMMPS_RELEASE}
-                               flatpak-build ${LAMMPS_DIR}/tools/lammps-gui/org.lammps.lammps-gui.yml
+                               flatpak-build ${LAMMPS_DIR}/cmake/packaging/org.lammps.lammps-gui.yml
       COMMAND ${FLATPAK_COMMAND} build-bundle --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo --verbose
                                ${CMAKE_CURRENT_BINARY_DIR}/flatpak-repo
                                ${FLATPAK_BUNDLE} org.lammps.lammps-gui ${LAMMPS_RELEASE}
-      COMMENT "Create Flatpak bundle file of LAMMPS-GUI and LAMMPS"
+      COMMENT "Create Flatpak bundle file of LAMMPS and LAMMPS-GUI"
       BYPRODUCT ${FLATPAK_BUNDLE}
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
@@ -208,7 +206,7 @@ if(BUILD_LAMMPS_GUI)
     file(STRINGS ${LAMMPS_DIR}/src/version.h line REGEX LAMMPS_VERSION)
     string(REGEX REPLACE "#define LAMMPS_VERSION \"([0-9]+) ([A-Za-z][A-Za-z][A-Za-z])[A-Za-z]* ([0-9]+)\""
                           "\\1\\2\\3" LAMMPS_RELEASE "${line}")
-    install(FILES $<TARGET_RUNTIME_DLLS:lammps-gui> TYPE BIN)
+    #    install(FILES $<TARGET_RUNTIME_DLLS:lammps-gui> TYPE BIN)
     if(BUILD_SHARED_LIBS)
       install(FILES $<TARGET_RUNTIME_DLLS:lammps> TYPE BIN)
     endif()
@@ -238,16 +236,18 @@ if(BUILD_LAMMPS_GUI)
     file(STRINGS ${LAMMPS_DIR}/src/version.h line REGEX LAMMPS_VERSION)
     string(REGEX REPLACE "#define LAMMPS_VERSION \"([0-9]+) ([A-Za-z][A-Za-z][A-Za-z])[A-Za-z]* ([0-9]+)\""
       "\\1\\2\\3" LAMMPS_RELEASE "${line}")
-    set(LAMMPS_GUI_RESOURCE ${CMAKE_BINARY_DIR}/lammps-gui_build-prefix/src/lammps-gui_build/resources/)
-    install(FILES ${LAMMPS_GUI_RESOURCE}/lammps-gui.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications/)
-    install(FILES ${LAMMPS_GUI_RESOURCE}/lammps-gui.appdata.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/appdata/)
-    install(FILES ${LAMMPS_GUI_RESOURCE}/lammps-input.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/mime/packages/)
-    install(FILES ${LAMMPS_GUI_RESOURCE}/lammps-input.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/mime/text/x-application-lammps.xml)
-    install(DIRECTORY ${LAMMPS_GUI_RESOURCE}/icons/hicolor DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/)
+    set(LAMMPS_GUI_PACKAGING ${CMAKE_BINARY_DIR}/lammps-gui_build-prefix/src/lammps-gui_build/packaging/)
+    set(LAMMPS_GUI_RESOURCES ${CMAKE_BINARY_DIR}/lammps-gui_build-prefix/src/lammps-gui_build/resources/)
+    install(PROGRAMS ${CMAKE_BINARY_DIR}/lammps-gui_build-prefix/bin/lammps-gui DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES ${LAMMPS_GUI_PACKAGING}/lammps-gui.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications/)
+    install(FILES ${LAMMPS_GUI_PACKAGING}/lammps-gui.appdata.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/appdata/)
+    install(FILES ${LAMMPS_GUI_PACKAGING}/lammps-input.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/mime/packages/)
+    install(FILES ${LAMMPS_GUI_PACKAGING}/lammps-input.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/mime/text/x-application-lammps.xml)
+    install(DIRECTORY ${LAMMPS_GUI_RESOURCES}/icons/hicolor DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/)
     install(CODE [[
       file(GET_RUNTIME_DEPENDENCIES
         LIBRARIES $<TARGET_FILE:lammps>
-        EXECUTABLES $<TARGET_FILE:lmp>
+        EXECUTABLES $<TARGET_FILE:lmp> ${CMAKE_BINARY_DIR}/lammps-gui_build-prefix/bin/lammps-gui
         RESOLVED_DEPENDENCIES_VAR _r_deps
         UNRESOLVED_DEPENDENCIES_VAR _u_deps
       )
@@ -273,5 +273,4 @@ if(BUILD_LAMMPS_GUI)
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
   endif()
-endif()
 endif()

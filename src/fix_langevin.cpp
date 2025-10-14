@@ -393,7 +393,6 @@ void FixLangevin::post_force_templated()
 
   double fdrag[3],fran[3],fsum[3],fsumall[3];
   bigint count;
-  double fswap;
 
   double boltz = force->boltz;
   double dt = update->dt;
@@ -650,12 +649,6 @@ void FixLangevin::end_of_step()
   double **v = atom->v;
   int *mask = atom->mask;
   int nlocal = atom->nlocal;
-  double dtfm;
-  double dt = update->dt;
-  double *mass = atom->mass;
-  double *rmass = atom->rmass;
-  double **f = atom->f;
-  int *type = atom->type;
 
   energy_onestep = 0.0;
 

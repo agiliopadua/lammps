@@ -138,7 +138,7 @@ the ``examples/QUANTUM`` sub-directories for more details:
 
 There are also at least two quantum codes which have direct MDI
 support, `Quantum ESPRESSO (QE) <https://www.quantum-espresso.org/>`_
-and `INQ <https://qsg.llnl.gov/node/101.html>`_.  There are also
+and `INQ <https://gitlab.com/npneq/inq>`_.  There are also
 several QM codes which have indirect support through QCEngine or i-PI.
 The former means they require a wrapper program (QCEngine) with MDI
 support which writes/read files to pass data to the quantum code

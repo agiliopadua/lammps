@@ -613,7 +613,8 @@ void Variable::set(int narg, char **arg)
 
   } else if (strcmp(arg[1], "timer") == 0) {
     if (narg != 2)
-      error->all(FLERR, "Illegal variable command: expected 2 arguments but found {}", narg);
+      error->all(FLERR, "Illegal variable command: expected 2 arguments but found {}{}", narg,
+                 utils::errorurl(3));
     int ivar = find(arg[0]);
     if (ivar >= 0) {
       if (style[ivar] != TIMER)
@@ -1591,6 +1592,9 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           }
         }
 
+        auto mismatch_msg = fmt::format("Compute '{}' in variable formula does not compute the "
+                                    "requested property. {}", compute->id, utils::errorurl(37));
+
         // equal-style or immediate variable is being evaluated
 
         if ((ivar < 0) || (style[ivar] == EQUAL)) {
@@ -1600,7 +1604,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           if (lowercase && nbracket == 0) {
 
             if (!compute->scalar_flag)
-              print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (!compute->is_initialized())
               print_var_error(FLERR,"Variable formula compute cannot be invoked before "
                               "initialization by a run",ivar);
@@ -1617,7 +1621,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           } else if (lowercase && nbracket == 1) {
 
             if (!compute->vector_flag)
-              print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (!compute->is_initialized())
               print_var_error(FLERR,"Variable formula compute cannot be invoked before "
                               "initialization by a run",ivar);
@@ -1641,7 +1645,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           } else if (lowercase && nbracket == 2) {
 
             if (!compute->array_flag)
-              print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (index2 > compute->size_array_cols)
               print_var_error(FLERR,"Variable formula compute array is accessed out-of-range"
                               + utils::errorurl(20), ivar, 0);
@@ -1668,9 +1672,9 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           } else if (!lowercase && nbracket == 1) {
 
             if (!compute->peratom_flag)
-              print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (compute->size_peratom_cols)
-              print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (!compute->is_initialized())
               print_var_error(FLERR,"Variable formula compute cannot be invoked before "
                               "initialization by a run",ivar);
@@ -1687,9 +1691,9 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           } else if (!lowercase && nbracket == 2) {
 
             if (!compute->peratom_flag)
-              print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (!compute->size_peratom_cols)
-              print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (index2 > compute->size_peratom_cols)
               print_var_error(FLERR,"Variable formula compute array is accessed out-of-range"
                               + utils::errorurl(20), ivar,0);
@@ -1711,7 +1715,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
 
           // no other possibilities for equal-style variable, so error
 
-          } else print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+          } else print_var_error(FLERR, mismatch_msg, ivar);
 
         // vector-style variable is being evaluated
 
@@ -1722,7 +1726,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           if (lowercase && nbracket == 0) {
 
             if (!compute->vector_flag)
-              print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (!compute->is_initialized())
               print_var_error(FLERR,"Variable formula compute cannot be invoked before "
                               "initialization by a run",ivar);
@@ -1749,7 +1753,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           } else if (lowercase && nbracket == 1) {
 
             if (!compute->array_flag)
-              print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (!compute->is_initialized())
               print_var_error(FLERR,"Variable formula compute cannot be invoked before "
                               "initialization by a run",ivar);
@@ -1776,7 +1780,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
 
           // no other possibilities for vector-style variable, so error
 
-          } else print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+          } else print_var_error(FLERR, mismatch_msg, ivar);
 
         // atom-style variable is being evaluated
 
@@ -1787,9 +1791,9 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           if (lowercase && nbracket == 0) {
 
             if (!compute->peratom_flag)
-              print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (compute->size_peratom_cols)
-              print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (!compute->is_initialized())
               print_var_error(FLERR,"Variable formula compute cannot be invoked before "
                               "initialization by a run",ivar);
@@ -1809,9 +1813,9 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           } else if (lowercase && nbracket == 1) {
 
             if (!compute->peratom_flag)
-              print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (!compute->size_peratom_cols)
-              print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (index1 > compute->size_peratom_cols)
               print_var_error(FLERR,"Variable formula compute array is accessed out-of-range"
                               + utils::errorurl(20), ivar,0);
@@ -1833,7 +1837,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
 
           // no other possibilities for atom-style variable, so error
 
-          } else print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+          } else print_var_error(FLERR, mismatch_msg, ivar);
         }
 
       // ----------------
@@ -1876,6 +1880,9 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           }
         }
 
+        auto mismatch_msg = fmt::format("Fix '{}' in variable formula does not compute the "
+                                    "requested property. {}", fix->id, utils::errorurl(37));
+
         // equal-style or immediate variable is being evaluated
 
         if ((ivar < 0) || (style[ivar] == EQUAL)) {
@@ -1885,7 +1892,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           if (lowercase && nbracket == 0) {
 
             if (!fix->scalar_flag)
-              print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (update->whichflag > 0 && update->ntimestep % fix->global_freq)
               print_var_error(FLERR,"Fix in variable not computed at a compatible time"
                               + utils::errorurl(7), ivar);
@@ -1898,7 +1905,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           } else if (lowercase && nbracket == 1) {
 
             if (!fix->vector_flag)
-              print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (index1 > fix->size_vector && fix->size_vector_variable == 0)
               print_var_error(FLERR,"Variable formula fix vector is accessed out-of-range"
                               + utils::errorurl(20), ivar,0);
@@ -1918,7 +1925,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           } else if (lowercase && nbracket == 2) {
 
             if (!fix->array_flag)
-              print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (index1 > fix->size_array_rows && fix->size_array_rows_variable == 0)
               print_var_error(FLERR,"Variable formula fix array is accessed out-of-range"
                               + utils::errorurl(20), ivar,0);
@@ -1941,9 +1948,9 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           } else if (!lowercase && nbracket == 1) {
 
             if (!fix->peratom_flag)
-              print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (fix->size_peratom_cols)
-              print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (update->whichflag > 0 &&
                 update->ntimestep % fix->peratom_freq)
               print_var_error(FLERR,"Fix in variable not computed at a compatible time"
@@ -1957,9 +1964,9 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           } else if (!lowercase && nbracket == 2) {
 
             if (!fix->peratom_flag)
-              print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (!fix->size_peratom_cols)
-              print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (index2 > fix->size_peratom_cols)
               print_var_error(FLERR,"Variable formula fix array is accessed out-of-range"
                               + utils::errorurl(20), ivar,0);
@@ -1977,7 +1984,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
 
           // no other possibilities for equal-style variable, so error
 
-          } else print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+          } else print_var_error(FLERR, mismatch_msg, ivar);
 
         // vector-style variable is being evaluated
 
@@ -1988,7 +1995,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           if (lowercase && nbracket == 0) {
 
             if (!fix->vector_flag)
-              print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (fix->size_vector == 0)
               print_var_error(FLERR,"Variable formula fix vector is zero length",ivar);
             if (update->whichflag > 0 && update->ntimestep % fix->global_freq)
@@ -2014,7 +2021,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           } else if (lowercase && nbracket == 1) {
 
             if (!fix->array_flag)
-              print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (fix->size_array_rows == 0)
               print_var_error(FLERR,"Variable formula fix array is zero length",ivar);
             if (index1 > fix->size_array_cols)
@@ -2040,7 +2047,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
 
           // no other possibilities for vector-style variable, so error
 
-          } else print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+          } else print_var_error(FLERR, mismatch_msg, ivar);
 
         // atom-style variable is being evaluated
 
@@ -2051,9 +2058,9 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           if (lowercase && nbracket == 0) {
 
             if (!fix->peratom_flag)
-              print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (fix->size_peratom_cols)
-              print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (update->whichflag > 0 && update->ntimestep % fix->peratom_freq)
               print_var_error(FLERR,"Fix in variable not computed at compatible time"
                               + utils::errorurl(7), ivar);
@@ -2069,9 +2076,9 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
           } else if (lowercase && nbracket == 1) {
 
             if (!fix->peratom_flag)
-              print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (!fix->size_peratom_cols)
-              print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+              print_var_error(FLERR, mismatch_msg, ivar);
             if (index1 > fix->size_peratom_cols)
               print_var_error(FLERR,"Variable formula fix array is accessed out-of-range"
                               + utils::errorurl(20), ivar,0);
@@ -2089,7 +2096,7 @@ double Variable::evaluate(char *str, Tree **tree, int ivar)
 
           // no other possibilities for atom-style variable, so error
 
-          } else print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+          } else print_var_error(FLERR, mismatch_msg, ivar);
         }
 
       // ----------------
@@ -4592,6 +4599,8 @@ int Variable::special_function(const std::string &word, char *contents, Tree **t
         mesg += "' in variable formula";
         print_var_error(FLERR,mesg,ivar);
       }
+      auto mismatch_msg = fmt::format("Compute '{}' in variable formula does not compute the "
+                                  "requested property. {}", compute->id, utils::errorurl(37));
       if (index == 0 && compute->vector_flag) {
         if (!compute->is_initialized())
           print_var_error(FLERR,"Variable formula compute cannot be invoked before "
@@ -4615,7 +4624,7 @@ int Variable::special_function(const std::string &word, char *contents, Tree **t
         }
         nvec = compute->size_array_rows;
         nstride = compute->size_array_cols;
-      } else print_var_error(FLERR,"Mismatched compute in variable formula",ivar);
+      } else print_var_error(FLERR, mismatch_msg, ivar);
 
     // argument is fix
 
@@ -4634,6 +4643,8 @@ int Variable::special_function(const std::string &word, char *contents, Tree **t
         mesg += "' in variable formula";
         print_var_error(FLERR,mesg,ivar);
       }
+      auto mismatch_msg = fmt::format("Fix '{}' in variable formula does not compute the "
+                                    "requested property. {}", fix->id, utils::errorurl(37));
       if (index == 0 && fix->vector_flag) {
         if (update->whichflag > 0 && update->ntimestep % fix->global_freq) {
           std::string mesg = "Fix with ID '";
@@ -4653,7 +4664,7 @@ int Variable::special_function(const std::string &word, char *contents, Tree **t
                           + utils::errorurl(7), ivar);
         nvec = fix->size_array_rows;
         nstride = fix->size_array_cols;
-      } else print_var_error(FLERR,"Mismatched fix in variable formula",ivar);
+      } else print_var_error(FLERR, mismatch_msg, ivar);
 
     // argument is vector-style variable
 

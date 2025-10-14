@@ -65,19 +65,6 @@ static constexpr double BIG = 1.0e20;
 
 enum{NONE,ALL,PARTIAL,TEMPLATE};
 
-static const char cite_neigh_multi_old[] =
-  "neighbor multi/old command: doi:10.1016/j.cpc.2008.03.005\n\n"
-  "@Article{Intveld08,\n"
-  " author =  {in 't Veld, P. J. and S. J. Plimpton and G. S. Grest},\n"
-  " title =   {Accurate and Efficient Methods for Modeling Colloidal\n"
-  "            Mixtures in an Explicit Solvent using Molecular Dynamics},\n"
-  " journal = {Comput.\\ Phys.\\ Commun.},\n"
-  " year =    2008,\n"
-  " volume =  179,\n"
-  " number =  5,\n"
-  " pages =   {320--329}\n"
-  "}\n\n";
-
 static const char cite_neigh_multi[] =
   "neighbor multi command: doi:10.1016/j.cpc.2008.03.005, doi:10.1007/s40571-020-00361-2\n\n"
   "@Article{Intveld08,\n"
@@ -2070,12 +2057,10 @@ int Neighbor::choose_stencil(NeighRequest *rq)
     if (!rq->ghost != !(mask & NS_GHOST)) continue;
     if (!rq->ssa != !(mask & NS_SSA)) continue;
 
-    // neighbor style is one of BIN, MULTI_OLD, or MULTI and must match
+    // neighbor style is one of BIN, or MULTI and must match
 
     if (style == Neighbor::BIN) {
       if (!(mask & NS_BIN)) continue;
-    } else if (style == Neighbor::MULTI_OLD) {
-      if (!(mask & NS_MULTI_OLD)) continue;
     } else if (style == Neighbor::MULTI) {
       if (!(mask & NS_MULTI)) continue;
     }
@@ -2217,14 +2202,12 @@ int Neighbor::choose_pair(NeighRequest *rq)
     if (!rq->halffull != !(mask & NP_HALF_FULL)) continue;
     if (!rq->off2on != !(mask & NP_OFF2ON)) continue;
 
-    // neighbor style is one of NSQ, BIN, MULTI_OLD, or MULTI and must match
+    // neighbor style is one of NSQ, BIN, or MULTI and must match
 
     if (style == Neighbor::NSQ) {
       if (!(mask & NP_NSQ)) continue;
     } else if (style == Neighbor::BIN) {
       if (!(mask & NP_BIN)) continue;
-    } else if (style == Neighbor::MULTI_OLD) {
-      if (!(mask & NP_MULTI_OLD)) continue;
     } else if (style == Neighbor::MULTI) {
       if (!(mask & NP_MULTI)) continue;
     }
@@ -2644,14 +2627,10 @@ void Neighbor::set(int narg, char **arg)
     style = Neighbor::MULTI;
     ncollections = atom->ntypes;
   } else if (strcmp(arg[1],"multi/old") == 0) {
-    style = Neighbor::MULTI_OLD;
-    if (me == 0)
-      error->warning(FLERR, "Neighbor list style 'multi/old' is deprecated and will be removed "
-                     "soon.\nPlease contact the LAMMPS developers if you cannot use style 'multi'."
-                     + utils::errorurl(35));
+    error->all(FLERR, 1, "Neighbor style multi/old has been removed. "
+               "Please use style 'multi' and see the documentation more information about it.");
   } else error->all(FLERR, 1, "Unknown neighbor {} argument: {}", arg[0], arg[1]);
 
-  if (style == Neighbor::MULTI_OLD && lmp->citeme) lmp->citeme->add(cite_neigh_multi_old);
   if (style == Neighbor::MULTI && lmp->citeme) lmp->citeme->add(cite_neigh_multi);
 }
 

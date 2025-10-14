@@ -669,8 +669,6 @@ void CommTiledKokkos::grow_swap_send(int i, int n, int /*nold*/)
   memory->destroy(sendbox[i]);
   memory->create(sendbox[i],n,6,"comm:sendbox");
   grow_swap_send_multi(i,n);
-  memory->destroy(sendbox_multiold[i]);
-  memory->create(sendbox_multiold[i],n,atom->ntypes+1,6,"comm:sendbox_multiold");
 
   if (sendlist && !k_sendlist.h_view.data()) {
     delete [] sendlist;
