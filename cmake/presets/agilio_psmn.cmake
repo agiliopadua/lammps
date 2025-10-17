@@ -11,7 +11,6 @@ set(ALL_PACKAGES
   MANYBODY
   MC
   MISC
-  MOFFF
   MOLECULE
   OPENMP
   PLUMED
@@ -24,4 +23,5 @@ foreach(PKG ${ALL_PACKAGES})
 endforeach()
 
 set(BUILD_TOOLS ON CACHE BOOL "" FORCE)
-set(CMAKE_INSTALL_PREFIX "/home/apadua" CACHE STRING "" FORCE)
+set(CMAKE_INSTALL_PREFIX "/Xnfs/chimie/debian13/lammps" CACHE STRING "" FORCE)
+

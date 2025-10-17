@@ -25,4 +25,3 @@ set(OpenMP_CXX_FLAGS "-qopenmp -qopenmp-simd" CACHE STRING "" FORCE)
 set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "" FORCE)
 set(OpenMP_Fortran_FLAGS "-qopenmp -qopenmp-simd" CACHE STRING "" FORCE)
 set(OpenMP_omp_LIBRARY "libiomp5.so" CACHE PATH "" FORCE)
-
