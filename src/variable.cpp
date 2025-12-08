@@ -340,6 +340,7 @@ void Variable::set(int narg, char **arg)
         error->all(FLERR, 1, "Cannot redefine variable {} with a different style", arg[0]);
       delete[] data[ivar][0];
       copy(1, &scopy, data[ivar]);
+      eval_in_progress[ivar] = 0;
       replaceflag = 1;
     } else {
       if (nvar == maxvar) grow();
@@ -442,6 +443,7 @@ void Variable::set(int narg, char **arg)
       delete[] data[ivar][1];
       data[ivar][0] = utils::strdup(arg[2]);
       data[ivar][1] = utils::strdup(arg[3]);
+      eval_in_progress[ivar] = 0;
       replaceflag = 1;
     } else {
       if (nvar == maxvar) grow();
@@ -478,6 +480,7 @@ void Variable::set(int narg, char **arg)
         error->all(FLERR, 1, "Cannot redefine variable {} with a different style", arg[0]);
       delete[] data[ivar][0];
       data[ivar][0] = utils::strdup(combined);
+      eval_in_progress[ivar] = 0;
       replaceflag = 1;
     } else {
       if (nvar == maxvar) grow();
@@ -512,6 +515,7 @@ void Variable::set(int narg, char **arg)
         error->all(FLERR, 1, "Cannot redefine variable {} with a different style", arg[0]);
       delete[] data[ivar][0];
       data[ivar][0] = utils::strdup(combined);
+      eval_in_progress[ivar] = 0;
       replaceflag = 1;
     } else {
       if (nvar == maxvar) grow();
@@ -555,6 +559,7 @@ void Variable::set(int narg, char **arg)
         std::vector<double> vec(vecs[ivar].values, vecs[ivar].values + vecs[ivar].n);
         data[ivar][1] = utils::strdup(fmt::format("[{}]", fmt::join(vec, ",")));
       }
+      eval_in_progress[ivar] = 0;
       replaceflag = 1;
     } else {
       if (nvar == maxvar) grow();
@@ -591,6 +596,7 @@ void Variable::set(int narg, char **arg)
         error->all(FLERR, 1, "Cannot redefine variable {} with a different style", arg[0]);
       delete[] data[ivar][0];
       data[ivar][0] = utils::strdup(arg[2]);
+      eval_in_progress[ivar] = 0;
       replaceflag = 1;
     } else {
       if (nvar == maxvar) grow();
@@ -620,6 +626,7 @@ void Variable::set(int narg, char **arg)
       if (style[ivar] != TIMER)
         error->all(FLERR, 1, "Cannot redefine variable {} with a different style", arg[0]);
       dvalue[ivar] = platform::walltime();
+      eval_in_progress[ivar] = 0;
       replaceflag = 1;
     } else {
       if (nvar == maxvar) grow();
@@ -645,7 +652,8 @@ void Variable::set(int narg, char **arg)
     if (ivar >= 0) {
       if (style[ivar] != INTERNAL)
         error->all(FLERR, 1, "Cannot redefine variable {} with a different style", arg[0]);
-      dvalue[nvar] = utils::numeric(FLERR, arg[2], false, lmp);
+      dvalue[ivar] = utils::numeric(FLERR, arg[2], false, lmp);
+      eval_in_progress[ivar] = 0;
       replaceflag = 1;
     } else {
       if (nvar == maxvar) grow();
@@ -671,6 +679,7 @@ void Variable::set(int narg, char **arg)
   if (!utils::is_id(arg[0]))
     error->all(FLERR, "Variable name '{}' must have only letters, numbers, or underscores", arg[0]);
   names[nvar] = utils::strdup(arg[0]);
+  eval_in_progress[nvar] = 0;
   nvar++;
 }
 
@@ -1362,6 +1371,7 @@ void Variable::remove(int n)
     reader[i-1] = reader[i];
     data[i-1] = data[i];
     dvalue[i-1] = dvalue[i];
+    eval_in_progress[i-1] = eval_in_progress[i];
 
     // copy VecVar struct from vecs[i] to vecs[i-1]
 

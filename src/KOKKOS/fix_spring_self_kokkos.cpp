@@ -48,9 +48,9 @@ FixSpringSelfKokkos<DeviceType>::FixSpringSelfKokkos(LAMMPS *lmp, int narg, char
   grow_arrays(nmax);
 
   for (int i = 0; i < atom->nlocal; i++) {
-    k_xoriginal.h_view(i,0) = xoriginal_tmp[i][0];
-    k_xoriginal.h_view(i,1) = xoriginal_tmp[i][1];
-    k_xoriginal.h_view(i,2) = xoriginal_tmp[i][2];
+    k_xoriginal.view_host()(i,0) = xoriginal_tmp[i][0];
+    k_xoriginal.view_host()(i,1) = xoriginal_tmp[i][1];
+    k_xoriginal.view_host()(i,2) = xoriginal_tmp[i][2];
   }
 
   k_xoriginal.modify_host();
