@@ -233,6 +233,11 @@ whether an extra library is needed to build and use the package:
      - :doc:`Howto granular <Howto_granular>`
      - pour
      - no
+   * - :ref:`GRAPHICS <PKG-GRAPHICS>`
+     - generate graphics output
+     - :doc:`Howto_viz`
+     - n/a
+     - no
    * - :ref:`H5MD <PKG-H5MD>`
      - dump output via HDF5
      - :doc:`dump h5md <dump_h5md>`
@@ -288,6 +293,11 @@ whether an extra library is needed to build and use the package:
      - :doc:`pair_style tersoff <pair_tersoff>`
      - shear
      - no
+   * - :ref:`MBX <PKG-MBX>`
+     - `MBX MB-nrg potential library <https://mbxsimulations.com/>`_
+     - :doc:`pair_mbx <pair_mbx>`
+     - ``PACKAGES/mbx``
+     - no
    * - :ref:`MC <PKG-MC>`
      - Monte Carlo options
      - :doc:`fix gcmc <fix_gcmc>`
@@ -322,6 +332,11 @@ whether an extra library is needed to build and use the package:
      - High-dimensional neural network potentials
      - :doc:`pair_style hdnnp <pair_hdnnp>`
      - ``PACKAGES/hdnnp``
+     - ext
+   * - :ref:`ML-RUNNER <PKG-ML-RUNNER>`
+     - Second-, third-, and fourth-generation high-dimensional neural network potentials
+     - :doc:`pair_style runner <pair_runner>`
+     - ``PACKAGES/runner``
      - ext
    * - :ref:`ML-IAP <PKG-ML-IAP>`
      - multiple machine learning potentials

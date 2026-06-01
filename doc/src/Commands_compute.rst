@@ -1,10 +1,12 @@
+.. include:: Commands_html.rst
+
 Compute styles
 ==============
 
 An alphabetic list of all LAMMPS :doc:`compute <compute>` commands.
-Some styles have accelerated versions.  This is indicated by
-additional letters in parenthesis: g = GPU, i = INTEL, k =
-KOKKOS, o = OPENMP, t = OPT.
+Some styles have accelerated versions.  This is indicated by additional
+letters in parenthesis: g = GPU, i = INTEL, k = KOKKOS, o = OPENMP, t =
+OPT.
 
 .. table_from_list::
    :columns: 4
@@ -49,7 +51,7 @@ KOKKOS, o = OPENMP, t = OPT.
    * :doc:`efield/atom <compute_efield_atom>`
    * :doc:`efield/wolf/atom <compute_efield_wolf_atom>`
    * :doc:`entropy/atom <compute_entropy_atom>`
-   * :doc:`erotate/asphere <compute_erotate_asphere>`
+   * :doc:`erotate/asphere (k) <compute_erotate_asphere>`
    * :doc:`erotate/rigid <compute_erotate_rigid>`
    * :doc:`erotate/sphere (k) <compute_erotate_sphere>`
    * :doc:`erotate/sphere/atom <compute_erotate_sphere_atom>`
@@ -66,6 +68,7 @@ KOKKOS, o = OPENMP, t = OPT.
    * :doc:`gyration/chunk <compute_gyration_chunk>`
    * :doc:`gyration/shape <compute_gyration_shape>`
    * :doc:`gyration/shape/chunk <compute_gyration_shape_chunk>`
+   * :doc:`hbond/local <compute_hbond_local>`
    * :doc:`heat/flux <compute_heat_flux>`
    * :doc:`heat/flux/tally <compute_tally>`
    * :doc:`heat/flux/virial/tally <compute_tally>`
@@ -173,7 +176,7 @@ KOKKOS, o = OPENMP, t = OPT.
    * :doc:`temp/region <compute_temp_region>`
    * :doc:`temp/region/eff <compute_temp_region_eff>`
    * :doc:`temp/rotate <compute_temp_rotate>`
-   * :doc:`temp/sphere <compute_temp_sphere>`
+   * :doc:`temp/sphere (k) <compute_temp_sphere>`
    * :doc:`temp/uef <compute_temp_uef>`
    * :doc:`ti <compute_ti>`
    * :doc:`torque/chunk <compute_torque_chunk>`
