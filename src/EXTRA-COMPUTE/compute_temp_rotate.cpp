@@ -23,8 +23,6 @@
 #include "force.h"
 #include "group.h"
 #include "domain.h"
-#include "modify.h"
-#include "lattice.h"
 #include "error.h"
 #include "memory.h"
 
